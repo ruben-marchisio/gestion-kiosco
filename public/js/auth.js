@@ -1,11 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('auth.js cargado');
+
   const formIniciarSesion = document.querySelector('#form-iniciar-sesion');
   const formRegistrarse = document.querySelector('#form-registrarse');
   const botonIrARegistro = document.querySelector('#ir-a-registro');
   const botonIrAInicioSesion = document.querySelector('#ir-a-inicio-sesion');
 
-  // Construcción de la URL base
-  const BASE_URL = `${window.location.protocol}//${window.location.hostname}:${window.location.port || 3000}`;
+  console.log('formIniciarSesion encontrado:', !!formIniciarSesion);
+  console.log('formRegistrarse encontrado:', !!formRegistrarse);
+
+  // Construcción de la URL base sin especificar el puerto
+  const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
   console.log('URL base generada:', BASE_URL);
 
   // Mostrar formulario de registro
@@ -28,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formIniciarSesion) {
     formIniciarSesion.addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.log('Evento submit disparado para inicio de sesión');
 
       const formData = new FormData(formIniciarSesion);
       const email = formData.get('email');
@@ -60,16 +66,19 @@ document.addEventListener('DOMContentLoaded', () => {
           alert(resultado.error || 'Error al iniciar sesión. Revisa los datos e intenta de nuevo.');
         }
       } catch (error) {
-        console.error('Error al conectar con el servidor:', error);
+        console.error('Error detallado al conectar con el servidor:', error);
         alert('Error al conectar con el servidor: ' + error.message);
       }
     });
+  } else {
+    console.error('Formulario de inicio de sesión no encontrado');
   }
 
   // Manejar el envío del formulario de registro
   if (formRegistrarse) {
     formRegistrarse.addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.log('Evento submit disparado para registro');
 
       const formData = new FormData(formRegistrarse);
       const data = Object.fromEntries(formData);
@@ -101,9 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
           alert(resultado.error || 'Error al registrarse. Revisa los datos e intenta de nuevo.');
         }
       } catch (error) {
-        console.error('Error al conectar con el servidor:', error);
+        console.error('Error detallado al conectar con el servidor:', error);
         alert('Error al conectar con el servidor: ' + error.message);
       }
     });
+  } else {
+    console.error('Formulario de registro no encontrado');
   }
 });
