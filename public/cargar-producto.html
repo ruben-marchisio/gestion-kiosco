@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="/public/css/estilos.css">
   <!-- Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- QuaggaJS para escaneo -->
-  <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+  <!-- QuaggaJS para escanear códigos de barras -->
+  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 </head>
 <body>
   <!-- Encabezado -->
@@ -16,98 +16,32 @@
     <div class="logo">
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
     </div>
-    <h1>Gestión Kiosco - Kiosco Juan</h1>
-    <button class="cerrar-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+    <h1>Gestión Kiosco</h1>
+    <nav class="nav-principal">
+      <a href="/public/index.html"><i class="fas fa-home"></i> Inicio</a>
+      <a href="/public/cargar-producto.html" class="activo"><i class="fas fa-box-open"></i> Cargar Producto</a>
+      <a href="/public/vender-producto.html"><i class="fas fa-shopping-cart"></i> Vender</a>
+      <a href="/public/clientes.html"><i class="fas fa-users"></i> Clientes</a>
+      <a href="#reportes"><i class="fas fa-chart-line"></i> Reportes</a>
+    </nav>
   </header>
 
-  <!-- Notificaciones -->
-  <section class="notificaciones">
-    <p><i class="fas fa-exclamation-triangle icono-alerta"></i> 3 productos por vencer en 10 días</p>
-  </section>
-
-  <!-- Menú Principal -->
-  <main class="menu-principal">
-    <button class="menu-boton" onclick="window.location.href='/public/cargar-producto.html'">
-      <i class="fas fa-box icono"></i> Cargar Producto
-    </button>
-    <button class="menu-boton" onclick="window.location.href='/public/vender-producto.html'">
-      <i class="fas fa-shopping-cart icono"></i> Vender
-    </button>
-    <button class="menu-boton">
-      <i class="fas fa-warehouse icono"></i> Ver Stock
-    </button>
-    <button class="menu-boton">
-      <i class="fas fa-chart-bar icono"></i> Reportes
-    </button>
-    <button class="menu-boton">
-      <i class="fas fa-clipboard-list icono"></i> Pedidos
-    </button>
-    <button class="menu-boton">
-      <i class="fas fa-cog icono"></i> Configuración
-    </button>
-    <button class="menu-boton" onclick="window.location.href='/public/clientes.html'">
-      <i class="fas fa-users icono"></i> Clientes
-    </button>
-  </main>
-
-  <!-- Sección para Cargar Producto -->
+  <!-- Formulario para Cargar Producto -->
   <section id="cargar-producto" class="seccion-formulario">
-    <h2>Cargar Nuevo Producto</h2>
-    <form id="form-cargar-producto" enctype="multipart/form-data" novalidate>
+    <h2>Cargar Producto</h2>
+    <form id="form-cargar-producto">
       <div class="form-campo">
-        <label for="nombre-producto">Nombre</label>
-        <input type="text" id="nombre-producto" name="nombre" placeholder="Ej. Coca-Cola 500ml">
-        <button type="button" id="escanear-carga" class="boton-accion"><i class="fas fa-barcode"></i> Escanear</button>
+        <label for="nombre-producto">Nombre del Producto</label>
+        <input type="text" id="nombre-producto" name="nombre" placeholder="Ej. Coca-Cola 500ml" required>
       </div>
-      <div id="camara-carga" style="display: none;"></div>
       <div class="form-campo">
         <label for="marca">Marca</label>
-        <input type="text" id="marca" name="marca" placeholder="Ej. Coca-Cola">
-      </div>
-      <div class="form-campo">
-        <label for="unidad">Unidad</label>
-        <select id="unidad" name="unidad">
-          <option value="kilo">Kilo</option>
-          <option value="unidad">Unidad</option>
-          <option value="docena">Docena</option>
-          <option value="pack">Pack</option>
-        </select>
-      </div>
-      <div class="form-campo" id="cantidad-packs" style="display: none;">
-        <label for="packs">Cantidad de Packs</label>
-        <input type="number" id="packs" name="packs" min="0" placeholder="Ej. 4">
-      </div>
-      <div class="form-campo" id="unidades-por-pack" style="display: none;">
-        <label for="unidadesPorPack">Unidades por Pack</label>
-        <input type="number" id="unidadesPorPack" name="unidadesPorPack" min="1" placeholder="Ej. 6">
-      </div>
-      <div class="form-campo" id="cantidad-docenas" style="display: none;">
-        <label for="docenas">Cantidad de Docenas</label>
-        <input type="number" id="docenas" name="docenas" min="0" placeholder="Ej. 2">
-      </div>
-      <div class="form-campo" id="cantidad-sueltas">
-        <label for="unidadesSueltas">Unidades Sueltas</label>
-        <input type="number" id="unidadesSueltas" name="unidadesSueltas" min="0" placeholder="Ej. 2">
-      </div>
-      <div class="form-campo">
-        <label for="cantidad-total">Cantidad Total (calculada)</label>
-        <input type="number" id="cantidad-total" name="cantidadUnidades" readonly>
-      </div>
-      <div class="form-campo">
-        <label for="precio-lista">Precio de Lista</label>
-        <input type="number" id="precio-lista" name="precioLista" min="0" step="0.01" placeholder="Ej. 1200">
-      </div>
-      <div class="form-campo">
-        <label for="porcentaje-ganancia">Porcentaje de Ganancia (%)</label>
-        <input type="number" id="porcentaje-ganancia" name="porcentajeGanancia" min="0" step="0.01" placeholder="Ej. 25">
-      </div>
-      <div class="form-campo">
-        <label for="precio-final">Precio Final (calculado)</label>
-        <input type="number" id="precio-final" name="precioFinal" step="0.01" readonly>
+        <input type="text" id="marca" name="marca" placeholder="Ej. Coca-Cola" required>
       </div>
       <div class="form-campo">
         <label for="categoria">Categoría</label>
-        <select id="categoria" name="categoria">
+        <select id="categoria" name="categoria" required>
+          <option value="">Selecciona una categoría</option>
           <option value="Bebidas">Bebidas</option>
           <option value="Golosinas">Golosinas</option>
           <option value="Lácteos">Lácteos</option>
@@ -117,103 +51,143 @@
           <option value="Panadería">Panadería</option>
           <option value="Almacén">Almacén</option>
           <option value="Verdulería">Verdulería</option>
-          <option value="Limpieza">Limpieza</option>
-          <option value="Higiene Personal">Higiene Personal</option>
-          <option value="Sin Tacc">Sin Tacc</option>
-          <option value="Productos Varios">Productos Varios</option>
         </select>
       </div>
+      <!-- Subcategorías -->
       <div class="form-campo" id="subcategoria-bebidas" style="display: none;">
-        <label for="subcategoria-bebidas">Subcategoría</label>
+        <label for="subcategoria-bebidas">Subcategoría Bebidas</label>
         <select id="subcategoria-bebidas" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Con Alcohol">Con Alcohol</option>
           <option value="Gaseosas">Gaseosas</option>
+          <option value="Jugos">Jugos</option>
           <option value="Agua">Agua</option>
-          <option value="Energizante">Energizante</option>
+          <option value="Energizantes">Energizantes</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-golosinas" style="display: none;">
-        <label for="subcategoria-golosinas">Subcategoría</label>
+        <label for="subcategoria-golosinas">Subcategoría Golosinas</label>
         <select id="subcategoria-golosinas" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Chocolate">Chocolate</option>
+          <option value="Chocolates">Chocolates</option>
           <option value="Caramelos">Caramelos</option>
           <option value="Chicles">Chicles</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-lacteos" style="display: none;">
-        <label for="subcategoria-lacteos">Subcategoría</label>
+        <label for="subcategoria-lacteos">Subcategoría Lácteos</label>
         <select id="subcategoria-lacteos" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
           <option value="Leche">Leche</option>
-          <option value="Yogures">Yogures</option>
-          <option value="Quesos">Quesos</option>
+          <option value="Yogur">Yogur</option>
+          <option value="Queso">Queso</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-cigarrillos" style="display: none;">
-        <label for="subcategoria-cigarrillos">Subcategoría</label>
+        <label for="subcategoria-cigarrillos">Subcategoría Cigarrillos</label>
         <select id="subcategoria-cigarrillos" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Comunes">Comunes</option>
-          <option value="Convertibles">Convertibles</option>
-          <option value="Tabaco">Tabaco</option>
+          <option value="Marlboro">Marlboro</option>
+          <option value="Camel">Camel</option>
+          <option value="Lucky Strike">Lucky Strike</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-fiambre" style="display: none;">
-        <label for="subcategoria-fiambre">Subcategoría</label>
+        <label for="subcategoria-fiambre">Subcategoría Fiambre</label>
         <select id="subcategoria-fiambre" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Primera Marca">Primera Marca</option>
-          <option value="Segunda Marca">Segunda Marca</option>
+          <option value="Jamón">Jamón</option>
+          <option value="Salame">Salame</option>
+          <option value="Queso">Queso</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-congelados" style="display: none;">
-        <label for="subcategoria-congelados">Subcategoría</label>
+        <label for="subcategoria-congelados">Subcategoría Congelados</label>
         <select id="subcategoria-congelados" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Carnes">Carnes</option>
           <option value="Helados">Helados</option>
+          <option value="Hamburguesas">Hamburguesas</option>
+          <option value="Pizzas">Pizzas</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-panaderia" style="display: none;">
-        <label for="subcategoria-panaderia">Subcategoría</label>
+        <label for="subcategoria-panaderia">Subcategoría Panadería</label>
         <select id="subcategoria-panaderia" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Dulce">Dulce</option>
-          <option value="Salado">Salado</option>
+          <option value="Pan">Pan</option>
+          <option value="Facturas">Facturas</option>
+          <option value="Tortas">Tortas</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-almacen" style="display: none;">
-        <label for="subcategoria-almacen">Subcategoría</label>
+        <label for="subcategoria-almacen">Subcategoría Almacén</label>
         <select id="subcategoria-almacen" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Harinas">Harinas</option>
-          <option value="Aceites y Vinagres">Aceites y Vinagres</option>
-          <option value="Aderezos y Condimentos">Aderezos y Condimentos</option>
-          <option value="Fideos y Arroz">Fideos y Arroz</option>
-          <option value="Enlatados y Conservas">Enlatados y Conservas</option>
+          <option value="Arroz">Arroz</option>
+          <option value="Fideos">Fideos</option>
+          <option value="Aceite">Aceite</option>
         </select>
       </div>
       <div class="form-campo" id="subcategoria-verduleria" style="display: none;">
-        <label for="subcategoria-verduleria">Subcategoría</label>
+        <label for="subcategoria-verduleria">Subcategoría Verdulería</label>
         <select id="subcategoria-verduleria" name="subcategoria">
           <option value="">Selecciona una subcategoría</option>
-          <option value="Frutas">Frutas</option>
-          <option value="Vegetales">Vegetales</option>
-          <option value="Huevos">Huevos</option>
+          <option value="Tomate">Tomate</option>
+          <option value="Lechuga">Lechuga</option>
+          <option value="Cebolla">Cebolla</option>
         </select>
       </div>
       <div class="form-campo">
+        <label for="precio-lista">Precio de Lista</label>
+        <input type="number" id="precio-lista" name="precioLista" placeholder="Ej. 1000" step="0.01" required>
+      </div>
+      <div class="form-campo">
+        <label for="porcentaje-ganancia">Porcentaje de Ganancia (%)</label>
+        <input type="number" id="porcentaje-ganancia" name="porcentajeGanancia" placeholder="Ej. 20" step="0.01" required>
+      </div>
+      <div class="form-campo">
+        <label for="precio-final">Precio Final</label>
+        <input type="number" id="precio-final" name="precioFinal" readonly>
+      </div>
+      <div class="form-campo">
+        <label for="unidad">Unidad</label>
+        <select id="unidad" name="unidad" required>
+          <option value="unidad">Unidad</option>
+          <option value="pack">Pack</option>
+          <option value="docena">Docena</option>
+          <option value="kilo">Kilo</option>
+        </select>
+      </div>
+      <div class="form-campo" id="cantidad-packs" style="display: none;">
+        <label for="packs">Cantidad de Packs</label>
+        <input type="number" id="packs" name="packs" value="0">
+      </div>
+      <div class="form-campo" id="unidades-por-pack" style="display: none;">
+        <label for="unidadesPorPack">Unidades por Pack</label>
+        <input type="number" id="unidadesPorPack" name="unidadesPorPack" value="0">
+      </div>
+      <div class="form-campo" id="cantidad-docenas" style="display: none;">
+        <label for="docenas">Cantidad de Docenas</label>
+        <input type="number" id="docenas" name="docenas" value="0">
+      </div>
+      <div class="form-campo" id="unidadesSueltas">
+        <label for="unidadesSueltas">Unidades Sueltas</label>
+        <input type="number" id="unidadesSueltas" name="unidadesSueltas" value="0">
+      </div>
+      <div class="form-campo">
+        <label for="cantidad-total">Cantidad Total (Unidades)</label>
+        <input type="number" id="cantidad-total" name="cantidadUnidades" readonly>
+      </div>
+      <div class="form-campo">
         <label for="fecha-vencimiento">Fecha de Vencimiento</label>
-        <input type="date" id="fecha-vencimiento" name="fechaVencimiento">
+        <input type="date" id="fecha-vencimiento" name="fechaVencimiento" required>
       </div>
       <div class="form-campo">
         <label for="imagen">Imagen del Producto</label>
-        <input type="file" id="imagen" name="imagen" accept="image/*">
+        <input type="file" id="imagen" name="imagen" accept="image/*" required>
       </div>
       <button type="submit" class="boton-accion"><i class="fas fa-save"></i> Guardar Producto</button>
-      <button type="button" class="boton-accion" onclick="window.location.href='/public/index.html'"><i class="fas fa-times"></i> Cancelar</button>
+      <button type="button" id="escanear-carga" class="boton-accion"><i class="fas fa-barcode"></i> Escanear</button>
+      <div id="camara-carga" class="camara"></div>
     </form>
   </section>
 
@@ -222,17 +196,8 @@
     <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
   </footer>
 
-  <script src="/public/js/utils.js?v=1"></script>
-  <script src="/public/js/main.js?v=1"></script>
-  <script src="/public/js/cargar-producto.js?v=1"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Desplazarse al inicio de la sección principal al cargar la página
-      const seccion = document.querySelector('#cargar-producto');
-      if (seccion) {
-        seccion.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  </script>
+  <!-- Scripts -->
+  <script src="/public/js/utils.js"></script>
+  <script src="/public/js/cargar-producto.js"></script>
 </body>
 </html>
