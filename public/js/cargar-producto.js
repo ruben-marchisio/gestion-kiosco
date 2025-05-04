@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const botonEscanearCarga = document.querySelector('#escanear-carga');
   if (botonEscanearCarga) {
     botonEscanearCarga.addEventListener('click', () => {
+      console.log('Botón Escanear clickeado en Cargar Producto'); // Depuración
       const camaraCarga = document.querySelector('#camara-carga');
       iniciarEscaneo(camaraCarga, async (codigo) => {
         try {

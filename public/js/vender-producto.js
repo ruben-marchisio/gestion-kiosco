@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const botonEscanearVenta = document.querySelector('#escanear-venta');
   if (botonEscanearVenta) {
     botonEscanearVenta.addEventListener('click', () => {
+      console.log('Botón Escanear clickeado en Vender Producto'); // Depuración
       const camaraVenta = document.querySelector('#camara-venta');
       iniciarEscaneo(camaraVenta, async (codigo) => {
         try {
