@@ -154,14 +154,14 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
   }
 });
 
-// Ruta para obtener productos sin código (no escaneados)
+// Ruta para obtener todos los productos del usuario (no solo los no escaneados)
 app.get('/api/productos/no-escaneados', async (req, res) => {
   try {
     const usuarioId = req.query.usuarioId;
-    const productos = await Producto.find({ codigo: '', usuarioId: new mongoose.Types.ObjectId(usuarioId) });
+    const productos = await Producto.find({ usuarioId: new mongoose.Types.ObjectId(usuarioId) });
     res.status(200).json({ productos });
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener los productos no escaneados: ' + error.message });
+    res.status(500).json({ error: 'Error al obtener los productos: ' + error.message });
   }
 });
 

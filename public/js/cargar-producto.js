@@ -29,6 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
     subcategoriaAlmacen.style.display = 'none';
     subcategoriaVerduleria.style.display = 'none';
 
+    // Habilitar todas las subcategorías
+    subcategoriaBebidas.disabled = false;
+    subcategoriaGolosinas.disabled = false;
+    subcategoriaLacteos.disabled = false;
+    subcategoriaCigarrillos.disabled = false;
+    subcategoriaFiambre.disabled = false;
+    subcategoriaCongelados.disabled = false;
+    subcategoriaPanaderia.disabled = false;
+    subcategoriaAlmacen.disabled = false;
+    subcategoriaVerduleria.disabled = false;
+
     // Restablecer valores de subcategoría
     subcategoriaBebidas.value = '';
     subcategoriaGolosinas.value = '';

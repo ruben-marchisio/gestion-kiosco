@@ -4,6 +4,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f4f4f4;
+  padding-bottom: 60px; /* Espacio para el footer fijo */
 }
 
 header {
@@ -11,7 +12,10 @@ header {
   color: white;
   text-align: center;
   padding: 1em 0;
-  position: relative;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 .logo {
@@ -56,7 +60,7 @@ h1 {
 
 .seccion-formulario {
   max-width: 600px;
-  margin: 20px auto;
+  margin: 80px auto 20px auto; /* Margen superior para el header fijo */
   padding: 20px;
   background-color: white;
   border-radius: 8px;
@@ -70,6 +74,7 @@ h2 {
 
 .form-campo {
   margin-bottom: 15px;
+  position: relative; /* Para manejar superposiciones */
 }
 
 .form-campo label {
@@ -85,10 +90,17 @@ h2 {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+  font-size: 16px;
 }
 
 .form-campo input[type="file"] {
   padding: 3px;
+}
+
+.form-campo select {
+  appearance: none; /* Remover estilo nativo */
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSI3IiB2aWV3Qm94PSIwIDAgMTIgNyI+PHBhdGggZmlsbD0iIzY2NiIgZD0iTTAgMGw2IDcgNi03eiIvPjwvc3ZnPg==') no-repeat right 8px center;
+  background-size: 12px;
 }
 
 .boton-accion {
@@ -150,6 +162,7 @@ footer {
   position: fixed;
   bottom: 0;
   width: 100%;
+  z-index: 1000;
 }
 
 footer a {
@@ -182,15 +195,34 @@ footer a:hover {
   object-fit: cover;
 }
 
+/* Estilo para la guía del código de barras */
+.guia-codigo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 50px;
+  border: 2px dashed #ff0000;
+  pointer-events: none;
+}
+
 /* Mejora la visualización del formulario */
 .form-campo input[readonly] {
   background-color: #f0f0f0;
   cursor: not-allowed;
 }
 
+/* Evitar superposición de elementos */
+select + .form-campo,
+input + .form-campo {
+  margin-top: 20px; /* Espacio adicional para evitar superposición */
+}
+
+/* Estilos responsivos */
 @media (max-width: 600px) {
   .seccion-formulario {
-    margin: 10px;
+    margin: 70px 10px 20px 10px; /* Margen superior para el header fijo */
     padding: 15px;
   }
 
@@ -207,5 +239,9 @@ footer a:hover {
   .camara {
     max-width: 100%;
     height: 200px;
+  }
+
+  h1 {
+    font-size: 20px;
   }
 }

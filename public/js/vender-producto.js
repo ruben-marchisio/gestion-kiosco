@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('vender-producto.js cargado'); // Depuración
+
   // Lista para almacenar los productos de la venta
   let productosVenta = [];
 
@@ -8,10 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Escaneo para vender producto
   const botonEscanearVenta = document.querySelector('#escanear-venta');
+  console.log('Botón Escanear encontrado:', !!botonEscanearVenta); // Depuración
   if (botonEscanearVenta) {
     botonEscanearVenta.addEventListener('click', () => {
       console.log('Botón Escanear clickeado en Vender Producto'); // Depuración
       const camaraVenta = document.querySelector('#camara-venta');
+      console.log('Contenedor de cámara encontrado:', !!camaraVenta); // Depuración
       iniciarEscaneo(camaraVenta, async (codigo) => {
         try {
           console.log('Buscando producto con código:', codigo);
@@ -36,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     });
+  } else {
+    console.error('Botón Escanear no encontrado en Vender Producto');
   }
 
   // Cargar productos para selección manual
@@ -59,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             productoManualSelect.appendChild(option);
           });
         } else {
-          alert(resultado.error || 'Error al cargar los productos no escaneados.');
+          alert(resultado.error || 'Error al cargar los productos.');
         }
       } catch (error) {
         alert('Error al conectar con el servidor: ' + error.message);
@@ -103,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Obtener el precio del producto (simulamos que lo tenemos desde el servidor o la selección manual)
+      // Obtener el precio del producto
       let precioUnitario = 0;
       const selectedOption = productoManualSelect.options[productoManualSelect.selectedIndex];
       if (selectedOption && selectedOption.dataset.precio) {
