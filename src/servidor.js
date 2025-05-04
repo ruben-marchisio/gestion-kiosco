@@ -6,10 +6,11 @@ const multer = require('multer');
 const { Usuario, Producto, Cliente } = require('./modelos/usuario');
 
 const app = express();
-const port = process.env.PORT || 3000; // Usa el puerto de Render o 3000 por defecto
+const port = process.env.PORT || 3000;
 
-// Conectar a MongoDB (esto se configurará después en Render)
-mongoose.connect('mongodb://localhost:27017/gestion-kiosco')
+// Conectar a MongoDB usando una variable de entorno
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/gestion-kiosco';
+mongoose.connect(mongoURI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
