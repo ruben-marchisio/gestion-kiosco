@@ -11,6 +11,19 @@ function iniciarEscaneo(contenedorCamara, callback) {
     return;
   }
 
+  // Agregar una guía visual para alinear el código de barras
+  const guia = document.createElement('div');
+  guia.className = 'guia-codigo';
+  guia.style.position = 'absolute';
+  guia.style.top = '50%';
+  guia.style.left = '50%';
+  guia.style.transform = 'translate(-50%, -50%)';
+  guia.style.width = '80%';
+  guia.style.height = '50px';
+  guia.style.border = '2px dashed #ff0000';
+  guia.style.pointerEvents = 'none';
+  contenedorCamara.appendChild(guia);
+
   contenedorCamara.style.display = 'block';
   console.log('Inicializando Quagga...'); // Depuración
   Quagga.init({
@@ -19,17 +32,27 @@ function iniciarEscaneo(contenedorCamara, callback) {
       type: 'LiveStream',
       target: contenedorCamara,
       constraints: {
-        facingMode: 'environment'
+        facingMode: 'environment',
+        width: 1280, // Aumentar resolución para mejor lectura
+        height: 720
       }
     },
+    locator: {
+      patchSize: 'medium', // Ajustar tamaño de parche para mejor detección
+      halfSample: true // Mejorar rendimiento
+    },
+    numOfWorkers: 4, // Aumentar número de workers para mejor procesamiento
     decoder: {
-      readers: ['ean_reader', 'upc_reader']
-    }
+      readers: ['ean_reader', 'upc_reader', 'code_128_reader'], // Agregar más tipos de códigos
+      multiple: false
+    },
+    locate: true // Habilitar localización automática
   }, (err) => {
     if (err) {
       console.error('Error al iniciar Quagga:', err); // Depuración
       alert('Error al iniciar la cámara: ' + err.message);
       contenedorCamara.style.display = 'none';
+      guia.remove();
       return;
     }
     console.log('Quagga iniciado correctamente'); // Depuración
@@ -41,6 +64,7 @@ function iniciarEscaneo(contenedorCamara, callback) {
     const codigo = data.codeResult.code;
     Quagga.stop();
     contenedorCamara.style.display = 'none';
+    guia.remove();
     callback(codigo);
   });
 }

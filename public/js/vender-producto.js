@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#producto-manual').value = resultado.producto._id;
             document.querySelector('#metodo-venta').value = resultado.producto.unidad;
           } else {
-            alert('Producto no encontrado.');
+            alert('Producto no encontrado con el código ' + codigo + '. Por favor, selecciona un producto manualmente o regístralo primero en "Cargar Producto".');
             document.querySelector('#codigo-venta').value = '';
             document.querySelector('#nombre-venta').value = '';
             document.querySelector('#producto-manual').value = '';
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Cargar productos no escaneados para selección manual
+  // Cargar productos para selección manual
   const botonSeleccionarManual = document.querySelector('#seleccionar-manual');
   const listaProductosNoEscaneados = document.querySelector('#lista-productos-no-escaneados');
   const productoManualSelect = document.querySelector('#producto-manual');

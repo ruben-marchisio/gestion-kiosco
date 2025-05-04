@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formCargarProducto.dataset.codigo = codigo;
           } else {
             document.querySelector('#nombre-producto').value = '';
-            alert('Producto no encontrado. Ingresa los datos manualmente.');
+            alert('Producto no encontrado. Por favor, llena los campos manualmente para registrar el producto con el código escaneado (' + codigo + '). Luego, presiona "Guardar Producto" para añadirlo a la base de datos.');
             formCargarProducto.dataset.codigo = codigo;
           }
         } catch (error) {

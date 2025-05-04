@@ -30,6 +30,8 @@
   <section id="cargar-producto" class="seccion-formulario">
     <h2>Cargar Producto</h2>
     <form id="form-cargar-producto">
+      <button type="button" id="escanear-carga" class="boton-accion"><i class="fas fa-barcode"></i> Escanear</button>
+      <div id="camara-carga" class="camara"></div>
       <div class="form-campo">
         <label for="nombre-producto">Nombre del Producto</label>
         <input type="text" id="nombre-producto" name="nombre" placeholder="Ej. Coca-Cola 500ml" required>
@@ -186,8 +188,6 @@
         <input type="file" id="imagen" name="imagen" accept="image/*" required>
       </div>
       <button type="submit" class="boton-accion"><i class="fas fa-save"></i> Guardar Producto</button>
-      <button type="button" id="escanear-carga" class="boton-accion"><i class="fas fa-barcode"></i> Escanear</button>
-      <div id="camara-carga" class="camara"></div>
     </form>
   </section>
 
