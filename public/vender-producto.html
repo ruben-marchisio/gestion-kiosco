@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Kiosco - Vender Producto</title>
+  <link rel="stylesheet" href="/public/css/estilos.css">
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- QuaggaJS para escaneo -->
+  <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+  <style>
+    .lista-venta {
+      margin-top: 20px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .lista-venta th, .lista-venta td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .lista-venta th {
+      background-color: #f2f2f2;
+    }
+    .lista-venta .total {
+      font-weight: bold;
+      background-color: #e6f3ff;
+    }
+    .boton-eliminar {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .boton-eliminar:hover {
+      background-color: #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <div class="logo">
+      <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+    </div>
+    <h1>Gestión Kiosco - Kiosco Juan</h1>
+    <button class="cerrar-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+  </header>
+
+  <!-- Notificaciones -->
+  <section class="notificaciones">
+    <p><i class="fas fa-exclamation-triangle icono-alerta"></i> 3 productos por vencer en 10 días</p>
+  </section>
+
+  <!-- Menú Principal -->
+  <main class="menu-principal">
+    <button class="menu-boton" onclick="window.location.href='/public/cargar-producto.html'">
+      <i class="fas fa-box icono"></i> Cargar Producto
+    </button>
+    <button class="menu-boton" onclick="window.location.href='/public/vender-producto.html'">
+      <i class="fas fa-shopping-cart icono"></i> Vender
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-warehouse icono"></i> Ver Stock
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-chart-bar icono"></i> Reportes
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-clipboard-list icono"></i> Pedidos
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-cog icono"></i> Configuración
+    </button>
+    <button class="menu-boton" onclick="window.location.href='/public/clientes.html'">
+      <i class="fas fa-users icono"></i> Clientes
+    </button>
+  </main>
+
+  <!-- Sección para Vender Producto -->
+  <section id="vender-producto" class="seccion-formulario">
+    <h2>Vender Productos</h2>
+    <form id="form-vender-producto" novalidate>
+      <div class="form-campo">
+        <label for="codigo-venta">Código del Producto</label>
+        <input type="text" id="codigo-venta" name="codigo" placeholder="Escanea el código" readonly>
+        <button type="button" id="escanear-venta" class="boton-accion"><i class="fas fa-barcode"></i> Escanear</button>
+        <button type="button" id="seleccionar-manual" class="boton-accion"><i class="fas fa-list"></i> Seleccionar Manualmente</button>
+      </div>
+      <div id="camara-venta" style="display: none;"></div>
+      <div class="form-campo" id="lista-productos-no-escaneados" style="display: none;">
+        <label for="producto-manual">Seleccionar Producto</label>
+        <select id="producto-manual" name="productoId">
+          <option value="">Selecciona un producto</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label for="nombre-venta">Nombre</label>
+        <input type="text" id="nombre-venta" name="nombre" readonly>
+      </div>
+      <div class="form-campo">
+        <label for="metodo-venta">Método de Venta</label>
+        <select id="metodo-venta" name="metodoVenta">
+          <option value="unidad">Unidad</option>
+          <option value="kilo">Kilo</option>
+          <option value="docena">Docena</option>
+          <option value="pack">Pack</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label for="cantidad-venta">Cantidad a Vender</label>
+        <input type="number" id="cantidad-venta" name="cantidad" min="1">
+      </div>
+      <button type="button" id="agregar-producto" class="boton-accion"><i class="fas fa-plus"></i> Agregar a la Venta</button>
+    </form>
+
+    <!-- Lista de productos a vender -->
+    <div id="lista-venta-container">
+      <table id="lista-venta" class="lista-venta">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Unidad</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="lista-venta-body">
+        </tbody>
+        <tfoot>
+          <tr class="total">
+            <td colspan="4">Total</td>
+            <td id="total-venta">0.00</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <button id="confirmar-venta" class="boton-accion" style="display: none;"><i class="fas fa-check"></i> Confirmar Venta</button>
+      <button type="button" class="boton-accion" onclick="window.location.href='/public/index.html'"><i class="fas fa-times"></i> Cancelar</button>
+    </div>
+  </section>
+
+  <!-- Pie de Página -->
+  <footer>
+    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+  </footer>
+
+  <script src="/public/js/utils.js?v=1"></script>
+  <script src="/public/js/main.js?v=1"></script>
+  <script src="/public/js/vender-producto.js?v=1"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Desplazarse al inicio de la sección principal al cargar la página
+      const seccion = document.querySelector('#vender-producto');
+      if (seccion) {
+        seccion.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  </script>
+</body>
+</html>

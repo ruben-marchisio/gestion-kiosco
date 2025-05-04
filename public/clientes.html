@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Kiosco - Clientes</title>
+  <link rel="stylesheet" href="/public/css/estilos.css">
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <div class="logo">
+      <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+    </div>
+    <h1>Gestión Kiosco - Kiosco Juan</h1>
+    <button class="cerrar-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+  </header>
+
+  <!-- Notificaciones -->
+  <section class="notificaciones">
+    <p><i class="fas fa-exclamation-triangle icono-alerta"></i> 3 productos por vencer en 10 días</p>
+  </section>
+
+  <!-- Menú Principal -->
+  <main class="menu-principal">
+    <button class="menu-boton" onclick="window.location.href='/public/cargar-producto.html'">
+      <i class="fas fa-box icono"></i> Cargar Producto
+    </button>
+    <button class="menu-boton" onclick="window.location.href='/public/vender-producto.html'">
+      <i class="fas fa-shopping-cart icono"></i> Vender
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-warehouse icono"></i> Ver Stock
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-chart-bar icono"></i> Reportes
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-clipboard-list icono"></i> Pedidos
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-cog icono"></i> Configuración
+    </button>
+    <button class="menu-boton" onclick="window.location.href='/public/clientes.html'">
+      <i class="fas fa-users icono"></i> Clientes
+    </button>
+  </main>
+
+  <!-- Sección para Gestionar Clientes -->
+  <section id="clientes" class="seccion-formulario">
+    <h2>Gestión de Clientes</h2>
+    <form id="form-cargar-cliente">
+      <div class="form-campo">
+        <label for="nombre-cliente">Nombre</label>
+        <input type="text" id="nombre-cliente" name="nombre" placeholder="Ej. Juan Pérez" required>
+      </div>
+      <div class="form-campo">
+        <label for="dni-cliente">DNI</label>
+        <input type="text" id="dni-cliente" name="dni" placeholder="Ej. 12345678" required>
+      </div>
+      <div class="form-campo">
+        <label for="telefono-cliente">Teléfono</label>
+        <input type="text" id="telefono-cliente" name="telefono" placeholder="Ej. 123-456-7890">
+      </div>
+      <div class="form-campo">
+        <label for="direccion-cliente">Dirección</label>
+        <input type="text" id="direccion-cliente" name="direccion" placeholder="Ej. Av. Siempre Viva 123">
+      </div>
+      <button type="submit" class="boton-accion"><i class="fas fa-save"></i> Guardar Cliente</button>
+      <button type="button" class="boton-accion" onclick="window.location.href='/public/index.html'"><i class="fas fa-times"></i> Cancelar</button>
+    </form>
+
+    <!-- Lista de Clientes -->
+    <div id="lista-clientes-container">
+      <h3>Clientes Registrados</h3>
+      <table id="lista-clientes" class="lista-venta">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+          </tr>
+        </thead>
+        <tbody id="lista-clientes-body">
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Pie de Página -->
+  <footer>
+    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+  </footer>
+
+  <script src="/public/js/main.js?v=1"></script>
+  <script src="/public/js/clientes.js?v=1"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Desplazarse al inicio de la sección principal al cargar la página
+      const seccion = document.querySelector('#clientes');
+      if (seccion) {
+        seccion.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  </script>
+</body>
+</html>

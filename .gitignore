@@ -1,0 +1,4 @@
+módulos_de_nodo/
+*.registro
+.env
+

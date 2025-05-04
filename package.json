@@ -1,0 +1,17 @@
+{
+  "name": "gestion-kiosco",
+  "version": "1.0.0",
+  "description": "Sistema de gestión para kioscos",
+  "main": "src/servidor.js",
+  "scripts": {
+    "start": "node src/servidor.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "mongoose": "^6.0.0",
+    "multer": "^1.4.3"
+  },
+  "author": "Ruben",
+  "license": "ISC"
+}

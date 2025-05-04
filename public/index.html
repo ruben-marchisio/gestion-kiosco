@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Kiosco - Menú</title>
+  <link rel="stylesheet" href="/public/css/estilos.css">
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <div class="logo">
+      <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+    </div>
+    <h1>Gestión Kiosco - Kiosco Juan</h1>
+    <button class="cerrar-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+  </header>
+
+  <!-- Notificaciones -->
+  <section class="notificaciones">
+    <p><i class="fas fa-exclamation-triangle icono-alerta"></i> 3 productos por vencer en 10 días</p>
+  </section>
+
+  <!-- Menú Principal -->
+  <main class="menu-principal">
+    <button class="menu-boton" onclick="window.location.href='/public/cargar-producto.html'">
+      <i class="fas fa-box icono"></i> Cargar Producto
+    </button>
+    <button class="menu-boton" onclick="window.location.href='/public/vender-producto.html'">
+      <i class="fas fa-shopping-cart icono"></i> Vender
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-warehouse icono"></i> Ver Stock
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-chart-bar icono"></i> Reportes
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-clipboard-list icono"></i> Pedidos
+    </button>
+    <button class="menu-boton">
+      <i class="fas fa-cog icono"></i> Configuración
+    </button>
+    <button class="menu-boton" onclick="window.location.href='/public/clientes.html'">
+      <i class="fas fa-users icono"></i> Clientes
+    </button>
+  </main>
+
+  <!-- Pie de Página -->
+  <footer>
+    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+  </footer>
+
+  <script src="/public/js/main.js?v=1"></script>
+</body>
+</html>

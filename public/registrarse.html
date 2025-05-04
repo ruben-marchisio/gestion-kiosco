@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Kiosco - Registrarse</title>
+  <link rel="stylesheet" href="/public/css/estilos.css">
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <div class="logo">
+      <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+    </div>
+    <h1>Gestión Kiosco</h1>
+  </header>
+
+  <!-- Formulario de Registro -->
+  <section id="registrarse" class="seccion-formulario">
+    <h2>Registrarse</h2>
+    <form id="form-registrarse">
+      <div class="form-campo">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+      </div>
+      <div class="form-campo">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Ej. usuario@kiosco.com" required>
+      </div>
+      <div class="form-campo">
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
+      </div>
+      <div class="form-campo">
+        <label for="nombre-kiosco">Nombre del Kiosco</label>
+        <input type="text" id="nombre-kiosco" name="nombre-kiosco" placeholder="Ej. Kiosco Juan" required>
+      </div>
+      <button type="submit" class="boton-accion"><i class="fas fa-user-plus"></i> Registrarse</button>
+      <button type="button" id="ir-a-inicio-sesion" class="boton-accion"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
+    </form>
+  </section>
+
+  <!-- Pie de Página -->
+  <footer>
+    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+  </footer>
+
+  <script src="/public/js/auth.js?v=1"></script>
+</body>
+</html>
