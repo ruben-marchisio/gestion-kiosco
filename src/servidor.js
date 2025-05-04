@@ -8,6 +8,9 @@ const { Usuario, Producto, Cliente } = require('./modelos/usuario');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Configura strictQuery para suprimir la advertencia de Mongoose
+mongoose.set('strictQuery', false);
+
 // Conectar a MongoDB usando una variable de entorno
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/gestion-kiosco';
 mongoose.connect(mongoURI)
@@ -56,16 +59,20 @@ app.post('/api/registrarse', async (req, res) => {
 
 // Ruta para iniciar sesión
 app.post('/api/iniciar-sesion', async (req, res) => {
+  console.log('Solicitud recibida en /api/iniciar-sesion:', req.body); // Depuración
   const { email, contrasena } = req.body;
 
   try {
     const usuario = await Usuario.findOne({ email, contrasena });
     if (!usuario) {
+      console.log('Usuario no encontrado:', { email, contrasena }); // Depuración
       return res.status(401).json({ error: 'Email o contraseña incorrectos.' });
     }
 
+    console.log('Inicio de sesión exitoso:', { usuarioId: usuario._id }); // Depuración
     res.status(200).json({ mensaje: 'Inicio de sesión exitoso.', usuarioId: usuario._id });
   } catch (error) {
+    console.error('Error al procesar /api/iniciar-sesion:', error); // Depuración
     res.status(500).json({ error: 'Error al iniciar sesión.' });
   }
 });
