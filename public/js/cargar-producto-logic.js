@@ -26,13 +26,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let productoEditandoIndex = null;
   let ultimoCodigoEscaneado = null;
   let ultimoEscaneoTiempo = 0;
-  const DEBOUNCE_TIME = 1000; // 1 segundo de debounce
+  const DEBOUNCE_TIME = 2000; // 2 segundos para dar más tiempo
 
   // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
 
   // Crear sonido de escaneo
   const sonidoEscaneo = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
+
+  // Función para validar ObjectId (24 caracteres hexadecimales)
+  function isValidObjectId(id) {
+    return /^[0-9a-fA-F]{24}$/.test(id);
+  }
 
   // Función para mostrar toasts
   function mostrarToast(mensaje, tipo) {
@@ -51,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         type: "LiveStream",
         target: camaraCarga,
         constraints: {
+          width: 300, // Ajustar tamaño para mejor precisión
+          height: 200,
           facingMode: "environment"
         }
       },
@@ -87,6 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.querySelector('#codigo').value = codigo;
       buscarProductoPorCodigo(codigo);
+
+      // Pausar el escáner para evitar lecturas múltiples
+      Quagga.pause();
+      setTimeout(() => {
+        if (escaneoActivo) Quagga.start();
+      }, DEBOUNCE_TIME);
     });
   }
 
@@ -249,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#cantidad-packs').style.display = unidad === 'pack' ? 'block' : 'none';
     document.querySelector('#unidades-por-pack').style.display = unidad === 'pack' ? 'block' : 'none';
     document.querySelector('#cantidad-docenas').style.display = unidad === 'docena' ? 'block' : 'none';
-    document.querySelector('#unidadesSueltas').style.display = unidad !== 'pack' && unidad !== 'docena' ? 'block' : 'none';
     actualizarCantidadTotal();
   }
 
@@ -257,16 +269,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function actualizarCantidadTotal() {
     const unidad = document.querySelector('#unidad').value;
     let totalUnidades = 0;
+    const unidadesSueltas = parseInt(document.querySelector('#unidadesSueltas').value) || 0;
+
     if (unidad === 'pack') {
       const packs = parseInt(document.querySelector('#packs').value) || 0;
       const unidadesPorPack = parseInt(document.querySelector('#unidadesPorPack').value) || 0;
-      totalUnidades = packs * unidadesPorPack;
+      totalUnidades = (packs * unidadesPorPack) + unidadesSueltas;
     } else if (unidad === 'docena') {
       const docenas = parseInt(document.querySelector('#docenas').value) || 0;
-      totalUnidades = docenas * 12;
+      totalUnidades = (docenas * 12) + unidadesSueltas;
+    } else if (unidad === 'kilo') {
+      totalUnidades = unidadesSueltas; // En kilos, las unidades sueltas representan la cantidad
     } else {
-      totalUnidades = parseInt(document.querySelector('#unidadesSueltas').value) || 0;
+      totalUnidades = unidadesSueltas; // Para "unidad", simplemente tomamos las unidades sueltas
     }
+
     document.querySelector('#cantidad-total').value = totalUnidades;
   }
 
@@ -406,28 +423,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // Confirmar todos los productos
   confirmarTodosBtn.addEventListener('click', async () => {
     try {
+      const usuarioId = localStorage.getItem('usuarioId');
+      if (!usuarioId || !isValidObjectId(usuarioId)) {
+        throw new Error('ID de usuario inválido. Por favor, inicia sesión nuevamente.');
+      }
+
       for (const producto of productosEnProceso) {
         const formData = new FormData();
-        formData.append('nombre', producto.nombre);
-        formData.append('marca', producto.marca);
-        formData.append('precioLista', producto.precioLista);
-        formData.append('porcentajeGanancia', producto.porcentajeGanancia);
-        formData.append('precioFinal', producto.precioFinal);
-        formData.append('categoria', producto.categoria);
+        formData.append('nombre', producto.nombre || '');
+        formData.append('marca', producto.marca || '');
+        formData.append('precioLista', producto.precioLista || 0);
+        formData.append('porcentajeGanancia', producto.porcentajeGanancia || 0);
+        formData.append('precioFinal', producto.precioFinal || 0);
+        formData.append('categoria', producto.categoria || '');
         formData.append('subcategoria', producto.subcategoria || '');
-        formData.append('unidad', producto.unidad);
-        formData.append('fechaVencimiento', producto.fechaVencimiento);
-        formData.append('usuarioId', localStorage.getItem('usuarioId') || 'default');
+        formData.append('unidad', producto.unidad || 'unidad');
+        formData.append('fechaVencimiento', producto.fechaVencimiento || new Date().toISOString().split('T')[0]);
+        formData.append('usuarioId', usuarioId);
         formData.append('codigo', producto.codigo || '');
         formData.append('packs', producto.packs || 0);
         formData.append('unidadesPorPack', producto.unidadesPorPack || 0);
         formData.append('docenas', producto.docenas || 0);
         formData.append('unidadesSueltas', producto.unidadesSueltas || 0);
-        if (producto.cantidadUnidades !== undefined) {
+        
+        // Manejar cantidadUnidades
+        if (producto.cantidadUnidades !== undefined && producto.nuevoTotal !== undefined) {
           formData.append('cantidadUnidades', producto.nuevoTotal);
         } else {
           formData.append('cantidadUnidades', producto.cantidadUnidades || 0);
         }
+
+        // Manejar imagen
         if (producto.imagenFile) {
           formData.append('imagen', producto.imagenFile);
         }

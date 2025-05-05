@@ -304,10 +304,13 @@ main {
 }
 
 .camara {
-  max-width: 100%;
+  width: 300px; /* Reducir tamaño para mejor precisión */
+  height: 200px;
   margin: 10px auto;
   position: relative;
   overflow: hidden;
+  border: 2px solid #2c3e50;
+  border-radius: 8px;
 }
 
 .camara::before {
@@ -319,13 +322,7 @@ main {
   height: 2px;
   background-color: red;
   z-index: 1000;
-  animation: scanLine 2s infinite linear;
-}
-
-@keyframes scanLine {
-  0% { top: 0; }
-  50% { top: 100%; }
-  100% { top: 0; }
+  transform: translateY(-50%);
 }
 
 /* Lista de Productos en Proceso */
@@ -544,6 +541,11 @@ footer a i {
   .boton-escaneo {
     padding: 8px 15px;
     font-size: 12px;
+  }
+
+  .camara {
+    width: 240px; /* Reducir más en móviles */
+    height: 180px;
   }
 
   #tabla-productos-proceso th,

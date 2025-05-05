@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('inicio-sesion.js cargado');
+  console.log('inicio-sesion-logic.js cargado');
 
   const formIniciarSesion = document.querySelector('#form-iniciar-sesion');
   const botonIrARegistro = document.querySelector('#ir-a-registro');
@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (respuesta.ok) {
           console.log('Inicio de sesión exitoso, redirigiendo...');
           alert(resultado.mensaje);
+          localStorage.setItem('usuarioId', resultado.usuarioId); // Guardar usuarioId
           localStorage.setItem('nombreKiosco', resultado.nombreKiosco || 'Kiosco Desconocido');
           window.location.href = '/public/index.html';
         } else {
