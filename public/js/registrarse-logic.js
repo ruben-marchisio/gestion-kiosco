@@ -26,12 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const formData = new FormData(formRegistrarse);
       const data = Object.fromEntries(formData);
+      // Ajustar el nombre del campo para que coincida con lo que espera el backend
+      data.nombreKiosco = data['nombre-kiosco'];
 
       console.log('Intentando registrarse con:', data);
 
       try {
-        console.log('Enviando solicitud a:', `${BASE_URL}/api/registrarse`);
-        const respuesta = await fetch(`${BASE_URL}/api/registrarse`, {
+        console.log('Enviando solicitud a:', `${BASE_URL}/api/registrar-usuario`);
+        const respuesta = await fetch(`${BASE_URL}/api/registrar-usuario`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

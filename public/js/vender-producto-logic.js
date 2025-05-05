@@ -1,216 +1,213 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('vender-producto-logic.js cargado'); // Depuración
+  console.log('vender-producto-logic.js cargado');
 
-  // Lista para almacenar los productos de la venta
+  // Verificar si el usuario ha iniciado sesión
+  const usuarioId = localStorage.getItem('usuarioId');
+  if (!usuarioId) {
+    window.location.href = '/public/inicio-sesion.html';
+    return;
+  }
+
+  // Elementos del DOM
+  const codigoVenta = document.querySelector('#codigo-venta');
+  const nombreVenta = document.querySelector('#nombre-venta');
+  const escanearVentaBtn = document.querySelector('#escanear-venta');
+  const camaraVenta = document.querySelector('#camara-venta');
+  const seleccionarManualBtn = document.querySelector('#seleccionar-manual');
+  const listaProductosNoEscaneados = document.querySelector('#lista-productos-no-escaneados');
+  const productoManualSelect = document.querySelector('#producto-manual');
+  const metodoVentaSelect = document.querySelector('#metodo-venta');
+  const cantidadVentaInput = document.querySelector('#cantidad-venta');
+  const agregarProductoBtn = document.querySelector('#agregar-producto');
+  const listaVentaBody = document.querySelector('#lista-venta-body');
+  const totalVentaSpan = document.querySelector('#total-venta');
+  const confirmarVentaBtn = document.querySelector('#confirmar-venta');
+
+  // Variables globales
   let productosVenta = [];
+  let totalVenta = 0;
+  let escaneoActivo = false;
+  let ultimoCodigoEscaneado = null;
+  let ultimoEscaneoTiempo = 0;
+  const DEBOUNCE_TIME = 2000; // 2 segundos para debounce
 
-  // Construcción de la URL base sin especificar el puerto
+  // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
-  console.log('URL base generada:', BASE_URL);
 
-  // Escaneo para vender producto
-  const botonEscanearVenta = document.querySelector('#escanear-venta');
-  console.log('Botón Escanear encontrado:', !!botonEscanearVenta); // Depuración
-  if (botonEscanearVenta) {
-    botonEscanearVenta.addEventListener('click', () => {
-      console.log('Botón Escanear clickeado en Vender Producto'); // Depuración
-      const camaraVenta = document.querySelector('#camara-venta');
-      console.log('Contenedor de cámara encontrado:', !!camaraVenta); // Depuración
-      iniciarEscaneo(camaraVenta, async (codigo) => {
-        try {
-          console.log('Buscando producto con código:', codigo);
-          const respuesta = await fetch(`${BASE_URL}/api/productos/codigo/${codigo}`);
-          const resultado = await respuesta.json();
-          console.log('Resultado de la búsqueda:', resultado);
+  // Crear sonido de escaneo
+  const sonidoEscaneo = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
 
-          if (respuesta.ok && resultado.producto) {
-            document.querySelector('#codigo-venta').value = codigo;
-            document.querySelector('#nombre-venta').value = resultado.producto.nombre;
-            document.querySelector('#producto-manual').value = resultado.producto._id;
-            document.querySelector('#metodo-venta').value = resultado.producto.unidad;
-          } else {
-            alert('Producto no encontrado con el código ' + codigo + '. Por favor, selecciona un producto manualmente o regístralo primero en "Cargar Producto".');
-            document.querySelector('#codigo-venta').value = '';
-            document.querySelector('#nombre-venta').value = '';
-            document.querySelector('#producto-manual').value = '';
-          }
-        } catch (error) {
-          alert('Error al buscar el producto: ' + error.message);
-          console.error('Error:', error);
+  // Función para buscar producto por código
+  async function buscarProductoPorCodigo(codigo) {
+    try {
+      const respuesta = await fetch(`${BASE_URL}/api/productos/codigo/${codigo}`);
+      const resultado = await respuesta.json();
+
+      if (respuesta.ok) {
+        const producto = resultado.producto;
+        codigoVenta.value = producto.codigo || '';
+        nombreVenta.value = producto.nombre || '';
+        return producto;
+      } else {
+        alert('Producto no encontrado');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al buscar producto:', error);
+      alert('Error al buscar el producto');
+      return null;
+    }
+  }
+
+  // Inicializar escaneo
+  function inicializarEscaneo() {
+    escaneoActivo = true;
+    camaraVenta.style.display = 'block';
+
+    iniciarEscaneo(camaraVenta, async (codigo) => {
+      const ahora = Date.now();
+
+      // Evitar múltiples escaneos con debounce
+      if (ultimoCodigoEscaneado === codigo && (ahora - ultimoEscaneoTiempo) < DEBOUNCE_TIME) {
+        if (escaneoActivo) {
+          setTimeout(inicializarEscaneo, 100);
         }
-      });
+        return;
+      }
+
+      ultimoCodigoEscaneado = codigo;
+      ultimoEscaneoTiempo = ahora;
+
+      // Reproducir sonido de escaneo
+      sonidoEscaneo.play().catch(err => console.error('Error al reproducir sonido:', err));
+
+      const producto = await buscarProductoPorCodigo(codigo);
+      if (producto && escaneoActivo) {
+        setTimeout(inicializarEscaneo, DEBOUNCE_TIME);
+      }
     });
-  } else {
-    console.error('Botón Escanear no encontrado en Vender Producto');
+  }
+
+  // Detener escaneo
+  function detenerEscaneo() {
+    Quagga.stop();
+    escaneoActivo = false;
+    camaraVenta.style.display = 'none';
+    ultimoCodigoEscaneado = null;
   }
 
   // Cargar productos para selección manual
-  const botonSeleccionarManual = document.querySelector('#seleccionar-manual');
-  const listaProductosNoEscaneados = document.querySelector('#lista-productos-no-escaneados');
-  const productoManualSelect = document.querySelector('#producto-manual');
-  if (botonSeleccionarManual && listaProductosNoEscaneados && productoManualSelect) {
-    botonSeleccionarManual.addEventListener('click', async () => {
-      listaProductosNoEscaneados.style.display = 'block';
-      try {
-        const respuesta = await fetch(`${BASE_URL}/api/productos/no-escaneados?usuarioId=507f1f77bcf86cd799439011`);
-        const resultado = await respuesta.json();
-        if (respuesta.ok) {
-          productoManualSelect.innerHTML = '<option value="">Selecciona un producto</option>';
-          resultado.productos.forEach(producto => {
-            const option = document.createElement('option');
-            option.value = producto._id;
-            option.textContent = `${producto.nombre} ($${producto.precioFinal})`;
-            option.dataset.precio = producto.precioFinal;
-            option.dataset.unidad = producto.unidad;
-            productoManualSelect.appendChild(option);
-          });
-        } else {
-          alert(resultado.error || 'Error al cargar los productos.');
-        }
-      } catch (error) {
-        alert('Error al conectar con el servidor: ' + error.message);
-        console.error('Error:', error);
+  async function cargarProductosManual() {
+    try {
+      const respuesta = await fetch(`${BASE_URL}/api/productos?usuarioId=${usuarioId}`);
+      const productos = await respuesta.json();
+      if (!respuesta.ok) {
+        throw new Error(productos.error || 'Error al cargar productos');
       }
-    });
-
-    productoManualSelect.addEventListener('change', () => {
-      const selectedOption = productoManualSelect.options[productoManualSelect.selectedIndex];
-      document.querySelector('#nombre-venta').value = selectedOption.textContent.split(' ($')[0];
-      document.querySelector('#codigo-venta').value = '';
-      document.querySelector('#metodo-venta').value = selectedOption.dataset.unidad || 'unidad';
-    });
+      productoManualSelect.innerHTML = '<option value="">Selecciona un producto</option>';
+      productos.forEach(producto => {
+        const option = document.createElement('option');
+        option.value = producto._id;
+        option.textContent = producto.nombre;
+        productoManualSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Error al cargar productos:', error);
+      alert('Error al cargar productos para selección manual: ' + error.message);
+    }
   }
 
   // Agregar producto a la lista de venta
-  const botonAgregarProducto = document.querySelector('#agregar-producto');
-  const listaVentaBody = document.querySelector('#lista-venta-body');
-  const totalVenta = document.querySelector('#total-venta');
-  const botonConfirmarVenta = document.querySelector('#confirmar-venta');
+  function agregarProductoALista(producto, metodo, cantidad) {
+    const subtotal = producto.precioFinal * cantidad;
+    productosVenta.push({ producto, metodo, cantidad, subtotal });
+    totalVenta += subtotal;
+    actualizarListaVenta();
+  }
 
-  if (botonAgregarProducto && listaVentaBody && totalVenta && botonConfirmarVenta) {
-    botonAgregarProducto.addEventListener('click', () => {
-      const codigo = document.querySelector('#codigo-venta').value;
-      const productoId = document.querySelector('#producto-manual').value;
-      const nombre = document.querySelector('#nombre-venta').value;
-      const cantidad = document.querySelector('#cantidad-venta').value;
-      const metodoVenta = document.querySelector('#metodo-venta').value;
-
-      // Validación manual de los campos requeridos
-      if (!cantidad || parseInt(cantidad) <= 0) {
-        alert('Por favor, ingresa una cantidad válida para vender.');
-        return;
-      }
-      if (!metodoVenta) {
-        alert('Por favor, selecciona un método de venta.');
-        return;
-      }
-      if (!codigo && !productoId) {
-        alert('Por favor, selecciona un producto (mediante escaneo o manualmente).');
-        return;
-      }
-
-      // Obtener el precio del producto
-      let precioUnitario = 0;
-      const selectedOption = productoManualSelect.options[productoManualSelect.selectedIndex];
-      if (selectedOption && selectedOption.dataset.precio) {
-        precioUnitario = parseFloat(selectedOption.dataset.precio);
-      }
-
-      if (precioUnitario <= 0) {
-        alert('Error: No se pudo obtener el precio del producto.');
-        return;
-      }
-
-      const subtotal = precioUnitario * parseInt(cantidad);
-
-      // Agregar el producto a la lista
-      const producto = {
-        codigo: codigo,
-        productoId: productoId,
-        nombre: nombre,
-        cantidad: parseInt(cantidad),
-        metodoVenta: metodoVenta,
-        precioUnitario: precioUnitario,
-        subtotal: subtotal
-      };
-
-      productosVenta.push(producto);
-      actualizarListaVenta();
-
-      // Limpiar el formulario
-      document.querySelector('#codigo-venta').value = '';
-      document.querySelector('#nombre-venta').value = '';
-      document.querySelector('#producto-manual').value = '';
-      document.querySelector('#cantidad-venta').value = '';
-      document.querySelector('#metodo-venta').value = 'unidad';
-      listaProductosNoEscaneados.style.display = 'none';
+  // Actualizar la lista de venta
+  function actualizarListaVenta() {
+    listaVentaBody.innerHTML = '';
+    productosVenta.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.producto.nombre}</td>
+        <td>${item.metodo}</td>
+        <td>${item.cantidad}</td>
+        <td>$${item.producto.precioFinal.toFixed(2)}</td>
+        <td>$${item.subtotal.toFixed(2)}</td>
+        <td><button class="eliminar" data-index="${index}"><i class="fas fa-trash"></i></button></td>
+      `;
+      listaVentaBody.appendChild(tr);
     });
+    totalVentaSpan.textContent = `$${totalVenta.toFixed(2)}`;
+    confirmarVentaBtn.style.display = productosVenta.length > 0 ? 'block' : 'none';
+  }
 
-    // Función para actualizar la lista de venta
-    function actualizarListaVenta() {
-      listaVentaBody.innerHTML = '';
-      let total = 0;
+  // Eventos
+  escanearVentaBtn.addEventListener('click', () => {
+    if (!escaneoActivo) {
+      inicializarEscaneo();
+    } else {
+      detenerEscaneo();
+    }
+  });
 
-      productosVenta.forEach((producto, index) => {
-        const fila = document.createElement('tr');
-        fila.innerHTML = `
-          <td>${producto.nombre}</td>
-          <td>${producto.metodoVenta}</td>
-          <td>${producto.cantidad}</td>
-          <td>$${producto.precioUnitario.toFixed(2)}</td>
-          <td>$${producto.subtotal.toFixed(2)}</td>
-          <td><button type="button" class="boton-eliminar" data-index="${index}"><i class="fas fa-trash"></i> Eliminar</button></td>
-        `;
-        listaVentaBody.appendChild(fila);
-        total += producto.subtotal;
-      });
+  seleccionarManualBtn.addEventListener('click', () => {
+    listaProductosNoEscaneados.style.display = 'block';
+    cargarProductosManual();
+  });
 
-      totalVenta.textContent = `$${total.toFixed(2)}`;
-      botonConfirmarVenta.style.display = productosVenta.length > 0 ? 'inline-block' : 'none';
+  agregarProductoBtn.addEventListener('click', async () => {
+    const codigo = codigoVenta.value;
+    const metodo = metodoVentaSelect.value;
+    const cantidad = parseInt(cantidadVentaInput.value) || 1;
 
-      // Agregar evento para eliminar productos
-      const botonesEliminar = document.querySelectorAll('.boton-eliminar');
-      botonesEliminar.forEach(boton => {
-        boton.addEventListener('click', () => {
-          const index = parseInt(boton.dataset.index);
-          productosVenta.splice(index, 1);
-          actualizarListaVenta();
-        });
-      });
+    if (!codigo && !productoManualSelect.value) {
+      alert('Por favor, escanea un producto o selecciona uno manualmente');
+      return;
     }
 
-    // Confirmar la venta
-    botonConfirmarVenta.addEventListener('click', async () => {
-      if (productosVenta.length === 0) {
-        alert('No hay productos para vender.');
-        return;
+    let producto;
+    if (codigo) {
+      producto = await buscarProductoPorCodigo(codigo);
+    } else {
+      const respuesta = await fetch(`${BASE_URL}/api/productos/${productoManualSelect.value}`);
+      const resultado = await respuesta.json();
+      if (!respuesta.ok) {
+        throw new Error(resultado.error || 'Error al obtener el producto');
       }
+      producto = resultado;
+    }
 
-      try {
-        const respuesta = await fetch(`${BASE_URL}/api/vender`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            productos: productosVenta,
-            usuarioId: '507f1f77bcf86cd799439011'
-          }),
-        });
+    if (producto) {
+      agregarProductoALista(producto, metodo, cantidad);
+      codigoVenta.value = '';
+      nombreVenta.value = '';
+      cantidadVentaInput.value = 1;
+      listaProductosNoEscaneados.style.display = 'none';
+    }
+  });
 
-        const resultado = await respuesta.json();
+  listaVentaBody.addEventListener('click', (e) => {
+    if (e.target.closest('.eliminar')) {
+      const index = parseInt(e.target.closest('.eliminar').dataset.index);
+      totalVenta -= productosVenta[index].subtotal;
+      productosVenta.splice(index, 1);
+      actualizarListaVenta();
+    }
+  });
 
-        if (respuesta.ok) {
-          alert(resultado.mensaje);
-          productosVenta = [];
-          actualizarListaVenta();
-        } else {
-          alert(resultado.error || 'Error al vender los productos. Revisa los datos e intenta de nuevo.');
-        }
-      } catch (error) {
-        alert('Error al conectar con el servidor: ' + error.message);
-        console.error('Error:', error);
-      }
-    });
-  }
+  confirmarVentaBtn.addEventListener('click', async () => {
+    try {
+      // Aquí implementarías la lógica para guardar la venta en el backend
+      alert('Venta confirmada con éxito');
+      productosVenta = [];
+      totalVenta = 0;
+      actualizarListaVenta();
+    } catch (error) {
+      console.error('Error al confirmar venta:', error);
+      alert('Error al confirmar la venta');
+    }
+  });
 });

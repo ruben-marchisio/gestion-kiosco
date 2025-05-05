@@ -438,6 +438,7 @@ footer a i {
   .nav-principal {
     gap: 5px;
     margin-top: 5px;
+    flex-wrap: wrap;
   }
 
   .nav-principal a {
@@ -446,7 +447,7 @@ footer a i {
   }
 
   main {
-    padding-top: 110px;
+    padding-top: 120px; /* Aumentado para evitar superposición */
     padding-bottom: 50px;
   }
 

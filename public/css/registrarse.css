@@ -207,7 +207,7 @@ footer a i {
   }
 
   .register-section {
-    padding: 80px 15px 60px;
+    padding: 90px 15px 60px; /* Aumentado para evitar superposición */
   }
 
   .register-content {

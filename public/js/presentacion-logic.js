@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('presentacion-logic.js cargado');
-    // Lógica específica para presentacion.html puede ir aquí si es necesario
-  });
-  
+  console.log('presentacion.js cargado');
+  // No se requiere lógica adicional, la página solo muestra contenido estático
+});

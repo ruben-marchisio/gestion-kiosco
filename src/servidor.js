@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { Usuario, Producto, Cliente } = require('./usuario');
 
 dotenv.config();
 const app = express();
@@ -20,43 +21,10 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-// Redirigir la ruta raíz a inicio-sesion.html
+// Redirigir la ruta raíz a presentacion.html
 app.get('/', (req, res) => {
-  res.redirect('/public/inicio-sesion.html');
+  res.redirect('/public/presentacion.html');
 });
-
-// Esquema para el usuario
-const usuarioSchema = new mongoose.Schema({
-  nombreKiosco: String,
-  email: { type: String, unique: true },
-  contrasena: String,
-  fechaCreacion: { type: Date, default: Date.now }
-});
-
-const Usuario = mongoose.model('Usuario', usuarioSchema);
-
-// Esquema para el producto
-const productoSchema = new mongoose.Schema({
-  nombre: String,
-  cantidadUnidades: Number,
-  packs: Number,
-  unidadesPorPack: Number,
-  docenas: Number,
-  unidadesSueltas: Number,
-  marca: String,
-  precioLista: Number,
-  porcentajeGanancia: Number,
-  precioFinal: Number,
-  categoria: String,
-  subcategoria: String,
-  unidad: String,
-  fechaVencimiento: Date,
-  icono: String,
-  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
-  codigo: String
-});
-
-const Producto = mongoose.model('Producto', productoSchema);
 
 // Rutas para usuarios
 app.post('/api/registrar-usuario', async (req, res) => {
@@ -77,6 +45,7 @@ app.post('/api/registrar-usuario', async (req, res) => {
     }
 
     const nuevoUsuario = new Usuario({
+      nombre: nombreKiosco, // Ajustado según el esquema
       nombreKiosco,
       email,
       contrasena
@@ -198,6 +167,97 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
   } catch (error) {
     console.error('Error al buscar el producto:', error);
     res.status(500).json({ error: 'Error al buscar el producto: ' + error.message });
+  }
+});
+
+// Nueva ruta para obtener todos los productos de un usuario
+app.get('/api/productos', async (req, res) => {
+  console.log('Solicitud recibida en /api/productos');
+  try {
+    const usuarioId = req.query.usuarioId;
+    if (!usuarioId) {
+      return res.status(400).json({ error: 'Falta el usuarioId.' });
+    }
+
+    const productos = await Producto.find({ usuarioId });
+    console.log('Productos encontrados:', productos.length);
+    res.status(200).json(productos);
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({ error: 'Error al obtener productos: ' + error.message });
+  }
+});
+
+// Nueva ruta para obtener un producto por ID
+app.get('/api/productos/:id', async (req, res) => {
+  console.log('Solicitud recibida en /api/productos/:id');
+  try {
+    const { id } = req.params;
+    console.log('Buscando producto con ID:', id);
+
+    const producto = await Producto.findById(id);
+    if (!producto) {
+      console.log('Producto no encontrado para el ID:', id);
+      return res.status(404).json({ error: 'Producto no encontrado.' });
+    }
+
+    console.log('Producto encontrado:', producto);
+    res.status(200).json(producto);
+  } catch (error) {
+    console.error('Error al buscar el producto:', error);
+    res.status(500).json({ error: 'Error al buscar el producto: ' + error.message });
+  }
+});
+
+// Rutas para clientes
+app.post('/api/clientes', async (req, res) => {
+  console.log('Solicitud recibida en /api/clientes');
+  try {
+    const { nombre, dni, telefono, direccion, usuarioId } = req.body;
+    console.log('Datos recibidos:', { nombre, dni, telefono, direccion, usuarioId });
+
+    if (!nombre || !dni || !usuarioId) {
+      console.log('Faltan campos requeridos:', { nombre, dni, usuarioId });
+      return res.status(400).json({ error: 'Faltan campos requeridos.' });
+    }
+
+    const clienteExistente = await Cliente.findOne({ dni });
+    if (clienteExistente) {
+      console.log('El DNI ya está registrado:', dni);
+      return res.status(400).json({ error: 'El DNI ya está registrado.' });
+    }
+
+    const nuevoCliente = new Cliente({
+      nombre,
+      dni,
+      telefono: telefono || '',
+      direccion: direccion || '',
+      usuarioId: new mongoose.Types.ObjectId(usuarioId)
+    });
+
+    await nuevoCliente.save();
+    console.log('Cliente guardado con éxito:', nombre);
+    res.status(201).json({ mensaje: 'Cliente guardado con éxito.' });
+  } catch (error) {
+    console.error('Error al guardar el cliente:', error);
+    res.status(500).json({ error: 'Error al guardar el cliente: ' + error.message });
+  }
+});
+
+app.get('/api/clientes', async (req, res) => {
+  console.log('Solicitud recibida en /api/clientes');
+  try {
+    const usuarioId = req.query.usuarioId;
+    if (!usuarioId) {
+      return res.status(400).json({ error: 'Falta el usuarioId.' });
+    }
+
+    const clientes = await Cliente.find({ usuarioId });
+    console.log('Clientes encontrados:', clientes.length);
+    res.status(200).json(clientes);
+  } catch (error) {
+    console.error('Error al obtener clientes:', error);
+    res.status(500).json({ error: 'Error al obtener clientes: ' + error.message });
   }
 });
 

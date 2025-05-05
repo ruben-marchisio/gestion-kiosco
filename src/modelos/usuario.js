@@ -17,7 +17,7 @@ const productoSchema = new Schema({
   subcategoria: { type: String },
   unidad: { type: String, enum: ['kilo', 'unidad', 'docena', 'pack'], required: true },
   fechaVencimiento: { type: Date, required: true },
-  imagen: { type: String, required: true },
+  imagen: { type: String, required: false }, // Hacer opcional
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
   codigo: { type: String, default: '' } // Código del producto (vacío si no tiene)
 });
