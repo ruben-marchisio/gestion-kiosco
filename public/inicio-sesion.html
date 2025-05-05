@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión Kiosco - Iniciar Sesión</title>
-  <link rel="stylesheet" href="/public/css/estilos.css">
+  <link rel="stylesheet" href="/public/css/inicio-sesion.css">
   <!-- Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -15,9 +15,16 @@
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
     </div>
     <h1>Gestión Kiosco</h1>
+    <nav class="nav-principal">
+      <a href="/public/index.html"><i class="fas fa-home"></i> Inicio</a>
+      <a href="/public/cargar-producto.html"><i class="fas fa-box-open"></i> Cargar Producto</a>
+      <a href="/public/vender-producto.html"><i class="fas fa-shopping-cart"></i> Vender</a>
+      <a href="/public/clientes.html"><i class="fas fa-users"></i> Clientes</a>
+      <a href="#reportes"><i class="fas fa-chart-line"></i> Reportes</a>
+    </nav>
   </header>
 
-  <!-- Formulario de Inicio de Sesión -->
+  <!-- Formulario para Iniciar Sesión -->
   <section id="inicio-sesion" class="seccion-formulario">
     <h2>Iniciar Sesión</h2>
     <form id="form-iniciar-sesion">
@@ -27,7 +34,10 @@
       </div>
       <div class="form-campo">
         <label for="contrasena">Contraseña</label>
-        <input type="password" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
+        <div style="position: relative;">
+          <input type="password" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
+          <i class="fas fa-eye toggle-password" onclick="togglePassword('contrasena')"></i>
+        </div>
       </div>
       <button type="submit" class="boton-accion"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
       <button type="button" id="ir-a-registro" class="boton-accion"><i class="fas fa-user-plus"></i> Registrarse</button>
@@ -39,6 +49,22 @@
     <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
   </footer>
 
-  <script src="/public/js/auth.js?v=3"></script>
+  <!-- Scripts -->
+  <script src="/public/js/inicio-sesion-logic.js"></script>
+  <script>
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      const icon = input.nextElementSibling;
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+  </script>
 </body>
 </html>

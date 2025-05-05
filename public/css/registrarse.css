@@ -1,4 +1,4 @@
-/* Estilos para presentacion.html */
+/* Estilos para registrarse.html */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -58,22 +58,48 @@ body {
     background-color: #007bff;
   }
   
-  #presentacion {
+  #registrarse {
     max-width: 600px;
     margin: 80px auto 20px auto; /* Margen superior para el header fijo */
     padding: 20px;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
   }
   
   h2 {
+    text-align: center;
     margin-bottom: 20px;
   }
   
-  p {
-    margin-bottom: 20px;
+  .form-campo {
+    margin-bottom: 15px;
+    position: relative;
+  }
+  
+  .form-campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-campo input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  
+  .form-campo .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
   }
   
   .boton-accion {
@@ -86,7 +112,6 @@ body {
     cursor: pointer;
     margin-right: 10px;
     margin-top: 10px;
-    text-decoration: none;
     transition: background-color 0.3s;
   }
   
@@ -120,7 +145,7 @@ body {
   
   /* Estilos responsivos */
   @media (max-width: 600px) {
-    #presentacion {
+    #registrarse {
       margin: 70px 10px 20px 10px;
       padding: 15px;
     }

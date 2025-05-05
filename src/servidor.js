@@ -11,9 +11,12 @@ const port = process.env.PORT || 3000;
 // Configura strictQuery para suprimir la advertencia de Mongoose
 mongoose.set('strictQuery', false);
 
-// Conectar a MongoDB usando una variable de entorno
+// Conectar a MongoDB usando una variable de entorno con opciones de tiempo de espera
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/gestion-kiosco';
-mongoose.connect(mongoURI)
+mongoose.connect(mongoURI, {
+  serverSelectionTimeoutMS: 5000, // Tiempo de espera para la selección del servidor
+  socketTimeoutMS: 45000, // Tiempo de espera para operaciones de socket
+})
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
@@ -22,7 +25,13 @@ app.use(cors({ origin: '*' })); // Permitir solicitudes desde cualquier origen (
 app.use(express.json());
 
 // Servir archivos estáticos desde la carpeta public, montados en /public
-app.use('/public', express.static(path.join(__dirname, '../public')));
+app.use('/public', express.static(path.join(__dirname, '../public'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.css') || path.endsWith('.js') || path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+}));
 
 // Configuración de multer para la subida de imágenes
 const storage = multer.diskStorage({
@@ -36,7 +45,10 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // Límite de 5MB para las imágenes
+});
 
 // Ruta para registrar un nuevo usuario
 app.post('/api/registrarse', async (req, res) => {
@@ -59,20 +71,20 @@ app.post('/api/registrarse', async (req, res) => {
 
 // Ruta para iniciar sesión
 app.post('/api/iniciar-sesion', async (req, res) => {
-  console.log('Solicitud recibida en /api/iniciar-sesion:', req.body); // Depuración
+  console.log('Solicitud recibida en /api/iniciar-sesion:', req.body);
   const { email, contrasena } = req.body;
 
   try {
     const usuario = await Usuario.findOne({ email, contrasena });
     if (!usuario) {
-      console.log('Usuario no encontrado:', { email, contrasena }); // Depuración
+      console.log('Usuario no encontrado:', { email, contrasena });
       return res.status(401).json({ error: 'Email o contraseña incorrectos.' });
     }
 
-    console.log('Inicio de sesión exitoso:', { usuarioId: usuario._id }); // Depuración
+    console.log('Inicio de sesión exitoso:', { usuarioId: usuario._id });
     res.status(200).json({ mensaje: 'Inicio de sesión exitoso.', usuarioId: usuario._id });
   } catch (error) {
-    console.error('Error al procesar /api/iniciar-sesion:', error); // Depuración
+    console.error('Error al procesar /api/iniciar-sesion:', error);
     res.status(500).json({ error: 'Error al iniciar sesión.' });
   }
 });
@@ -154,7 +166,7 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
   }
 });
 
-// Ruta para obtener todos los productos del usuario (no solo los no escaneados)
+// Ruta para obtener todos los productos del usuario
 app.get('/api/productos/no-escaneados', async (req, res) => {
   try {
     const usuarioId = req.query.usuarioId;

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('vender-producto.js cargado'); // Depuración
+  console.log('vender-producto-logic.js cargado'); // Depuración
 
   // Lista para almacenar los productos de la venta
   let productosVenta = [];

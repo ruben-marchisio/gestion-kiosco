@@ -1,4 +1,4 @@
-/* Estilos para presentacion.html */
+/* Estilos para cargar-producto.html */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -58,22 +58,54 @@ body {
     background-color: #007bff;
   }
   
-  #presentacion {
+  #cargar-producto {
     max-width: 600px;
     margin: 80px auto 20px auto; /* Margen superior para el header fijo */
     padding: 20px;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
   }
   
   h2 {
+    text-align: center;
     margin-bottom: 20px;
   }
   
-  p {
-    margin-bottom: 20px;
+  .form-campo {
+    margin-bottom: 15px;
+    position: relative;
+  }
+  
+  .form-campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-campo input,
+  .form-campo select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  
+  .form-campo input[type="file"] {
+    padding: 3px;
+  }
+  
+  .form-campo select {
+    appearance: none;
+    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSI3IiB2aWV3Qm94PSIwIDAgMTIgNyI+PHBhdGggZmlsbD0iIzY2NiIgZD0iTTAgMGw2IDcgNi03eiIvPjwvc3ZnPg==') no-repeat right 8px center;
+    background-size: 12px;
+  }
+  
+  .form-campo input[readonly] {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
   }
   
   .boton-accion {
@@ -86,7 +118,6 @@ body {
     cursor: pointer;
     margin-right: 10px;
     margin-top: 10px;
-    text-decoration: none;
     transition: background-color 0.3s;
   }
   
@@ -96,6 +127,36 @@ body {
   
   .boton-accion i {
     margin-right: 5px;
+  }
+  
+  .camara {
+    display: none;
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    margin: 10px auto;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1000;
+  }
+  
+  .camara video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .guia-codigo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 50px;
+    border: 2px dashed #ff0000;
+    pointer-events: none;
   }
   
   footer {
@@ -120,7 +181,7 @@ body {
   
   /* Estilos responsivos */
   @media (max-width: 600px) {
-    #presentacion {
+    #cargar-producto {
       margin: 70px 10px 20px 10px;
       padding: 15px;
     }
@@ -137,5 +198,10 @@ body {
   
     h1 {
       font-size: 20px;
+    }
+  
+    .camara {
+      max-width: 100%;
+      height: 200px;
     }
   }

@@ -3,62 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión Kiosco - Bienvenido</title>
+  <title>Gestión Kiosco - Presentación</title>
   <link rel="stylesheet" href="/public/css/presentacion.css">
   <!-- Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-  <!-- Encabezado (Hero) -->
-  <header class="hero">
-    <div class="hero-contenido">
+  <!-- Encabezado -->
+  <header>
+    <div class="logo">
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
-      <h1>Gestión Kiosco</h1>
-      <p>Administra tu kiosco como nunca antes: ventas, inventario y reportes al alcance de tu mano.</p>
-      <div class="hero-botones">
-        <a href="/public/registrarse.html" class="boton-accion">Registrarse</a>
-        <a href="/public/inicio-sesion.html" class="boton-accion secundario">Iniciar Sesión</a>
-      </div>
     </div>
+    <h1>Gestión Kiosco</h1>
+    <nav class="nav-principal">
+      <a href="/public/index.html"><i class="fas fa-home"></i> Inicio</a>
+      <a href="/public/cargar-producto.html"><i class="fas fa-box-open"></i> Cargar Producto</a>
+      <a href="/public/vender-producto.html"><i class="fas fa-shopping-cart"></i> Vender</a>
+      <a href="/public/clientes.html"><i class="fas fa-users"></i> Clientes</a>
+      <a href="#reportes"><i class="fas fa-chart-line"></i> Reportes</a>
+    </nav>
   </header>
 
-  <!-- Sección de Beneficios -->
-  <section class="beneficios">
-    <h2>¿Por qué elegir Gestión Kiosco?</h2>
-    <div class="beneficios-lista">
-      <div class="beneficio">
-        <i class="fas fa-shopping-cart beneficio-icono"></i>
-        <h3>Vende Fácilmente</h3>
-        <p>Registra ventas por unidad, kilo, docena o pack, y actualiza tu stock automáticamente.</p>
-      </div>
-      <div class="beneficio">
-        <i class="fas fa-warehouse beneficio-icono"></i>
-        <h3>Controla tu Inventario</h3>
-        <p>Lleva un control total de tus productos con alertas de vencimiento y stock bajo.</p>
-      </div>
-      <div class="beneficio">
-        <i class="fas fa-chart-line beneficio-icono"></i>
-        <h3>Analiza tus Ventas</h3>
-        <p>Obtén reportes diarios y mensuales para tomar decisiones inteligentes.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Llamada a la Acción -->
-  <section class="cta">
-    <h2>¡Empieza a gestionar tu kiosco hoy!</h2>
-    <p>Únete a cientos de pequeños negocios que ya confían en nosotros.</p>
-    <a href="/public/registrarse.html" class="boton-accion">Comenzar Ahora</a>
-  </section>
+  <!-- Contenido Principal -->
+  <main>
+    <section id="presentacion">
+      <h2>Bienvenido a Gestión Kiosco</h2>
+      <p>Administra tu kiosco de manera eficiente y sencilla.</p>
+      <a href="/public/inicio-sesion.html" class="boton-accion"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+      <a href="/public/registrarse.html" class="boton-accion"><i class="fas fa-user-plus"></i> Registrarse</a>
+    </section>
+  </main>
 
   <!-- Pie de Página -->
   <footer>
-    <p>© 2025 Gestión Kiosco. Todos los derechos reservados.</p>
-    <div class="footer-enlaces">
-      <a href="#contacto"><i class="fas fa-envelope"></i> Contacto</a>
-      <a href="#terminos"><i class="fas fa-file-alt"></i> Términos</a>
-      <a href="#privacidad"><i class="fas fa-shield-alt"></i> Privacidad</a>
-    </div>
+    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
   </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/presentacion.js"></script>
 </body>
 </html>
