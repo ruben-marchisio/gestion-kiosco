@@ -10,15 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const listaProductosBody = document.querySelector('#lista-productos-body');
   const confirmarTodosBtn = document.querySelector('#confirmar-todos');
   const cancelarTodoBtn = document.querySelector('#cancelar-todo');
-  const cargarImagenBtn = document.querySelector('#cargar-imagen');
-  const tomarFotoBtn = document.querySelector('#tomar-foto');
-  const imagenInput = document.querySelector('#imagen');
-  const vistaPreviaImagen = document.querySelector('#vista-previa-imagen');
-  const imagenPrevia = document.querySelector('#imagen-previa');
-  const eliminarImagenBtn = document.querySelector('#eliminar-imagen');
+  const toastContainer = document.querySelector('#toast-container');
   const agregarProductoBtn = document.querySelector('#agregar-producto');
   const cancelarProductoBtn = document.querySelector('#cancelar-producto');
-  const toastContainer = document.querySelector('#toast-container');
 
   // Variables globales
   let productosEnProceso = [];
@@ -48,59 +42,41 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // Inicializar QuaggaJS
+  // Inicializar escaneo usando utils.js
   function inicializarEscaneo() {
-    Quagga.init({
-      inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: camaraCarga,
-        constraints: {
-          width: 300, // Ajustar tamaño para mejor precisión
-          height: 200,
-          facingMode: "environment"
+    escaneoActivo = true;
+    activarEscaneoBtn.style.display = 'none';
+    detenerEscaneoBtn.style.display = 'inline-block';
+
+    const escanear = () => {
+      iniciarEscaneo(camaraCarga, (codigo) => {
+        const ahora = Date.now();
+
+        // Evitar múltiples escaneos con debounce
+        if (ultimoCodigoEscaneado === codigo && (ahora - ultimoEscaneoTiempo) < DEBOUNCE_TIME) {
+          if (escaneoActivo) {
+            setTimeout(escanear, 100); // Reanudar escaneo después de un pequeño retraso
+          }
+          return;
         }
-      },
-      decoder: {
-        readers: ["ean_reader", "code_128_reader"]
-      }
-    }, (err) => {
-      if (err) {
-        console.error('Error al inicializar Quagga:', err);
-        mostrarToast('Error al iniciar el escáner', 'error');
-        return;
-      }
-      Quagga.start();
-      escaneoActivo = true;
-      activarEscaneoBtn.style.display = 'none';
-      detenerEscaneoBtn.style.display = 'inline-block';
-      camaraCarga.style.display = 'block';
-    });
 
-    Quagga.onDetected((result) => {
-      const codigo = result.codeResult.code;
-      const ahora = Date.now();
+        ultimoCodigoEscaneado = codigo;
+        ultimoEscaneoTiempo = ahora;
 
-      // Evitar múltiples escaneos con debounce
-      if (ultimoCodigoEscaneado === codigo && (ahora - ultimoEscaneoTiempo) < DEBOUNCE_TIME) {
-        return;
-      }
+        // Reproducir sonido de escaneo
+        sonidoEscaneo.play().catch(err => console.error('Error al reproducir sonido:', err));
 
-      ultimoCodigoEscaneado = codigo;
-      ultimoEscaneoTiempo = ahora;
+        document.querySelector('#codigo').value = codigo;
+        buscarProductoPorCodigo(codigo);
 
-      // Reproducir sonido de escaneo
-      sonidoEscaneo.play().catch(err => console.error('Error al reproducir sonido:', err));
+        // Reanudar escaneo si está activo
+        if (escaneoActivo) {
+          setTimeout(escanear, DEBOUNCE_TIME);
+        }
+      });
+    };
 
-      document.querySelector('#codigo').value = codigo;
-      buscarProductoPorCodigo(codigo);
-
-      // Pausar el escáner para evitar lecturas múltiples
-      Quagga.pause();
-      setTimeout(() => {
-        if (escaneoActivo) Quagga.start();
-      }, DEBOUNCE_TIME);
-    });
+    escanear();
   }
 
   // Detener escaneo
@@ -116,17 +92,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Buscar producto por código
   async function buscarProductoPorCodigo(codigo) {
     try {
-      const respuesta = await fetch(`${BASE_URL}/api/productos/codigo/${codigo}`);
-      const resultado = await respuesta.json();
+      // Primero buscar en la base de datos local
+      const respuestaLocal = await fetch(`${BASE_URL}/api/productos/codigo/${codigo}`);
+      const resultadoLocal = await respuestaLocal.json();
 
-      if (respuesta.ok) {
-        // Producto existente
-        const producto = resultado.producto;
-        mostrarToast(`Producto encontrado: ${producto.nombre}`, 'exito');
-        agregarProductoALista(producto, false);
+      if (respuestaLocal.ok) {
+        // Producto encontrado en la base de datos local
+        const producto = resultadoLocal.producto;
+        mostrarToast(`Producto encontrado localmente: ${producto.nombre}`, 'exito');
+        cargarProductoExistente(producto);
+        return;
+      }
+
+      // Si no se encuentra localmente, buscar en Open Food Facts
+      const respuestaExterna = await fetch(`https://world.openfoodfacts.org/api/v0/product/${codigo}.json`);
+      const resultadoExterna = await respuestaExterna.json();
+
+      if (resultadoExterna.status === 1) {
+        // Producto encontrado en Open Food Facts
+        const productData = resultadoExterna.product;
+        const producto = {
+          codigo: codigo,
+          nombre: productData.product_name || 'Producto Desconocido',
+          marca: productData.brands || 'Sin Marca',
+          categoria: productData.categories_tags ? productData.categories_tags[0] || '' : '',
+          subcategoria: productData.categories_tags ? productData.categories_tags[1] || '' : '',
+          icono: 'default',
+          estado: 'Completo'
+        };
+        mostrarToast(`Producto encontrado en Open Food Facts: ${producto.nombre}`, 'exito');
+        cargarProductoExistente(producto);
       } else {
-        // Producto nuevo
-        mostrarToast('Producto nuevo añadido, completar datos', 'exito');
+        // Producto no encontrado, completar manualmente
+        mostrarToast('Producto no encontrado, por favor completa los datos manualmente', 'error');
         const producto = { codigo, estado: 'Pendiente' };
         agregarProductoALista(producto, true);
 
@@ -139,6 +137,39 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error al buscar producto:', error);
       mostrarToast('Error al buscar el producto', 'error');
     }
+  }
+
+  // Cargar producto existente en el formulario
+  function cargarProductoExistente(producto) {
+    document.querySelector('#codigo').value = producto.codigo || '';
+    document.querySelector('#nombre-producto').value = producto.nombre || '';
+    document.querySelector('#marca').value = producto.marca || '';
+    document.querySelector('#categoria').value = producto.categoria || '';
+    manejarCambioCategoria();
+    const subcategoriaSelect = document.querySelector(`#subcategoria-${producto.categoria ? producto.categoria.toLowerCase() : ''}`);
+    if (subcategoriaSelect) {
+      subcategoriaSelect.value = producto.subcategoria || '';
+    }
+    document.querySelector('#icono-producto').value = producto.icono || 'default';
+    document.querySelector('#unidad').value = producto.unidad || 'unidad';
+    manejarCambioUnidad();
+
+    // Deshabilitar campos que no deben editarse
+    document.querySelector('#nombre-producto').disabled = true;
+    document.querySelector('#marca').disabled = true;
+    document.querySelector('#categoria').disabled = true;
+    if (subcategoriaSelect) subcategoriaSelect.disabled = true;
+    document.querySelector('#icono-producto').disabled = true;
+
+    // Mostrar campos de cantidad existente si aplica
+    if (producto.cantidadUnidades !== undefined) {
+      document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
+      document.querySelector('#cantidad-actual').value = producto.cantidadUnidades;
+      document.querySelector('#cantidad-a-anadir').value = 0;
+      document.querySelector('#nuevo-total').value = producto.cantidadUnidades;
+    }
+
+    agregarProductoALista(producto, false);
   }
 
   // Agregar producto a la lista
@@ -160,12 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Actualizar la tabla de productos en proceso
   function actualizarListaProductos() {
-    listaProductosBody.innerHTML = '';
+    listaProductosBody.innerHTML = ''; // Limpiar la tabla antes de agregar productos
     productosEnProceso.forEach((producto, index) => {
       const tr = document.createElement('tr');
       tr.className = producto.estado.toLowerCase();
       tr.innerHTML = `
-        <td>${producto.codigo}</td>
         <td>${producto.nombre || 'N/A'}</td>
         <td>${producto.marca || 'N/A'}</td>
         <td>${producto.categoria || 'N/A'}</td>
@@ -173,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${producto.cantidadUnidades ? `Actual: ${producto.cantidadUnidades}, Añadir: ${producto.cantidadAAnadir}, Total: ${producto.nuevoTotal}` : producto.cantidadAAnadir}
         </td>
         <td class="estado">${producto.estado}</td>
+        <td><i class="fas fa-${producto.icono || 'default'}"></i></td>
         <td class="acciones">
           <button class="editar" data-index="${index}"><i class="fas fa-edit"></i></button>
           <button class="eliminar" data-index="${index}"><i class="fas fa-trash"></i></button>
@@ -209,8 +240,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
     document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
     document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
-    
-    // Mostrar campos de cantidad existente
+    document.querySelector('#icono-producto').value = producto.icono || 'default';
+
+    // Habilitar campos para edición manual
+    document.querySelector('#nombre-producto').disabled = false;
+    document.querySelector('#marca').disabled = false;
+    document.querySelector('#categoria').disabled = false;
+    if (subcategoriaSelect) subcategoriaSelect.disabled = false;
+    document.querySelector('#icono-producto').disabled = false;
+
+    // Mostrar campos de cantidad existente si aplica
     if (producto.cantidadUnidades !== undefined) {
       document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
       document.querySelector('#cantidad-actual').value = producto.cantidadUnidades;
@@ -220,14 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
     }
 
-    // Manejar imagen
-    if (producto.imagen) {
-      imagenPrevia.src = producto.imagen;
-      vistaPreviaImagen.style.display = 'block';
-    } else {
-      vistaPreviaImagen.style.display = 'none';
-    }
-
     agregarProductoBtn.textContent = 'Actualizar Producto';
   }
 
@@ -235,9 +266,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function limpiarFormulario() {
     formCargarProducto.reset();
     document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
-    vistaPreviaImagen.style.display = 'none';
     productoEditandoIndex = null;
     agregarProductoBtn.textContent = 'Agregar Producto';
+    document.querySelector('#nombre-producto').disabled = false;
+    document.querySelector('#marca').disabled = false;
+    document.querySelector('#categoria').disabled = false;
+    const subcategoriaSelect = document.querySelector(`#subcategoria-${document.querySelector('#categoria').value.toLowerCase()}`);
+    if (subcategoriaSelect) subcategoriaSelect.disabled = false;
+    document.querySelector('#icono-producto').disabled = false;
     manejarCambioCategoria();
     manejarCambioUnidad();
   }
@@ -248,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.form-campo[id^="subcategoria-"]').forEach(el => {
       el.style.display = 'none';
       const select = el.querySelector('select');
-      if (select) select.value = ''; // Resetear subcategoría
+      if (select) select.value = '';
     });
     const subcategoriaCampo = document.querySelector(`#subcategoria-${categoria}`);
     if (subcategoriaCampo) {
@@ -279,9 +315,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const docenas = parseInt(document.querySelector('#docenas').value) || 0;
       totalUnidades = (docenas * 12) + unidadesSueltas;
     } else if (unidad === 'kilo') {
-      totalUnidades = unidadesSueltas; // En kilos, las unidades sueltas representan la cantidad
+      totalUnidades = unidadesSueltas;
     } else {
-      totalUnidades = unidadesSueltas; // Para "unidad", simplemente tomamos las unidades sueltas
+      totalUnidades = unidadesSueltas;
     }
 
     document.querySelector('#cantidad-total').value = totalUnidades;
@@ -294,34 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const precioFinal = precioLista * (1 + porcentajeGanancia / 100);
     document.querySelector('#precio-final').value = precioFinal.toFixed(2);
   }
-
-  // Manejar carga de imagen
-  cargarImagenBtn.addEventListener('click', () => {
-    imagenInput.removeAttribute('capture');
-    imagenInput.click();
-  });
-
-  tomarFotoBtn.addEventListener('click', () => {
-    imagenInput.setAttribute('capture', 'environment');
-    imagenInput.click();
-  });
-
-  imagenInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        imagenPrevia.src = event.target.result;
-        vistaPreviaImagen.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  eliminarImagenBtn.addEventListener('click', () => {
-    imagenInput.value = '';
-    vistaPreviaImagen.style.display = 'none';
-  });
 
   // Eventos del formulario
   document.querySelector('#categoria').addEventListener('change', manejarCambioCategoria);
@@ -358,15 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     producto.porcentajeGanancia = parseFloat(producto.porcentajeGanancia) || 0;
     producto.precioFinal = parseFloat(producto.precioFinal) || 0;
     producto.estado = 'Completo';
-
-    // Manejar imagen
-    if (imagenInput.files[0]) {
-      producto.imagenFile = imagenInput.files[0];
-      producto.imagen = imagenPrevia.src;
-    } else {
-      producto.imagenFile = null;
-      producto.imagen = null;
-    }
+    producto.icono = producto.icono || 'default';
 
     // Manejar cantidades para productos existentes
     if (productoEditandoIndex !== null && productosEnProceso[productoEditandoIndex].cantidadUnidades !== undefined) {
@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reanudar escaneo si estaba activo
     if (escaneoActivo) {
-      Quagga.start();
+      inicializarEscaneo();
     }
   });
 
@@ -402,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     limpiarFormulario();
     if (escaneoActivo) {
-      Quagga.start();
+      inicializarEscaneo();
     }
   });
 
@@ -445,17 +445,13 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('unidadesPorPack', producto.unidadesPorPack || 0);
         formData.append('docenas', producto.docenas || 0);
         formData.append('unidadesSueltas', producto.unidadesSueltas || 0);
-        
+        formData.append('icono', producto.icono || 'default');
+
         // Manejar cantidadUnidades
         if (producto.cantidadUnidades !== undefined && producto.nuevoTotal !== undefined) {
           formData.append('cantidadUnidades', producto.nuevoTotal);
         } else {
           formData.append('cantidadUnidades', producto.cantidadUnidades || 0);
-        }
-
-        // Manejar imagen
-        if (producto.imagenFile) {
-          formData.append('imagen', producto.imagenFile);
         }
 
         const respuesta = await fetch(`${BASE_URL}/api/productos`, {

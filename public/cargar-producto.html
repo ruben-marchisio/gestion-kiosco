@@ -200,18 +200,25 @@
             <label for="fecha-vencimiento">Fecha de Vencimiento</label>
             <input type="date" id="fecha-vencimiento" name="fechaVencimiento" required>
           </div>
-          <!-- Campo de Imagen Opcional -->
+          <!-- Selector de Ícono -->
           <div class="form-campo">
-            <label>Imagen del Producto (Opcional)</label>
-            <div class="imagen-opciones">
-              <button type="button" id="cargar-imagen" class="boton-imagen"><i class="fas fa-upload"></i> Cargar Imagen</button>
-              <button type="button" id="tomar-foto" class="boton-imagen"><i class="fas fa-camera"></i> Tomar Foto</button>
-              <input type="file" id="imagen" name="imagen" accept="image/*" capture="environment" style="display: none;">
-            </div>
-            <div class="imagen-vista-previa" id="vista-previa-imagen" style="display: none;">
-              <img id="imagen-previa" src="" alt="Vista Previa">
-              <button type="button" id="eliminar-imagen" class="boton-eliminar-imagen"><i class="fas fa-trash"></i> Eliminar Imagen</button>
-            </div>
+            <label for="icono-producto">Ícono del Producto (Opcional)</label>
+            <select id="icono-producto" name="icono">
+              <option value="default">Sin ícono</option>
+              <option value="bottle-water"><i class="fas fa-bottle-water"></i> Botella (Bebida)</option>
+              <option value="candy-cane"><i class="fas fa-candy-cane"></i> Caramelo (Golosina)</option>
+              <option value="glass-whiskey"><i class="fas fa-glass-whiskey"></i> Leche (Lácteo)</option>
+              <option value="smoking"><i class="fas fa-smoking"></i> Cigarrillo</option>
+              <option value="cheese"><i class="fas fa-cheese"></i> Queso (Fiambre)</option>
+              <option value="ice-cream"><i class="fas fa-ice-cream"></i> Helado (Congelado)</option>
+              <option value="bread-slice"><i class="fas fa-bread-slice"></i> Pan (Panadería)</option>
+              <option value="utensils"><i class="fas fa-utensils"></i> Almacén</option>
+              <option value="carrot"><i class="fas fa-carrot"></i> Verdulería</option>
+              <option value="broom"><i class="fas fa-broom"></i> Limpieza</option>
+              <option value="soap"><i class="fas fa-soap"></i> Higiene Personal</option>
+              <option value="wheat-awn"><i class="fas fa-wheat-awn"></i> Sin TACC</option>
+              <option value="box"><i class="fas fa-box"></i> Productos Varios</option>
+            </select>
           </div>
           <div class="form-acciones">
             <button type="button" id="agregar-producto" class="boton-accion boton-primario"><i class="fas fa-plus"></i> Agregar Producto</button>
@@ -239,12 +246,12 @@
         <table id="tabla-productos-proceso">
           <thead>
             <tr>
-              <th>Código</th>
               <th>Nombre</th>
               <th>Marca</th>
               <th>Categoría</th>
               <th>Cantidad</th>
               <th>Estado</th>
+              <th>Ícono</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -267,6 +274,7 @@
   </footer>
 
   <!-- Scripts -->
+  <script src="/public/js/utils.js"></script>
   <script src="/public/js/cargar-producto-logic.js"></script>
 </body>
 </html>
