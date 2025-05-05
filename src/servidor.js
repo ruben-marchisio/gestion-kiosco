@@ -9,7 +9,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+// Configurar strictQuery para suprimir la advertencia de Mongoose
+mongoose.set('strictQuery', true);
+
+// Conectar a MongoDB (eliminamos useNewUrlParser y useUnifiedTopology, ya que son obsoletos en Mongoose 8)
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
@@ -39,7 +43,7 @@ const productoSchema = new mongoose.Schema({
   subcategoria: String,
   unidad: String,
   fechaVencimiento: Date,
-  icono: String, // Nuevo campo para el ícono
+  icono: String,
   usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
   codigo: String
 });
