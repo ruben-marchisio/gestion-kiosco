@@ -15,34 +15,31 @@
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
     </div>
     <h1>Gestión Kiosco</h1>
-    <nav class="nav-principal">
-      <a href="/public/index.html"><i class="fas fa-home"></i> Inicio</a>
-      <a href="/public/cargar-producto.html"><i class="fas fa-box-open"></i> Cargar Producto</a>
-      <a href="/public/vender-producto.html"><i class="fas fa-shopping-cart"></i> Vender</a>
-      <a href="/public/clientes.html"><i class="fas fa-users"></i> Clientes</a>
-      <a href="#reportes"><i class="fas fa-chart-line"></i> Reportes</a>
-    </nav>
   </header>
 
   <!-- Formulario para Iniciar Sesión -->
-  <section id="inicio-sesion" class="seccion-formulario">
-    <h2>Iniciar Sesión</h2>
-    <form id="form-iniciar-sesion">
-      <div class="form-campo">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Ej. usuario@kiosco.com" required>
+  <main>
+    <section class="login-section">
+      <div class="login-content">
+        <h2>Iniciar Sesión</h2>
+        <form id="form-iniciar-sesion">
+          <div class="form-campo">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Ej. usuario@kiosco.com" required>
+          </div>
+          <div class="form-campo">
+            <label for="contrasena">Contraseña</label>
+            <div class="password-container">
+              <input type="password" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
+              <i class="fas fa-eye toggle-password" onclick="togglePassword('contrasena')"></i>
+            </div>
+          </div>
+          <button type="submit" class="boton-accion boton-primario"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
+          <button type="button" id="ir-a-registro" class="boton-accion boton-secundario"><i class="fas fa-user-plus"></i> Registrarse</button>
+        </form>
       </div>
-      <div class="form-campo">
-        <label for="contrasena">Contraseña</label>
-        <div style="position: relative;">
-          <input type="password" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
-          <i class="fas fa-eye toggle-password" onclick="togglePassword('contrasena')"></i>
-        </div>
-      </div>
-      <button type="submit" class="boton-accion"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
-      <button type="button" id="ir-a-registro" class="boton-accion"><i class="fas fa-user-plus"></i> Registrarse</button>
-    </form>
-  </section>
+    </section>
+  </main>
 
   <!-- Pie de Página -->
   <footer>
@@ -51,20 +48,5 @@
 
   <!-- Scripts -->
   <script src="/public/js/inicio-sesion-logic.js"></script>
-  <script>
-    function togglePassword(inputId) {
-      const input = document.getElementById(inputId);
-      const icon = input.nextElementSibling;
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-      }
-    }
-  </script>
 </body>
 </html>

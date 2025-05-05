@@ -1,404 +1,431 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('cargar-producto.js cargado');
+
+  // Elementos del DOM
   const formCargarProducto = document.querySelector('#form-cargar-producto');
-  const categoriaSelect = document.querySelector('#categoria');
-  const subcategoriaBebidas = document.querySelector('#subcategoria-bebidas');
-  const subcategoriaGolosinas = document.querySelector('#subcategoria-golosinas');
-  const subcategoriaLacteos = document.querySelector('#subcategoria-lacteos');
-  const subcategoriaCigarrillos = document.querySelector('#subcategoria-cigarrillos');
-  const subcategoriaFiambre = document.querySelector('#subcategoria-fiambre');
-  const subcategoriaCongelados = document.querySelector('#subcategoria-congelados');
-  const subcategoriaPanaderia = document.querySelector('#subcategoria-panaderia');
-  const subcategoriaAlmacen = document.querySelector('#subcategoria-almacen');
-  const subcategoriaVerduleria = document.querySelector('#subcategoria-verduleria');
+  const completarInmediatamente = document.querySelector('#completar-inmediatamente');
+  const activarEscaneoBtn = document.querySelector('#activar-escaneo');
+  const detenerEscaneoBtn = document.querySelector('#detener-escaneo');
+  const camaraCarga = document.querySelector('#camara-carga');
+  const listaProductosBody = document.querySelector('#lista-productos-body');
+  const confirmarTodosBtn = document.querySelector('#confirmar-todos');
+  const cancelarTodoBtn = document.querySelector('#cancelar-todo');
+  const cargarImagenBtn = document.querySelector('#cargar-imagen');
+  const tomarFotoBtn = document.querySelector('#tomar-foto');
+  const imagenInput = document.querySelector('#imagen');
+  const vistaPreviaImagen = document.querySelector('#vista-previa-imagen');
+  const imagenPrevia = document.querySelector('#imagen-previa');
+  const eliminarImagenBtn = document.querySelector('#eliminar-imagen');
+  const agregarProductoBtn = document.querySelector('#agregar-producto');
+  const cancelarProductoBtn = document.querySelector('#cancelar-producto');
+  const toastContainer = document.querySelector('#toast-container');
 
-  // Construcción de la URL base sin especificar el puerto
+  // Variables globales
+  let productosEnProceso = [];
+  let escaneoActivo = false;
+  let productoEditandoIndex = null;
+
+  // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
-  console.log('URL base generada:', BASE_URL);
 
-  // Función para manejar la visibilidad de subcategorías
-  const manejarSubcategorias = () => {
-    console.log('Categoría seleccionada:', categoriaSelect.value); // Depuración
-    // Ocultar todas las subcategorías
-    subcategoriaBebidas.style.display = 'none';
-    subcategoriaGolosinas.style.display = 'none';
-    subcategoriaLacteos.style.display = 'none';
-    subcategoriaCigarrillos.style.display = 'none';
-    subcategoriaFiambre.style.display = 'none';
-    subcategoriaCongelados.style.display = 'none';
-    subcategoriaPanaderia.style.display = 'none';
-    subcategoriaAlmacen.style.display = 'none';
-    subcategoriaVerduleria.style.display = 'none';
-
-    // Habilitar todas las subcategorías
-    subcategoriaBebidas.disabled = false;
-    subcategoriaGolosinas.disabled = false;
-    subcategoriaLacteos.disabled = false;
-    subcategoriaCigarrillos.disabled = false;
-    subcategoriaFiambre.disabled = false;
-    subcategoriaCongelados.disabled = false;
-    subcategoriaPanaderia.disabled = false;
-    subcategoriaAlmacen.disabled = false;
-    subcategoriaVerduleria.disabled = false;
-
-    // Restablecer valores de subcategoría
-    subcategoriaBebidas.value = '';
-    subcategoriaGolosinas.value = '';
-    subcategoriaLacteos.value = '';
-    subcategoriaCigarrillos.value = '';
-    subcategoriaFiambre.value = '';
-    subcategoriaCongelados.value = '';
-    subcategoriaPanaderia.value = '';
-    subcategoriaAlmacen.value = '';
-    subcategoriaVerduleria.value = '';
-
-    // Mostrar la subcategoría correspondiente
-    switch (categoriaSelect.value) {
-      case 'Bebidas':
-        console.log('Mostrando subcategoría Bebidas');
-        subcategoriaBebidas.style.display = 'block';
-        break;
-      case 'Golosinas':
-        console.log('Mostrando subcategoría Golosinas');
-        subcategoriaGolosinas.style.display = 'block';
-        break;
-      case 'Lácteos':
-        console.log('Mostrando subcategoría Lácteos');
-        subcategoriaLacteos.style.display = 'block';
-        break;
-      case 'Cigarrillos':
-        console.log('Mostrando subcategoría Cigarrillos');
-        subcategoriaCigarrillos.style.display = 'block';
-        break;
-      case 'Fiambre':
-        console.log('Mostrando subcategoría Fiambre');
-        subcategoriaFiambre.style.display = 'block';
-        break;
-      case 'Congelados':
-        console.log('Mostrando subcategoría Congelados');
-        subcategoriaCongelados.style.display = 'block';
-        break;
-      case 'Panadería':
-        console.log('Mostrando subcategoría Panadería');
-        subcategoriaPanaderia.style.display = 'block';
-        break;
-      case 'Almacén':
-        console.log('Mostrando subcategoría Almacén');
-        subcategoriaAlmacen.style.display = 'block';
-        break;
-      case 'Verdulería':
-        console.log('Mostrando subcategoría Verdulería');
-        subcategoriaVerduleria.style.display = 'block';
-        break;
-      default:
-        console.log('Categoría sin subcategorías:', categoriaSelect.value);
-        break;
-    }
-  };
-
-  // Mostrar/Ocultar subcategorías según la categoría seleccionada
-  if (categoriaSelect && subcategoriaBebidas && subcategoriaGolosinas && subcategoriaLacteos && subcategoriaCigarrillos && subcategoriaFiambre && subcategoriaCongelados && subcategoriaPanaderia && subcategoriaAlmacen && subcategoriaVerduleria) {
-    categoriaSelect.addEventListener('change', manejarSubcategorias);
-    // Llamar a la función inicialmente para manejar la categoría por defecto
-    manejarSubcategorias();
-  } else {
-    console.error('No se encontraron todos los elementos de subcategoría:', {
-      categoriaSelect,
-      subcategoriaBebidas,
-      subcategoriaGolosinas,
-      subcategoriaLacteos,
-      subcategoriaCigarrillos,
-      subcategoriaFiambre,
-      subcategoriaCongelados,
-      subcategoriaPanaderia,
-      subcategoriaAlmacen,
-      subcategoriaVerduleria
-    });
+  // Función para mostrar toasts
+  function mostrarToast(mensaje, tipo) {
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`;
+    toast.textContent = mensaje;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   }
 
-  // Manejar el cambio de unidad para mostrar campos de packs/docenas
-  const unidadSelect = document.querySelector('#unidad');
-  const cantidadPacks = document.querySelector('#cantidad-packs');
-  const unidadesPorPack = document.querySelector('#unidades-por-pack');
-  const cantidadDocenas = document.querySelector('#cantidad-docenas');
-  const cantidadSueltas = document.querySelector('#unidadesSueltas');
-  const cantidadTotalInput = document.querySelector('#cantidad-total');
-
-  if (unidadSelect && cantidadPacks && unidadesPorPack && cantidadDocenas && cantidadSueltas && cantidadTotalInput) {
-    const actualizarCamposUnidad = () => {
-      cantidadPacks.style.display = 'none';
-      unidadesPorPack.style.display = 'none';
-      cantidadDocenas.style.display = 'none';
-      const packsInput = document.querySelector('#packs');
-      const unidadesPorPackInput = document.querySelector('#unidadesPorPack');
-      const docenasInput = document.querySelector('#docenas');
-
-      // Restablecer valores
-      packsInput.value = '0';
-      unidadesPorPackInput.value = '0';
-      docenasInput.value = '0';
-
-      switch (unidadSelect.value) {
-        case 'pack':
-          cantidadPacks.style.display = 'block';
-          unidadesPorPack.style.display = 'block';
-          break;
-        case 'docena':
-          cantidadDocenas.style.display = 'block';
-          break;
-        default: // unidad o kilo
-          break;
-      }
-      calcularCantidadTotal();
-    };
-
-    const calcularCantidadTotal = () => {
-      const packs = parseInt(document.querySelector('#packs').value) || 0;
-      const unidadesPorPackValue = parseInt(document.querySelector('#unidadesPorPack').value) || 0;
-      const docenas = parseInt(document.querySelector('#docenas').value) || 0;
-      const sueltas = parseInt(document.querySelector('#unidadesSueltas').value) || 0;
-      const total = (packs * unidadesPorPackValue) + (docenas * 12) + sueltas;
-      cantidadTotalInput.value = total;
-    };
-
-    unidadSelect.addEventListener('change', actualizarCamposUnidad);
-    document.querySelector('#packs').addEventListener('input', calcularCantidadTotal);
-    document.querySelector('#unidadesPorPack').addEventListener('input', calcularCantidadTotal);
-    document.querySelector('#docenas').addEventListener('input', calcularCantidadTotal);
-    document.querySelector('#unidadesSueltas').addEventListener('input', calcularCantidadTotal);
-
-    // Llamar a la función inicialmente para manejar la unidad por defecto
-    actualizarCamposUnidad();
-  }
-
-  // Calcular el precio final dinámicamente
-  const precioListaInput = document.querySelector('#precio-lista');
-  const porcentajeGananciaInput = document.querySelector('#porcentaje-ganancia');
-  const precioFinalInput = document.querySelector('#precio-final');
-
-  if (precioListaInput && porcentajeGananciaInput && precioFinalInput) {
-    const calcularPrecioFinal = () => {
-      const precioLista = parseFloat(precioListaInput.value) || 0;
-      const porcentajeGanancia = parseFloat(porcentajeGananciaInput.value) || 0;
-      const precioFinal = precioLista * (1 + porcentajeGanancia / 100);
-      precioFinalInput.value = precioFinal.toFixed(2);
-    };
-
-    precioListaInput.addEventListener('input', calcularPrecioFinal);
-    porcentajeGananciaInput.addEventListener('input', calcularPrecioFinal);
-  }
-
-  // Escaneo para cargar producto
-  const botonEscanearCarga = document.querySelector('#escanear-carga');
-  if (botonEscanearCarga) {
-    botonEscanearCarga.addEventListener('click', () => {
-      console.log('Botón Escanear clickeado en Cargar Producto'); // Depuración
-      const camaraCarga = document.querySelector('#camara-carga');
-      iniciarEscaneo(camaraCarga, async (codigo) => {
-        try {
-          console.log('Buscando producto con código:', codigo);
-          const respuesta = await fetch(`${BASE_URL}/api/productos/codigo/${codigo}`);
-          const resultado = await respuesta.json();
-          console.log('Resultado de la búsqueda:', resultado);
-
-          if (respuesta.ok && resultado.producto) {
-            document.querySelector('#nombre-producto').value = resultado.producto.nombre;
-            document.querySelector('#marca').value = resultado.producto.marca;
-            document.querySelector('#categoria').value = resultado.producto.categoria;
-            categoriaSelect.dispatchEvent(new Event('change'));
-            if (resultado.producto.subcategoria) {
-              document.querySelector(`#subcategoria-${resultado.producto.categoria.toLowerCase()}`).value = resultado.producto.subcategoria;
-            }
-            document.querySelector('#precio-lista').value = resultado.producto.precioLista;
-            document.querySelector('#porcentaje-ganancia').value = resultado.producto.porcentajeGanancia;
-            document.querySelector('#precio-final').value = resultado.producto.precioFinal;
-            document.querySelector('#unidad').value = resultado.producto.unidad;
-            unidadSelect.dispatchEvent(new Event('change'));
-            document.querySelector('#packs').value = resultado.producto.packs;
-            document.querySelector('#unidadesPorPack').value = resultado.producto.unidadesPorPack;
-            document.querySelector('#docenas').value = resultado.producto.docenas;
-            document.querySelector('#unidadesSueltas').value = resultado.producto.unidadesSueltas;
-            document.querySelector('#cantidad-total').value = resultado.producto.cantidadUnidades;
-            document.querySelector('#fecha-vencimiento').value = new Date(resultado.producto.fechaVencimiento).toISOString().split('T')[0];
-            formCargarProducto.dataset.codigo = codigo;
-          } else {
-            document.querySelector('#nombre-producto').value = '';
-            alert('Producto no encontrado. Por favor, llena los campos manualmente para registrar el producto con el código escaneado (' + codigo + '). Luego, presiona "Guardar Producto" para añadirlo a la base de datos.');
-            formCargarProducto.dataset.codigo = codigo;
-          }
-        } catch (error) {
-          alert('Error al buscar el producto: ' + error.message);
-          console.error('Error:', error);
+  // Inicializar QuaggaJS
+  function inicializarEscaneo() {
+    Quagga.init({
+      inputStream: {
+        name: "Live",
+        type: "LiveStream",
+        target: camaraCarga,
+        constraints: {
+          facingMode: "environment"
         }
-      });
+      },
+      decoder: {
+        readers: ["ean_reader", "code_128_reader"]
+      }
+    }, (err) => {
+      if (err) {
+        console.error('Error al inicializar Quagga:', err);
+        mostrarToast('Error al iniciar el escáner', 'error');
+        return;
+      }
+      Quagga.start();
+      escaneoActivo = true;
+      activarEscaneoBtn.style.display = 'none';
+      detenerEscaneoBtn.style.display = 'inline-block';
+      camaraCarga.style.display = 'block';
+    });
+
+    Quagga.onDetected((result) => {
+      const codigo = result.codeResult.code;
+      document.querySelector('#codigo').value = codigo;
+      buscarProductoPorCodigo(codigo);
     });
   }
 
-  // Manejar el envío del formulario de cargar producto
-  if (formCargarProducto) {
-    formCargarProducto.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      console.log('Formulario enviado'); // Depuración
+  // Detener escaneo
+  function detenerEscaneo() {
+    Quagga.stop();
+    escaneoActivo = false;
+    activarEscaneoBtn.style.display = 'inline-block';
+    detenerEscaneoBtn.style.display = 'none';
+    camaraCarga.style.display = 'none';
+  }
 
-      const formData = new FormData(formCargarProducto);
-      formData.append('usuarioId', '507f1f77bcf86cd799439011');
-      formData.append('codigo', formCargarProducto.dataset.codigo || '');
+  // Buscar producto por código
+  async function buscarProductoPorCodigo(codigo) {
+    try {
+      const respuesta = await fetch(`${BASE_URL}/api/productos/codigo/${codigo}`);
+      const resultado = await respuesta.json();
 
-      // Validación manual de los campos requeridos
-      const nombre = formData.get('nombre');
-      const marca = formData.get('marca');
-      const unidad = formData.get('unidad');
-      const precioLista = parseFloat(formData.get('precioLista')) || 0;
-      const porcentajeGanancia = parseFloat(formData.get('porcentajeGanancia')) || 0;
-      const categoria = formData.get('categoria');
-      const fechaVencimiento = formData.get('fechaVencimiento');
-      const imagen = formData.get('imagen');
+      if (respuesta.ok) {
+        // Producto existente
+        const producto = resultado.producto;
+        mostrarToast(`Producto encontrado: ${producto.nombre}`, 'exito');
+        agregarProductoALista(producto, false);
+      } else {
+        // Producto nuevo
+        mostrarToast('Producto nuevo añadido, completar datos', 'exito');
+        const producto = { codigo, estado: 'Pendiente' };
+        agregarProductoALista(producto, true);
 
-      if (!nombre) {
-        alert('Por favor, completa el campo "Nombre".');
-        return;
+        if (completarInmediatamente.checked) {
+          detenerEscaneo();
+          cargarProductoEnFormulario(producto, productosEnProceso.length - 1);
+        }
       }
-      if (!marca) {
-        alert('Por favor, completa el campo "Marca".');
-        return;
-      }
-      if (!unidad) {
-        alert('Por favor, selecciona una "Unidad".');
-        return;
-      }
-      if (precioLista <= 0) {
-        alert('Por favor, ingresa un "Precio de Lista" válido.');
-        return;
-      }
-      if (porcentajeGanancia < 0) {
-        alert('Por favor, ingresa un "Porcentaje de Ganancia" válido.');
-        return;
-      }
-      if (!categoria) {
-        alert('Por favor, selecciona una "Categoría".');
-        return;
-      }
-      if (!fechaVencimiento) {
-        alert('Por favor, selecciona una "Fecha de Vencimiento".');
-        return;
-      }
-      if (!imagen || imagen.size === 0) {
-        alert('Por favor, selecciona una "Imagen del Producto".');
-        return;
-      }
+    } catch (error) {
+      console.error('Error al buscar producto:', error);
+      mostrarToast('Error al buscar el producto', 'error');
+    }
+  }
 
-      // Validación manual de los campos según la unidad seleccionada
-      const packs = parseInt(formData.get('packs')) || 0;
-      const unidadesPorPack = parseInt(formData.get('unidadesPorPack')) || 0;
-      const docenas = parseInt(formData.get('docenas')) || 0;
-      const sueltas = parseInt(formData.get('unidadesSueltas')) || 0;
+  // Agregar producto a la lista
+  function agregarProductoALista(producto, esNuevo) {
+    const index = productosEnProceso.findIndex(p => p.codigo === producto.codigo);
+    if (index !== -1) {
+      // Producto ya está en la lista, incrementar cantidad
+      productosEnProceso[index].cantidadAAnadir = (productosEnProceso[index].cantidadAAnadir || 0) + 1;
+      productosEnProceso[index].nuevoTotal = (producto.cantidadUnidades || 0) + productosEnProceso[index].cantidadAAnadir;
+    } else {
+      // Nuevo producto en la lista
+      producto.cantidadAAnadir = 1;
+      producto.nuevoTotal = (producto.cantidadUnidades || 0) + 1;
+      producto.estado = esNuevo ? 'Pendiente' : 'Completo';
+      productosEnProceso.push(producto);
+    }
+    actualizarListaProductos();
+  }
 
-      if (unidad === 'pack' && (packs <= 0 || unidadesPorPack <= 0)) {
-        alert('Por favor, completa los campos "Cantidad de Packs" y "Unidades por Pack".');
-        return;
+  // Actualizar la tabla de productos en proceso
+  function actualizarListaProductos() {
+    listaProductosBody.innerHTML = '';
+    productosEnProceso.forEach((producto, index) => {
+      const tr = document.createElement('tr');
+      tr.className = producto.estado.toLowerCase();
+      tr.innerHTML = `
+        <td>${producto.codigo}</td>
+        <td>${producto.nombre || 'N/A'}</td>
+        <td>${producto.marca || 'N/A'}</td>
+        <td>${producto.categoria || 'N/A'}</td>
+        <td>
+          ${producto.cantidadUnidades ? `Actual: ${producto.cantidadUnidades}, Añadir: ${producto.cantidadAAnadir}, Total: ${producto.nuevoTotal}` : producto.cantidadAAnadir}
+        </td>
+        <td class="estado">${producto.estado}</td>
+        <td class="acciones">
+          <button class="editar" data-index="${index}"><i class="fas fa-edit"></i></button>
+          <button class="eliminar" data-index="${index}"><i class="fas fa-trash"></i></button>
+        </td>
+      `;
+      listaProductosBody.appendChild(tr);
+    });
+
+    // Habilitar/deshabilitar botón "Confirmar Todos"
+    const hayPendientes = productosEnProceso.some(p => p.estado === 'Pendiente');
+    confirmarTodosBtn.disabled = hayPendientes;
+  }
+
+  // Cargar producto en el formulario para editar
+  function cargarProductoEnFormulario(producto, index) {
+    productoEditandoIndex = index;
+    document.querySelector('#codigo').value = producto.codigo || '';
+    document.querySelector('#nombre-producto').value = producto.nombre || '';
+    document.querySelector('#marca').value = producto.marca || '';
+    document.querySelector('#categoria').value = producto.categoria || '';
+    manejarCambioCategoria();
+    document.querySelector(`#subcategoria-${producto.categoria ? producto.categoria.toLowerCase() : ''}`).value = producto.subcategoria || '';
+    document.querySelector('#precio-lista').value = producto.precioLista || '';
+    document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
+    document.querySelector('#precio-final').value = producto.precioFinal || '';
+    document.querySelector('#unidad').value = producto.unidad || 'unidad';
+    manejarCambioUnidad();
+    document.querySelector('#packs').value = producto.packs || 0;
+    document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
+    document.querySelector('#docenas').value = producto.docenas || 0;
+    document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
+    document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
+    document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
+    
+    // Mostrar campos de cantidad existente
+    if (producto.cantidadUnidades !== undefined) {
+      document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
+      document.querySelector('#cantidad-actual').value = producto.cantidadUnidades;
+      document.querySelector('#cantidad-a-anadir').value = producto.cantidadAAnadir || 0;
+      document.querySelector('#nuevo-total').value = producto.nuevoTotal || producto.cantidadUnidades;
+    } else {
+      document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
+    }
+
+    // Manejar imagen
+    if (producto.imagen) {
+      imagenPrevia.src = producto.imagen;
+      vistaPreviaImagen.style.display = 'block';
+    } else {
+      vistaPreviaImagen.style.display = 'none';
+    }
+
+    agregarProductoBtn.textContent = 'Actualizar Producto';
+  }
+
+  // Limpiar formulario
+  function limpiarFormulario() {
+    formCargarProducto.reset();
+    document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
+    vistaPreviaImagen.style.display = 'none';
+    productoEditandoIndex = null;
+    agregarProductoBtn.textContent = 'Agregar Producto';
+    manejarCambioCategoria();
+    manejarCambioUnidad();
+  }
+
+  // Manejar cambio de categoría
+  function manejarCambioCategoria() {
+    const categoria = document.querySelector('#categoria').value.toLowerCase();
+    document.querySelectorAll('.form-campo[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+    const subcategoriaCampo = document.querySelector(`#subcategoria-${categoria}`);
+    if (subcategoriaCampo) {
+      subcategoriaCampo.style.display = 'block';
+    }
+  }
+
+  // Manejar cambio de unidad
+  function manejarCambioUnidad() {
+    const unidad = document.querySelector('#unidad').value;
+    document.querySelector('#cantidad-packs').style.display = unidad === 'pack' ? 'block' : 'none';
+    document.querySelector('#unidades-por-pack').style.display = unidad === 'pack' ? 'block' : 'none';
+    document.querySelector('#cantidad-docenas').style.display = unidad === 'docena' ? 'block' : 'none';
+    document.querySelector('#unidadesSueltas').style.display = unidad !== 'pack' && unidad !== 'docena' ? 'block' : 'none';
+    actualizarCantidadTotal();
+  }
+
+  // Actualizar cantidad total
+  function actualizarCantidadTotal() {
+    const unidad = document.querySelector('#unidad').value;
+    let totalUnidades = 0;
+    if (unidad === 'pack') {
+      const packs = parseInt(document.querySelector('#packs').value) || 0;
+      const unidadesPorPack = parseInt(document.querySelector('#unidadesPorPack').value) || 0;
+      totalUnidades = packs * unidadesPorPack;
+    } else if (unidad === 'docena') {
+      const docenas = parseInt(document.querySelector('#docenas').value) || 0;
+      totalUnidades = docenas * 12;
+    } else {
+      totalUnidades = parseInt(document.querySelector('#unidadesSueltas').value) || 0;
+    }
+    document.querySelector('#cantidad-total').value = totalUnidades;
+  }
+
+  // Calcular precio final
+  function calcularPrecioFinal() {
+    const precioLista = parseFloat(document.querySelector('#precio-lista').value) || 0;
+    const porcentajeGanancia = parseFloat(document.querySelector('#porcentaje-ganancia').value) || 0;
+    const precioFinal = precioLista * (1 + porcentajeGanancia / 100);
+    document.querySelector('#precio-final').value = precioFinal.toFixed(2);
+  }
+
+  // Manejar carga de imagen
+  cargarImagenBtn.addEventListener('click', () => {
+    imagenInput.removeAttribute('capture');
+    imagenInput.click();
+  });
+
+  tomarFotoBtn.addEventListener('click', () => {
+    imagenInput.setAttribute('capture', 'environment');
+    imagenInput.click();
+  });
+
+  imagenInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        imagenPrevia.src = event.target.result;
+        vistaPreviaImagen.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  eliminarImagenBtn.addEventListener('click', () => {
+    imagenInput.value = '';
+    vistaPreviaImagen.style.display = 'none';
+  });
+
+  // Eventos del formulario
+  document.querySelector('#categoria').addEventListener('change', manejarCambioCategoria);
+  document.querySelector('#unidad').addEventListener('change', manejarCambioUnidad);
+  document.querySelector('#packs').addEventListener('input', actualizarCantidadTotal);
+  document.querySelector('#unidadesPorPack').addEventListener('input', actualizarCantidadTotal);
+  document.querySelector('#docenas').addEventListener('input', actualizarCantidadTotal);
+  document.querySelector('#unidadesSueltas').addEventListener('input', actualizarCantidadTotal);
+  document.querySelector('#precio-lista').addEventListener('input', calcularPrecioFinal);
+  document.querySelector('#porcentaje-ganancia').addEventListener('input', calcularPrecioFinal);
+  document.querySelector('#cantidad-a-anadir').addEventListener('input', () => {
+    if (productoEditandoIndex !== null) {
+      const cantidadActual = parseInt(document.querySelector('#cantidad-actual').value) || 0;
+      const cantidadAAnadir = parseInt(document.querySelector('#cantidad-a-anadir').value) || 0;
+      document.querySelector('#nuevo-total').value = cantidadActual + cantidadAAnadir;
+    }
+  });
+
+  // Activar/Detener escaneo
+  activarEscaneoBtn.addEventListener('click', inicializarEscaneo);
+  detenerEscaneoBtn.addEventListener('click', detenerEscaneo);
+
+  // Agregar producto a la lista
+  agregarProductoBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const formData = new FormData(formCargarProducto);
+    const producto = Object.fromEntries(formData);
+    producto.cantidadUnidades = parseInt(producto.cantidadUnidades) || 0;
+    producto.packs = parseInt(producto.packs) || 0;
+    producto.unidadesPorPack = parseInt(producto.unidadesPorPack) || 0;
+    producto.docenas = parseInt(producto.docenas) || 0;
+    producto.unidadesSueltas = parseInt(producto.unidadesSueltas) || 0;
+    producto.precioLista = parseFloat(producto.precioLista) || 0;
+    producto.porcentajeGanancia = parseFloat(producto.porcentajeGanancia) || 0;
+    producto.precioFinal = parseFloat(producto.precioFinal) || 0;
+    producto.estado = 'Completo';
+
+    // Manejar imagen
+    if (imagenInput.files[0]) {
+      producto.imagenFile = imagenInput.files[0];
+      producto.imagen = imagenPrevia.src;
+    } else {
+      producto.imagenFile = null;
+      producto.imagen = null;
+    }
+
+    // Manejar cantidades para productos existentes
+    if (productoEditandoIndex !== null && productosEnProceso[productoEditandoIndex].cantidadUnidades !== undefined) {
+      producto.cantidadUnidades = productosEnProceso[productoEditandoIndex].cantidadUnidades;
+      producto.cantidadAAnadir = parseInt(document.querySelector('#cantidad-a-anadir').value) || 0;
+      producto.nuevoTotal = parseInt(document.querySelector('#nuevo-total').value) || 0;
+    }
+
+    if (productoEditandoIndex !== null) {
+      productosEnProceso[productoEditandoIndex] = producto;
+    } else {
+      const index = productosEnProceso.findIndex(p => p.codigo === producto.codigo);
+      if (index !== -1) {
+        productosEnProceso[index].cantidadAAnadir = (productosEnProceso[index].cantidadAAnadir || 0) + (producto.cantidadAAnadir || 1);
+        productosEnProceso[index].nuevoTotal = (productosEnProceso[index].cantidadUnidades || 0) + productosEnProceso[index].cantidadAAnadir;
+      } else {
+        productosEnProceso.push(producto);
       }
-      if (unidad === 'docena' && docenas <= 0) {
-        alert('Por favor, completa el campo "Cantidad de Docenas".');
-        return;
+    }
+
+    actualizarListaProductos();
+    limpiarFormulario();
+    mostrarToast('Producto añadido a la lista', 'exito');
+
+    // Reanudar escaneo si estaba activo
+    if (escaneoActivo) {
+      Quagga.start();
+    }
+  });
+
+  // Cancelar producto
+  cancelarProductoBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    limpiarFormulario();
+    if (escaneoActivo) {
+      Quagga.start();
+    }
+  });
+
+  // Editar/Eliminar productos de la lista
+  listaProductosBody.addEventListener('click', (e) => {
+    if (e.target.closest('.editar')) {
+      const index = parseInt(e.target.closest('.editar').dataset.index);
+      detenerEscaneo();
+      cargarProductoEnFormulario(productosEnProceso[index], index);
+    } else if (e.target.closest('.eliminar')) {
+      const index = parseInt(e.target.closest('.eliminar').dataset.index);
+      productosEnProceso.splice(index, 1);
+      actualizarListaProductos();
+      mostrarToast('Producto eliminado de la lista', 'exito');
+    }
+  });
+
+  // Confirmar todos los productos
+  confirmarTodosBtn.addEventListener('click', async () => {
+    const productosAEnviar = [];
+    for (const producto of productosEnProceso) {
+      const formData = new FormData();
+      for (const key in producto) {
+        if (key !== 'imagenFile' && key !== 'estado' && key !== 'cantidadAAnadir' && key !== 'nuevoTotal') {
+          formData.append(key, producto[key]);
+        }
       }
-      if ((unidad === 'unidad' || unidad === 'kilo') && sueltas <= 0) {
-        alert('Por favor, completa el campo "Unidades Sueltas".');
-        return;
+      if (producto.imagenFile) {
+        formData.append('imagen', producto.imagenFile);
       }
-
-      // Obtener el valor correcto de subcategoria según la categoría seleccionada
-      let subcategoria = '';
-      switch (categoria) {
-        case 'Bebidas':
-          subcategoria = subcategoriaBebidas.value;
-          break;
-        case 'Golosinas':
-          subcategoria = subcategoriaGolosinas.value;
-          break;
-        case 'Lácteos':
-          subcategoria = subcategoriaLacteos.value;
-          break;
-        case 'Cigarrillos':
-          subcategoria = subcategoriaCigarrillos.value;
-          break;
-        case 'Fiambre':
-          subcategoria = subcategoriaFiambre.value;
-          break;
-        case 'Congelados':
-          subcategoria = subcategoriaCongelados.value;
-          break;
-        case 'Panadería':
-          subcategoria = subcategoriaPanaderia.value;
-          break;
-        case 'Almacén':
-          subcategoria = subcategoriaAlmacen.value;
-          break;
-        case 'Verdulería':
-          subcategoria = subcategoriaVerduleria.value;
-          break;
-        default:
-          subcategoria = '';
+      formData.append('usuarioId', localStorage.getItem('usuarioId') || 'default');
+      if (producto.cantidadUnidades !== undefined) {
+        formData.set('cantidadUnidades', producto.nuevoTotal);
       }
+      productosAEnviar.push(formData);
+    }
 
-      // Reemplazar el valor de subcategoria en formData
-      formData.delete('subcategoria');
-      formData.append('subcategoria', subcategoria);
-
-      // Depuración: Mostrar los datos que se están enviando
-      console.log('Datos enviados:', Object.fromEntries(formData));
-
-      try {
+    try {
+      for (const formData of productosAEnviar) {
         const respuesta = await fetch(`${BASE_URL}/api/productos`, {
           method: 'POST',
-          body: formData,
+          body: formData
         });
-
-        console.log('Estado de la respuesta:', respuesta.status);
-        console.log('¿Respuesta OK?', respuesta.ok);
-
         const resultado = await respuesta.json();
-        console.log('Resultado del servidor:', resultado);
-
-        if (respuesta.ok) {
-          alert(resultado.mensaje);
-          formCargarProducto.reset();
-          formCargarProducto.dataset.codigo = '';
-          precioFinalInput.value = '';
-          cantidadTotalInput.value = '';
-          formCargarProducto.closest('.seccion-formulario').style.display = 'none';
-          subcategoriaBebidas.style.display = 'none';
-          subcategoriaGolosinas.style.display = 'none';
-          subcategoriaLacteos.style.display = 'none';
-          subcategoriaCigarrillos.style.display = 'none';
-          subcategoriaFiambre.style.display = 'none';
-          subcategoriaCongelados.style.display = 'none';
-          subcategoriaPanaderia.style.display = 'none';
-          subcategoriaAlmacen.style.display = 'none';
-          subcategoriaVerduleria.style.display = 'none';
-          subcategoriaBebidas.disabled = true;
-          subcategoriaGolosinas.disabled = true;
-          subcategoriaLacteos.disabled = true;
-          subcategoriaCigarrillos.disabled = true;
-          subcategoriaFiambre.disabled = true;
-          subcategoriaCongelados.disabled = true;
-          subcategoriaPanaderia.disabled = true;
-          subcategoriaAlmacen.disabled = true;
-          subcategoriaVerduleria.disabled = true;
-          document.querySelector('#subcategoria-bebidas').value = '';
-          document.querySelector('#subcategoria-golosinas').value = '';
-          document.querySelector('#subcategoria-lacteos').value = '';
-          document.querySelector('#subcategoria-cigarrillos').value = '';
-          document.querySelector('#subcategoria-fiambre').value = '';
-          document.querySelector('#subcategoria-congelados').value = '';
-          document.querySelector('#subcategoria-panaderia').value = '';
-          document.querySelector('#subcategoria-almacen').value = '';
-          document.querySelector('#subcategoria-verduleria').value = '';
-        } else {
-          alert(resultado.error || 'Error al cargar el producto. Revisa los datos e intenta de nuevo.');
+        if (!respuesta.ok) {
+          throw new Error(resultado.error || 'Error al guardar el producto');
         }
-      } catch (error) {
-        alert('Error al conectar con el servidor: ' + error.message);
-        console.error('Error:', error);
       }
-    });
-  }
+      mostrarToast('Productos guardados con éxito', 'exito');
+      productosEnProceso = [];
+      actualizarListaProductos();
+      limpiarFormulario();
+    } catch (error) {
+      console.error('Error al confirmar productos:', error);
+      mostrarToast('Error al guardar los productos', 'error');
+    }
+  });
+
+  // Cancelar todo
+  cancelarTodoBtn.addEventListener('click', () => {
+    productosEnProceso = [];
+    actualizarListaProductos();
+    limpiarFormulario();
+    mostrarToast('Lista de productos cancelada', 'exito');
+  });
+
+  // Inicializar estado
+  manejarCambioCategoria();
+  manejarCambioUnidad();
 });

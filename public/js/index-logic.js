@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('index-logic.js cargado');
-  // Lógica específica para index.html puede ir aquí si es necesario
+  console.log('index.js cargado');
+
+  // Obtener el nombre del kiosco desde localStorage
+  const nombreKiosco = localStorage.getItem('nombreKiosco') || 'Kiosco Desconocido';
+  document.getElementById('nombre-kiosco').textContent = nombreKiosco;
+  document.title = `Gestión Kiosco - ${nombreKiosco}`;
 });

@@ -1,166 +1,234 @@
 /* Estilos para inicio-sesion.html */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    padding-bottom: 60px; /* Espacio para el footer fijo */
+  font-family: 'Poppins', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Gradiente suave */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Encabezado */
+header {
+  background-color: #2c3e50; /* Color oscuro elegante */
+  color: white;
+  text-align: center;
+  padding: 1.5em 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+}
+
+.logo-img {
+  width: 60px;
+  height: auto;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Sección de Inicio de Sesión */
+.login-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px 20px 60px; /* Espacio para el header y footer */
+  text-align: center;
+}
+
+.login-content {
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.login-content h2 {
+  font-size: 32px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.form-campo {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-campo label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.form-campo input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-campo input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+  outline: none;
+}
+
+.password-container {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+  color: #3498db;
+}
+
+.boton-accion {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 25px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  margin-right: 10px;
+}
+
+.boton-accion i {
+  margin-right: 8px;
+}
+
+.boton-primario {
+  background-color: #3498db;
+  color: white;
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.boton-primario:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+}
+
+.boton-secundario {
+  background-color: #e74c3c;
+  color: white;
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+}
+
+.boton-secundario:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
+}
+
+/* Pie de Página */
+footer {
+  text-align: center;
+  padding: 1em 0;
+  background-color: #2c3e50;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+footer a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #3498db;
+}
+
+footer a i {
+  margin-right: 5px;
+}
+
+/* Animación para la entrada del contenido */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos responsivos */
+@media (max-width: 600px) {
   header {
-    background-color: #333;
-    color: white;
-    text-align: center;
     padding: 1em 0;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
   }
-  
-  .logo {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-  }
-  
+
   .logo-img {
     width: 50px;
-    height: auto;
   }
-  
+
   h1 {
-    margin: 0;
-    font-size: 24px;
+    font-size: 22px;
   }
-  
-  .nav-principal {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 10px;
+
+  .login-section {
+    padding: 80px 15px 60px;
   }
-  
-  .nav-principal a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-  }
-  
-  .nav-principal a:hover {
-    background-color: #555;
-  }
-  
-  .nav-principal a.activo {
-    background-color: #007bff;
-  }
-  
-  #inicio-sesion {
-    max-width: 600px;
-    margin: 80px auto 20px auto; /* Margen superior para el header fijo */
+
+  .login-content {
     padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
+
+  .login-content h2 {
+    font-size: 28px;
   }
-  
-  .form-campo {
-    margin-bottom: 15px;
-    position: relative;
-  }
-  
+
   .form-campo label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-campo input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
-  }
-  
-  .form-campo .toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
     font-size: 14px;
-    color: #666;
   }
-  
+
+  .form-campo input {
+    padding: 10px;
+    font-size: 14px;
+  }
+
   .boton-accion {
-    display: inline-block;
     padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    margin-top: 10px;
-    transition: background-color 0.3s;
+    font-size: 14px;
   }
-  
-  .boton-accion:hover {
-    background-color: #0056b3;
-  }
-  
-  .boton-accion i {
-    margin-right: 5px;
-  }
-  
-  footer {
-    text-align: center;
-    padding: 1em 0;
-    background-color: #333;
-    color: white;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 1000;
-  }
-  
-  footer a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  footer a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Estilos responsivos */
-  @media (max-width: 600px) {
-    #inicio-sesion {
-      margin: 70px 10px 20px 10px;
-      padding: 15px;
-    }
-  
-    .nav-principal {
-      flex-direction: column;
-      gap: 10px;
-    }
-  
-    .nav-principal a {
-      font-size: 14px;
-      padding: 8px;
-    }
-  
-    h1 {
-      font-size: 20px;
-    }
-  }
+}

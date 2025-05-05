@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión Kiosco - Inicio</title>
+  <title>Gestión Kiosco - [Nombre del Kiosco]</title>
   <link rel="stylesheet" href="/public/css/index.css">
   <!-- Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,20 +14,16 @@
     <div class="logo">
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
     </div>
-    <h1>Gestión Kiosco - Kiosco Juan</h1>
+    <h1>Gestión Kiosco - <span id="nombre-kiosco">Cargando...</span></h1>
     <nav class="nav-principal">
       <a href="/public/index.html" class="activo"><i class="fas fa-home"></i> Inicio</a>
-      <a href="/public/cargar-producto.html"><i class="fas fa-box-open"></i> Cargar Producto</a>
-      <a href="/public/vender-producto.html"><i class="fas fa-shopping-cart"></i> Vender</a>
-      <a href="/public/clientes.html"><i class="fas fa-users"></i> Clientes</a>
-      <a href="#reportes"><i class="fas fa-chart-line"></i> Reportes</a>
     </nav>
   </header>
 
   <!-- Contenido Principal -->
   <main>
     <section id="inicio">
-      <p>🔔 3 productos por vencer en 10 días</p>
+      <p class="alert"><i class="fas fa-bell"></i> 3 productos por vencer en 10 días</p>
       <div class="acciones-principales">
         <a href="/public/cargar-producto.html" class="boton-accion"><i class="fas fa-box-open"></i> Cargar Producto</a>
         <a href="/public/vender-producto.html" class="boton-accion"><i class="fas fa-shopping-cart"></i> Vender</a>
@@ -45,6 +41,6 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="/public/js/index.js"></script>
+  <script src="/public/js/index-logic.js"></script>
 </body>
 </html>

@@ -82,7 +82,7 @@ app.post('/api/registrarse', async (req, res) => {
   }
 });
 
-// Ruta para iniciar sesión
+// Ruta para iniciar sesión (actualizada para incluir nombreKiosco)
 app.post('/api/iniciar-sesion', async (req, res) => {
   console.log('Solicitud recibida en /api/iniciar-sesion:', req.body);
   const { email, contrasena } = req.body;
@@ -94,8 +94,12 @@ app.post('/api/iniciar-sesion', async (req, res) => {
       return res.status(401).json({ error: 'Email o contraseña incorrectos.' });
     }
 
-    console.log('Inicio de sesión exitoso:', { usuarioId: usuario._id });
-    res.status(200).json({ mensaje: 'Inicio de sesión exitoso.', usuarioId: usuario._id });
+    console.log('Inicio de sesión exitoso:', { usuarioId: usuario._id, nombreKiosco: usuario.nombreKiosco });
+    res.status(200).json({
+      mensaje: 'Inicio de sesión exitoso.',
+      usuarioId: usuario._id,
+      nombreKiosco: usuario.nombreKiosco // Añadido para título dinámico
+    });
   } catch (error) {
     console.error('Error al procesar /api/iniciar-sesion:', error.message);
     res.status(500).json({ error: 'Error al iniciar sesión: ' + error.message });
@@ -103,16 +107,14 @@ app.post('/api/iniciar-sesion', async (req, res) => {
 });
 
 // Ruta para cargar un nuevo producto
+// ... (código anterior)
+
+// Ruta para cargar un nuevo producto
 app.post('/api/productos', upload.single('imagen'), async (req, res) => {
   console.log('Solicitud recibida en /api/productos');
   try {
     console.log('Datos recibidos:', req.body);
     console.log('Archivo recibido:', req.file);
-
-    if (!req.file) {
-      console.log('Falta la imagen del producto');
-      return res.status(400).json({ error: 'Falta la imagen del producto.' });
-    }
 
     const {
       nombre,
@@ -138,7 +140,7 @@ app.post('/api/productos', upload.single('imagen'), async (req, res) => {
       return res.status(400).json({ error: 'Faltan campos requeridos.' });
     }
 
-    const imagen = `/imagenes/productos/${req.file.filename}`;
+    const imagen = req.file ? `/imagenes/productos/${req.file.filename}` : null; // Imagen opcional
 
     const nuevoProducto = new Producto({
       nombre,
@@ -165,10 +167,12 @@ app.post('/api/productos', upload.single('imagen'), async (req, res) => {
     console.log('Producto cargado con éxito:', nombre);
     res.status(201).json({ mensaje: 'Producto cargado con éxito.' });
   } catch (error) {
-    console.error('Error al cargar el producto:', error.message);
+    console.error('Error al cargar el producto:', error);
     res.status(500).json({ error: 'Error al cargar el producto: ' + error.message });
   }
 });
+
+
 
 // Ruta para buscar un producto por código
 app.get('/api/productos/codigo/:codigo', async (req, res) => {
