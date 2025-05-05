@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('cargar-producto.js cargado');
+  console.log('cargar-producto-logic.js cargado');
 
   // Elementos del DOM
   const formCargarProducto = document.querySelector('#form-cargar-producto');
@@ -24,9 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let productosEnProceso = [];
   let escaneoActivo = false;
   let productoEditandoIndex = null;
+  let ultimoCodigoEscaneado = null;
+  let ultimoEscaneoTiempo = 0;
+  const DEBOUNCE_TIME = 1000; // 1 segundo de debounce
 
   // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
+
+  // Crear sonido de escaneo
+  const sonidoEscaneo = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
 
   // Función para mostrar toasts
   function mostrarToast(mensaje, tipo) {
@@ -66,6 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     Quagga.onDetected((result) => {
       const codigo = result.codeResult.code;
+      const ahora = Date.now();
+
+      // Evitar múltiples escaneos con debounce
+      if (ultimoCodigoEscaneado === codigo && (ahora - ultimoEscaneoTiempo) < DEBOUNCE_TIME) {
+        return;
+      }
+
+      ultimoCodigoEscaneado = codigo;
+      ultimoEscaneoTiempo = ahora;
+
+      // Reproducir sonido de escaneo
+      sonidoEscaneo.play().catch(err => console.error('Error al reproducir sonido:', err));
+
       document.querySelector('#codigo').value = codigo;
       buscarProductoPorCodigo(codigo);
     });
@@ -78,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activarEscaneoBtn.style.display = 'inline-block';
     detenerEscaneoBtn.style.display = 'none';
     camaraCarga.style.display = 'none';
+    ultimoCodigoEscaneado = null; // Resetear para permitir nuevos escaneos
   }
 
   // Buscar producto por código
@@ -161,7 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#marca').value = producto.marca || '';
     document.querySelector('#categoria').value = producto.categoria || '';
     manejarCambioCategoria();
-    document.querySelector(`#subcategoria-${producto.categoria ? producto.categoria.toLowerCase() : ''}`).value = producto.subcategoria || '';
+    const subcategoriaSelect = document.querySelector(`#subcategoria-${producto.categoria ? producto.categoria.toLowerCase() : ''}`);
+    if (subcategoriaSelect) {
+      subcategoriaSelect.value = producto.subcategoria || '';
+    }
     document.querySelector('#precio-lista').value = producto.precioLista || '';
     document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
     document.querySelector('#precio-final').value = producto.precioFinal || '';
@@ -209,7 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Manejar cambio de categoría
   function manejarCambioCategoria() {
     const categoria = document.querySelector('#categoria').value.toLowerCase();
-    document.querySelectorAll('.form-campo[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.form-campo[id^="subcategoria-"]').forEach(el => {
+      el.style.display = 'none';
+      const select = el.querySelector('select');
+      if (select) select.value = ''; // Resetear subcategoría
+    });
     const subcategoriaCampo = document.querySelector(`#subcategoria-${categoria}`);
     if (subcategoriaCampo) {
       subcategoriaCampo.style.display = 'block';
@@ -378,32 +405,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Confirmar todos los productos
   confirmarTodosBtn.addEventListener('click', async () => {
-    const productosAEnviar = [];
-    for (const producto of productosEnProceso) {
-      const formData = new FormData();
-      for (const key in producto) {
-        if (key !== 'imagenFile' && key !== 'estado' && key !== 'cantidadAAnadir' && key !== 'nuevoTotal') {
-          formData.append(key, producto[key]);
-        }
-      }
-      if (producto.imagenFile) {
-        formData.append('imagen', producto.imagenFile);
-      }
-      formData.append('usuarioId', localStorage.getItem('usuarioId') || 'default');
-      if (producto.cantidadUnidades !== undefined) {
-        formData.set('cantidadUnidades', producto.nuevoTotal);
-      }
-      productosAEnviar.push(formData);
-    }
-
     try {
-      for (const formData of productosAEnviar) {
+      for (const producto of productosEnProceso) {
+        const formData = new FormData();
+        formData.append('nombre', producto.nombre);
+        formData.append('marca', producto.marca);
+        formData.append('precioLista', producto.precioLista);
+        formData.append('porcentajeGanancia', producto.porcentajeGanancia);
+        formData.append('precioFinal', producto.precioFinal);
+        formData.append('categoria', producto.categoria);
+        formData.append('subcategoria', producto.subcategoria || '');
+        formData.append('unidad', producto.unidad);
+        formData.append('fechaVencimiento', producto.fechaVencimiento);
+        formData.append('usuarioId', localStorage.getItem('usuarioId') || 'default');
+        formData.append('codigo', producto.codigo || '');
+        formData.append('packs', producto.packs || 0);
+        formData.append('unidadesPorPack', producto.unidadesPorPack || 0);
+        formData.append('docenas', producto.docenas || 0);
+        formData.append('unidadesSueltas', producto.unidadesSueltas || 0);
+        if (producto.cantidadUnidades !== undefined) {
+          formData.append('cantidadUnidades', producto.nuevoTotal);
+        } else {
+          formData.append('cantidadUnidades', producto.cantidadUnidades || 0);
+        }
+        if (producto.imagenFile) {
+          formData.append('imagen', producto.imagenFile);
+        }
+
         const respuesta = await fetch(`${BASE_URL}/api/productos`, {
           method: 'POST',
           body: formData
         });
-        const resultado = await respuesta.json();
+
         if (!respuesta.ok) {
+          const resultado = await respuesta.json();
           throw new Error(resultado.error || 'Error al guardar el producto');
         }
       }
@@ -413,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
       limpiarFormulario();
     } catch (error) {
       console.error('Error al confirmar productos:', error);
-      mostrarToast('Error al guardar los productos', 'error');
+      mostrarToast('Error al guardar los productos: ' + error.message, 'error');
     }
   });
 
