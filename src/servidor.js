@@ -12,10 +12,18 @@ app.use(express.static('public'));
 // Configurar strictQuery para suprimir la advertencia de Mongoose
 mongoose.set('strictQuery', true);
 
-// Conectar a MongoDB (eliminamos useNewUrlParser y useUnifiedTopology, ya que son obsoletos en Mongoose 8)
+// Depuración: Mostrar el valor de MONGODB_URI
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+
+// Conectar a MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
+
+// Redirigir la ruta raíz a inicio-sesion.html
+app.get('/', (req, res) => {
+  res.redirect('/public/inicio-sesion.html');
+});
 
 // Esquema para el usuario
 const usuarioSchema = new mongoose.Schema({

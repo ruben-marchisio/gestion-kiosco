@@ -1,6 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('cargar-producto-logic.js cargado');
 
+  // Verificar si el usuario ha iniciado sesión
+  const usuarioId = localStorage.getItem('usuarioId');
+  if (!usuarioId) {
+    window.location.href = '/public/inicio-sesion.html';
+    return;
+  }
+
   // Elementos del DOM
   const formCargarProducto = document.querySelector('#form-cargar-producto');
   const completarInmediatamente = document.querySelector('#completar-inmediatamente');
