@@ -10,10 +10,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Configurar la carpeta public para archivos estáticos
-const publicPath = path.join(__dirname, '../public');
-console.log('Ruta del directorio public:', publicPath);
+// Ajustar la ruta para servir archivos estáticos desde public/
+const publicPath = path.join(__dirname, '..', 'public');
+console.log('Ruta del directorio public:', publicPath); // Depuración
 app.use(express.static(publicPath));
+
+// Manejar rutas bajo /public/ explícitamente
+app.get('/public/*', (req, res) => {
+  const filePath = path.join(publicPath, req.path.replace('/public', ''));
+  console.log('Intentando servir archivo:', filePath); // Depuración
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error al servir archivo:', err);
+      res.status(404).send('Archivo no encontrado');
+    }
+  });
+});
 
 // Configurar strictQuery para suprimir la advertencia de Mongoose
 mongoose.set('strictQuery', true);
@@ -26,13 +38,18 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-// Servir presentacion.html en la ruta raíz
+// Redirigir la ruta raíz a presentacion.html
 app.get('/', (req, res) => {
-  console.log('Sirviendo presentacion.html');
+  console.log('Redirigiendo a /public/presentacion.html'); // Depuración
+  res.redirect('/public/presentacion.html');
+});
+
+// Ruta de prueba para verificar archivos estáticos
+app.get('/test-static', (req, res) => {
   res.sendFile(path.join(publicPath, 'presentacion.html'), (err) => {
     if (err) {
       console.error('Error al servir presentacion.html:', err);
-      res.status(500).send('Error al cargar la página');
+      res.status(500).send('Error al cargar el archivo estático');
     }
   });
 });
@@ -56,7 +73,7 @@ app.post('/api/registrar-usuario', async (req, res) => {
     }
 
     const nuevoUsuario = new Usuario({
-      nombre: nombreKiosco,
+      nombre: nombreKiosco, // Ajustado según el esquema
       nombreKiosco,
       email,
       contrasena
@@ -140,7 +157,7 @@ app.post('/api/productos', async (req, res) => {
       unidadesSueltas: parseInt(unidadesSueltas) || 0,
       marca,
       precioLista: parseFloat(precioLista),
-      porcentajeGanancia: parseFloat(porcentajeGanancia),
+      porcentajeGanancia: parseFloat(precioLista),
       precioFinal: parseFloat(precioFinal),
       categoria,
       subcategoria: subcategoria || '',
@@ -181,6 +198,7 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
   }
 });
 
+// Nueva ruta para obtener todos los productos de un usuario
 app.get('/api/productos', async (req, res) => {
   console.log('Solicitud recibida en /api/productos');
   try {
@@ -198,6 +216,7 @@ app.get('/api/productos', async (req, res) => {
   }
 });
 
+// Nueva ruta para obtener un producto por ID
 app.get('/api/productos/:id', async (req, res) => {
   console.log('Solicitud recibida en /api/productos/:id');
   try {
@@ -271,7 +290,7 @@ app.get('/api/clientes', async (req, res) => {
 });
 
 // Iniciar el servidor
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
