@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Ajustar la ruta para servir archivos estáticos desde public/
-const publicPath = path.join(__dirname, '..', 'public');
+const publicPath = path.join(__dirname, 'public');
 console.log('Ruta del directorio public:', publicPath); // Depuración
 app.use(express.static(publicPath));
 
