@@ -10,9 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Ajustar la ruta para servir archivos estáticos desde public/
-const publicPath = '/opt/render/project/public'; // Ruta absoluta en Render
-console.log('Ruta del directorio public:', publicPath); // Depuración
+// Configurar la carpeta public para archivos estáticos
+const publicPath = path.join(__dirname, '../public');
+console.log('Ruta del directorio public:', publicPath);
 app.use(express.static(publicPath));
 
 // Configurar strictQuery para suprimir la advertencia de Mongoose
@@ -26,18 +26,13 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-// Redirigir la ruta raíz a presentacion.html
+// Servir presentacion.html en la ruta raíz
 app.get('/', (req, res) => {
-  console.log('Redirigiendo a /public/presentacion.html'); // Depuración
-  res.redirect('/public/presentacion.html');
-});
-
-// Ruta de prueba para verificar archivos estáticos
-app.get('/test-static', (req, res) => {
+  console.log('Sirviendo presentacion.html');
   res.sendFile(path.join(publicPath, 'presentacion.html'), (err) => {
     if (err) {
       console.error('Error al servir presentacion.html:', err);
-      res.status(500).send('Error al cargar el archivo estático');
+      res.status(500).send('Error al cargar la página');
     }
   });
 });
@@ -61,7 +56,7 @@ app.post('/api/registrar-usuario', async (req, res) => {
     }
 
     const nuevoUsuario = new Usuario({
-      nombre: nombreKiosco, // Ajustado según el esquema
+      nombre: nombreKiosco,
       nombreKiosco,
       email,
       contrasena
@@ -186,7 +181,6 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
   }
 });
 
-// Nueva ruta para obtener todos los productos de un usuario
 app.get('/api/productos', async (req, res) => {
   console.log('Solicitud recibida en /api/productos');
   try {
@@ -204,7 +198,6 @@ app.get('/api/productos', async (req, res) => {
   }
 });
 
-// Nueva ruta para obtener un producto por ID
 app.get('/api/productos/:id', async (req, res) => {
   console.log('Solicitud recibida en /api/productos/:id');
   try {
@@ -278,7 +271,7 @@ app.get('/api/clientes', async (req, res) => {
 });
 
 // Iniciar el servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
