@@ -2,15 +2,14 @@
   "name": "gestion-kiosco",
   "version": "1.0.0",
   "description": "Aplicación para la gestión de un kiosco",
-  "main": "src/servidor.js",
+  "main": "servidor.js",
   "scripts": {
-    "start": "node src/servidor.js"
+    "start": "node servidor.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.1",
-    "mongodb": "^6.16.0",
-    "mongoose": "^8.0.0"
+    "mongoose": "^6.2.4"
   }
 }

@@ -157,7 +157,7 @@ app.post('/api/productos', async (req, res) => {
       unidadesSueltas: parseInt(unidadesSueltas) || 0,
       marca,
       precioLista: parseFloat(precioLista),
-      porcentajeGanancia: parseFloat(precioLista),
+      porcentajeGanancia: parseFloat(porcentajeGanancia),
       precioFinal: parseFloat(precioFinal),
       categoria,
       subcategoria: subcategoria || '',
