@@ -11,7 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 // Ajustar la ruta para servir archivos estáticos desde public/
-app.use(express.static(path.join(__dirname, '..', 'public')));
+const publicPath = path.join(__dirname, '..', 'public');
+console.log('Ruta del directorio public:', publicPath); // Depuración
+app.use(express.static(publicPath));
 
 // Configurar strictQuery para suprimir la advertencia de Mongoose
 mongoose.set('strictQuery', true);
@@ -26,7 +28,18 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Redirigir la ruta raíz a presentacion.html
 app.get('/', (req, res) => {
+  console.log('Redirigiendo a /public/presentacion.html'); // Depuración
   res.redirect('/public/presentacion.html');
+});
+
+// Ruta de prueba para verificar archivos estáticos
+app.get('/test-static', (req, res) => {
+  res.sendFile(path.join(publicPath, 'presentacion.html'), (err) => {
+    if (err) {
+      console.error('Error al servir presentacion.html:', err);
+      res.status(500).send('Error al cargar el archivo estático');
+    }
+  });
 });
 
 // Rutas para usuarios
@@ -225,9 +238,9 @@ app.post('/api/clientes', async (req, res) => {
     }
 
     const clienteExistente = await Cliente.findOne({ dni });
-    if (clienteExistente) {
-      console.log('El DNI ya está registrado:', dni);
-      return res.status(400).json({ error: 'El DNI ya está registrado.' });
+    if (usuarioId && clienteExistente && clienteExistente.usuarioId.toString() === usuarioId.toString()) {
+      console.log('El DNI ya está registrado para este usuario:', dni);
+      return res.status(400).json({ error: 'El DNI ya está registrado para este usuario.' });
     }
 
     const nuevoCliente = new Cliente({
