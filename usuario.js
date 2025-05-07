@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Esquema para productos
+// Esquema para productos (stock local de cada usuario)
 const productoSchema = new Schema({
   nombre: { type: String, required: true },
   cantidadUnidades: { type: Number, required: true }, // Total de unidades (calculado)
@@ -20,6 +20,15 @@ const productoSchema = new Schema({
   imagen: { type: String, required: false }, // Hacer opcional
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
   codigo: { type: String, default: '' } // Código del producto (vacío si no tiene)
+});
+
+// Esquema para productos comunes (base de datos común)
+const productoComunSchema = new Schema({
+  codigo: { type: String, required: true, unique: true }, // Código de barras (clave única)
+  nombre: { type: String, required: true },
+  marca: { type: String, required: true },
+  categoria: { type: String, required: true },
+  subcategoria: { type: String, default: '' }
 });
 
 // Esquema para usuarios
@@ -43,5 +52,6 @@ const clienteSchema = new Schema({
 module.exports = {
   Usuario: mongoose.model('Usuario', usuarioSchema),
   Producto: mongoose.model('Producto', productoSchema),
-  Cliente: mongoose.model('Cliente', clienteSchema)
+  Cliente: mongoose.model('Cliente', clienteSchema),
+  ProductoComun: mongoose.model('ProductoComun', productoComunSchema)
 };

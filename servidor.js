@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const { Usuario, Producto, Cliente } = require('./usuario');
+const { Usuario, Producto, Cliente, ProductoComun } = require('./usuario');
 
 dotenv.config();
 const app = express();
@@ -177,6 +177,22 @@ app.post('/api/productos', async (req, res) => {
 
     await nuevoProducto.save();
 
+    // Si el producto tiene código de barras, guardarlo en la base de datos común (si no existe)
+    if (codigo && codigo.trim() !== '') {
+      const existeEnComunes = await ProductoComun.findOne({ codigo });
+      if (!existeEnComunes) {
+        const nuevoProductoComun = new ProductoComun({
+          codigo,
+          nombre,
+          marca,
+          categoria,
+          subcategoria: subcategoria || ''
+        });
+        await nuevoProductoComun.save();
+        console.log('Producto guardado en la base de datos común:', codigo);
+      }
+    }
+
     console.log('Producto cargado con éxito:', nombre);
     res.status(201).json({ mensaje: 'Producto cargado con éxito.' });
   } catch (error) {
@@ -189,19 +205,40 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
   console.log('Solicitud recibida en /api/productos/codigo/:codigo');
   try {
     const { codigo } = req.params;
-    console.log('Buscando producto con código:', codigo);
+    const usuarioId = req.query.usuarioId; // Obtener usuarioId de los parámetros de consulta
+    console.log('Buscando producto con código:', codigo, 'para usuario:', usuarioId);
 
-    const producto = await Producto.findOne({ codigo });
+    const producto = await Producto.findOne({ codigo, usuarioId });
     if (!producto) {
-      console.log('Producto no encontrado para el código:', codigo);
-      return res.status(404).json({ error: 'Producto no encontrado.' });
+      console.log('Producto no encontrado en el stock del usuario para el código:', codigo);
+      return res.json({ producto: null });
     }
 
-    console.log('Producto encontrado:', producto);
+    console.log('Producto encontrado en el stock del usuario:', producto);
     res.status(200).json({ producto });
   } catch (error) {
     console.error('Error al buscar el producto:', error);
     res.status(500).json({ error: 'Error al buscar el producto: ' + error.message });
+  }
+});
+
+app.get('/api/productos-comunes/codigo/:codigo', async (req, res) => {
+  console.log('Solicitud recibida en /api/productos-comunes/codigo/:codigo');
+  try {
+    const { codigo } = req.params;
+    console.log('Buscando producto en la base de datos común con código:', codigo);
+
+    const producto = await ProductoComun.findOne({ codigo });
+    if (!producto) {
+      console.log('Producto no encontrado en la base de datos común para el código:', codigo);
+      return res.json({ producto: null });
+    }
+
+    console.log('Producto encontrado en la base de datos común:', producto);
+    res.status(200).json({ producto });
+  } catch (error) {
+    console.error('Error al buscar en la base de datos común:', error);
+    res.status(500).json({ error: 'Error al buscar en la base de datos común: ' + error.message });
   }
 });
 

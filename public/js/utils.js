@@ -31,7 +31,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
   // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
-  console.log('URL base:', BASE_URL); // Depuración
 
   // Verificar si el navegador soporta getUserMedia y si estamos en un entorno seguro
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -123,19 +122,53 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     inputCodigo.value = code;
     mostrarToast('Código escaneado: ' + code, 'success');
 
-    // Completar datos automáticamente
-    fetch(`${BASE_URL}/api/productos/codigo/${code}`)
+    // Primero buscar en el stock local del usuario
+    const usuarioId = localStorage.getItem('usuarioId');
+    fetch(`${BASE_URL}/api/productos/codigo/${code}?usuarioId=${usuarioId}`)
       .then(res => res.json())
       .then(data => {
         if (data.producto) {
+          console.log('Producto encontrado en el stock local:', data.producto); // Depuración
           completarCallback(data.producto);
         } else {
-          mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
+          // Si no se encuentra en el stock local, buscar en la base de datos común
+          fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`)
+            .then(res => res.json())
+            .then(dataComun => {
+              if (dataComun.producto) {
+                console.log('Producto encontrado en la base de datos común:', dataComun.producto); // Depuración
+                completarCallback(dataComun.producto);
+                mostrarToast('Producto encontrado en la base de datos común. Por favor, completa los datos adicionales.', 'info');
+              } else {
+                mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
+              }
+            })
+            .catch(err => {
+              console.error('Error al buscar en la base de datos común:', err);
+              mostrarToast('Error al buscar en la base de datos común: ' + err.message, 'error');
+              mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
+            });
         }
       })
       .catch(err => {
-        console.error('Error al buscar el producto:', err);
-        mostrarToast('Error al buscar el producto: ' + err.message, 'error');
+        console.error('Error al buscar en el stock local:', err);
+        mostrarToast('Error al buscar en el stock local: ' + err.message, 'error');
+        // Si falla la solicitud al stock local, intentar con la base de datos común
+        fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`)
+          .then(res => res.json())
+          .then(dataComun => {
+            if (dataComun.producto) {
+              console.log('Producto encontrado en la base de datos común (respaldo):', dataComun.producto); // Depuración
+              completarCallback(dataComun.producto);
+              mostrarToast('Producto encontrado en la base de datos común (respaldo). Por favor, completa los datos adicionales.', 'info');
+            } else {
+              mostrarToast('Producto no encontrado y stock local no disponible. Por favor, completa los datos manualmente.', 'error');
+            }
+          })
+          .catch(err => {
+            console.error('Error al buscar en la base de datos común (respaldo):', err);
+            mostrarToast('Producto no encontrado y servidor no disponible. Por favor, completa los datos manualmente.', 'error');
+          });
       });
 
     // Ejecutar callback adicional si se proporciona
