@@ -38,11 +38,16 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-// Redirigir la ruta raíz a presentacion.html
+// Servir presentacion.html directamente en la ruta raíz
 app.get('/', (req, res) => {
-  console.log('Solicitud recibida para la ruta raíz: /'); // Depuración adicional
-  console.log('Redirigiendo a /public/presentacion.html');
-  res.redirect('/public/presentacion.html');
+  console.log('Solicitud recibida para la ruta raíz: /');
+  console.log('Sirviendo /public/presentacion.html directamente');
+  res.sendFile(path.join(publicPath, 'presentacion.html'), (err) => {
+    if (err) {
+      console.error('Error al servir presentacion.html:', err);
+      res.status(500).send('Error al cargar la página de presentación');
+    }
+  });
 });
 
 // Ruta de prueba para verificar archivos estáticos
@@ -265,7 +270,7 @@ app.post('/api/clientes', async (req, res) => {
       usuarioId: new mongoose.Types.ObjectId(usuarioId)
     });
 
-    await nuevoCliente.save();
+    await nuevoUsuario.save();
     console.log('Cliente guardado con éxito:', nombre);
     res.status(201).json({ mensaje: 'Cliente guardado con éxito.' });
   } catch (error) {
