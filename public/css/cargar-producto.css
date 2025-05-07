@@ -244,22 +244,32 @@ main {
 }
 
 .camara {
-  width: 300px;
-  height: 200px;
+  width: 100%;
+  max-width: 500px; /* Aumentado para un rectángulo más ancho */
+  height: 120px; /* Reducido para un rectángulo más pronunciado */
   margin: 10px auto;
   position: relative;
   overflow: hidden;
   border: 2px solid #2c3e50;
   border-radius: 8px;
+  background-color: #000;
 }
 
+#camara-carga video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Mantengo el ajuste para evitar distorsión */
+  transform: scale(0.7); /* Reduzco el zoom para que se vea más "alejado" */
+}
+
+/* Rectángulo guía para el código de barras */
 .guia-codigo {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;
-  height: 50px;
+  width: 90%; /* Más ancho para un rectángulo guía */
+  height: 30px; /* Más pequeño para un rectángulo guía */
   border: 2px dashed #ff0000;
   pointer-events: none;
 }
@@ -473,19 +483,22 @@ footer a i {
     font-size: 12px;
   }
 
-  .boton-accion {
-    padding: 8px 15px;
-    font-size: 12px;
-  }
-
   .boton-escaneo {
     padding: 8px 15px;
     font-size: 12px;
   }
 
   .camara {
-    width: 240px;
-    height: 180px;
+    max-width: 90%; /* Más ancho para móviles */
+    height: 100px; /* Más pequeño en altura para un rectángulo más pronunciado */
+  }
+
+  #camara-carga video {
+    transform: scale(0.6); /* Reduzco aún más el zoom en móviles */
+  }
+
+  .guia-codigo {
+    height: 25px; /* Ajustado para móviles */
   }
 
   #tabla-productos-proceso th,
@@ -509,7 +522,11 @@ footer a i {
   }
 
   .boton-accion {
-    font-size: 14px;
     padding: 12px 20px;
+  }
+
+  .camara {
+    max-width: 600px;
+    height: 120px;
   }
 }

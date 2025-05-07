@@ -1,4 +1,4 @@
-/* Estilos para index.html */
+/* Estilos generales */
 body {
   font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
@@ -42,14 +42,12 @@ h1 {
 }
 
 .nav-principal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
-.nav-principal a, .nav-principal button {
+.nav-principal button {
   display: flex;
   align-items: center;
   color: white;
@@ -63,16 +61,12 @@ h1 {
   cursor: pointer;
 }
 
-.nav-principal a:hover, .nav-principal button:hover {
+.nav-principal button:hover {
   background-color: #3498db;
   transform: scale(1.05);
 }
 
-.nav-principal a.activo {
-  background-color: #3498db;
-}
-
-.nav-principal a i, .nav-principal button i {
+.nav-principal button i {
   margin-right: 4px;
   font-size: 15px;
 }
@@ -125,17 +119,17 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 20px;
+  padding: 18px 20px; /* Aumentado el padding vertical para alargar */
   background-color: #3498db;
   color: white;
   border: none;
   border-radius: 20px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 15px; /* Texto un poco más grande */
   font-weight: 500;
   transition: background-color 0.3s ease, transform 0.2s ease;
   width: 100%;
-  max-width: 320px; /* Más ancho para ocupar más espacio */
+  max-width: 320px; /* Mantengo el ancho */
 }
 
 .boton-accion:hover {
@@ -146,6 +140,7 @@ main {
 
 .boton-accion i {
   margin-right: 8px;
+  font-size: 18px; /* Ícono un poco más grande */
 }
 
 /* Pie de Página */
@@ -201,13 +196,7 @@ footer a i {
     font-size: 16px;
   }
 
-  .nav-principal {
-    gap: 4px;
-    margin-top: 6px;
-    flex-wrap: wrap; /* Para evitar desbordamiento en móviles pequeños */
-  }
-
-  .nav-principal a, .nav-principal button {
+  .nav-principal button {
     font-size: 11px;
     padding: 5px 8px;
   }
@@ -236,9 +225,9 @@ footer a i {
   }
 
   .boton-accion {
-    padding: 12px 20px;
-    font-size: 13px;
-    max-width: 85%; /* Reducido para mejor estética */
+    padding: 20px 25px; /* Aumentado aún más en móviles para alargar */
+    font-size: 14px;
+    max-width: 90%; /* Mantengo el ancho */
   }
 
   footer {
@@ -252,8 +241,8 @@ footer a i {
   }
 
   .boton-accion {
-    font-size: 13px;
-    padding: 12px 20px;
+    padding: 18px 20px;
+    font-size: 14px;
     max-width: 340px;
   }
 
@@ -261,7 +250,7 @@ footer a i {
     font-size: 18px;
   }
 
-  .nav-principal a, .nav-principal button {
+  .nav-principal button {
     font-size: 12px;
   }
 }
@@ -272,8 +261,8 @@ footer a i {
   }
 
   .boton-accion {
+    padding: 18px 20px;
     font-size: 14px;
-    padding: 12px 20px;
     max-width: 360px;
   }
 }
