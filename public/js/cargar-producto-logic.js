@@ -27,8 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnConfirmarTodos = document.querySelector('#confirmar-todos');
   const btnCancelarTodo = document.querySelector('#cancelar-todo');
   const tablaProductosProceso = document.querySelector('#lista-productos-body');
-  const completarInmediatamente = document.querySelector('#completar-inmediatamente');
-  const btnEscanear = document.querySelector('#escanear'); // Cambiado de 'activar-escaneo' a 'escanear'
+  const btnEscanear = document.querySelector('#escanear');
   const btnDetenerEscaneo = document.querySelector('#detener-escaneo');
   const camaraCarga = document.querySelector('#camara-carga');
   const inputCodigo = document.querySelector('#codigo');
@@ -312,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnEscanear,
       btnDetenerEscaneo,
       inputCodigo,
-      completarInmediatamente.checked ? completarCallback : null,
+      completarCallback, // Siempre completar datos automáticamente
       null // No necesitamos un callback adicional por ahora
     );
   });

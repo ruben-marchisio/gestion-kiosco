@@ -21,7 +21,7 @@ function mostrarToast(mensaje, tipo = 'info') {
 }
 
 // Función para iniciar el escaneo continuo de códigos de barras con control manual
-function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, inputCodigo, completarInmediatamenteCallback, onCodeDetected) {
+function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, inputCodigo, completarCallback, onCodeDetected) {
   let escaneoActivo = false;
   let estaEscaneando = false; // Estado para controlar si el botón está presionado
   let ultimoCodigoEscaneado = null;
@@ -123,22 +123,20 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     inputCodigo.value = code;
     mostrarToast('Código escaneado: ' + code, 'success');
 
-    // Ejecutar callback para completar datos si está activado
-    if (completarInmediatamenteCallback) {
-      fetch(`${BASE_URL}/api/productos/codigo/${code}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.producto) {
-            completarInmediatamenteCallback(data.producto);
-          } else {
-            mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
-          }
-        })
-        .catch(err => {
-          console.error('Error al buscar el producto:', err);
-          mostrarToast('Error al buscar el producto: ' + err.message, 'error');
-        });
-    }
+    // Completar datos automáticamente
+    fetch(`${BASE_URL}/api/productos/codigo/${code}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.producto) {
+          completarCallback(data.producto);
+        } else {
+          mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
+        }
+      })
+      .catch(err => {
+        console.error('Error al buscar el producto:', err);
+        mostrarToast('Error al buscar el producto: ' + err.message, 'error');
+      });
 
     // Ejecutar callback adicional si se proporciona
     if (onCodeDetected) {
