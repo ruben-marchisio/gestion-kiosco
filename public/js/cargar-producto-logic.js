@@ -45,10 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#cantidad-docenas').style.display = 'none';
   document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
 
-  // Mostrar u ocultar subcategorías según la categoría seleccionada
-  inputCategoria.addEventListener('change', () => {
-    const categoria = inputCategoria.value;
-    console.log('Categoría seleccionada:', categoria); // Depuración
+  // Función para mostrar la subcategoría según la categoría seleccionada
+  function mostrarSubcategoria(categoria) {
     document.querySelectorAll('[id^="subcategoria-"]').forEach(el => {
       console.log('Ocultando elemento:', el.id); // Depuración
       el.style.display = 'none';
@@ -63,6 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`No se encontró subcategoría para la categoría: ${categoria}`); // Depuración
       }
     }
+  }
+
+  // Mostrar u ocultar subcategorías según la categoría seleccionada
+  inputCategoria.addEventListener('change', () => {
+    const categoria = inputCategoria.value;
+    console.log('Categoría seleccionada:', categoria); // Depuración
+    mostrarSubcategoria(categoria);
   });
 
   // Mostrar u ocultar campos de cantidad según la unidad seleccionada
@@ -138,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Verificar si el producto ya existe
-    fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}`)
+    fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
       .then(res => res.json())
       .then(result => {
         if (result.producto) {
@@ -307,21 +312,27 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#nombre-producto').value = producto.nombre;
       document.querySelector('#marca').value = producto.marca;
       document.querySelector('#categoria').value = producto.categoria;
-      document.querySelector(`#select-subcategoria-${producto.categoria}`).value = producto.subcategoria || '';
-      document.querySelector('#precio-lista').value = producto.precioLista;
-      document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia;
-      document.querySelector('#precio-final').value = producto.precioFinal;
-      document.querySelector('#unidad').value = producto.unidad;
-      document.querySelector('#packs').value = producto.packs;
-      document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack;
-      document.querySelector('#docenas').value = producto.docenas;
-      document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas;
-      document.querySelector('#cantidad-total').value = producto.cantidadUnidades;
-      document.querySelector('#fecha-vencimiento').value = new Date(producto.fechaVencimiento).toISOString().split('T')[0];
-      document.querySelector('#icono-producto').value = producto.icono;
-      document.querySelector('#cantidad-actual').value = producto.cantidadUnidades;
+      // Mostrar el campo de subcategoría correspondiente
+      mostrarSubcategoria(producto.categoria);
+      // Establecer el valor de la subcategoría
+      const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
+      if (subcategoriaSelect) {
+        subcategoriaSelect.value = producto.subcategoria || '';
+      }
+      document.querySelector('#precio-lista').value = producto.precioLista || '';
+      document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
+      document.querySelector('#precio-final').value = producto.precioFinal || '';
+      document.querySelector('#unidad').value = producto.unidad || 'unidad';
+      document.querySelector('#packs').value = producto.packs || 0;
+      document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
+      document.querySelector('#docenas').value = producto.docenas || 0;
+      document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
+      document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
+      document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
+      document.querySelector('#icono-producto').value = producto.icono || 'default';
+      document.querySelector('#cantidad-actual').value = producto.cantidadUnidades || 0;
       document.querySelector('#cantidad-a-anadir').value = 0;
-      document.querySelector('#nuevo-total').value = producto.cantidadUnidades;
+      document.querySelector('#nuevo-total').value = producto.cantidadUnidades || 0;
       document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
     };
 

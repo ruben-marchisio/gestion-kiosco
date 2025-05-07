@@ -14,10 +14,10 @@ function mostrarToast(mensaje, tipo = 'info') {
   toast.textContent = mensaje;
   toastContainer.appendChild(toast);
 
-  // Eliminar el toast después de la animación
+  // Eliminar el toast después de 5 segundos (ajustado para coincidir con el CSS)
   setTimeout(() => {
     toast.remove();
-  }, 3000);
+  }, 5000);
 }
 
 // Función para iniciar el escaneo continuo de códigos de barras con control manual
@@ -130,6 +130,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         if (data.producto) {
           console.log('Producto encontrado en el stock local:', data.producto); // Depuración
           completarCallback(data.producto);
+          mostrarToast('Producto encontrado en tu stock local. Verifica y completa los datos.', 'success');
         } else {
           // Si no se encuentra en el stock local, buscar en la base de datos común
           fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`)
@@ -140,7 +141,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
                 completarCallback(dataComun.producto);
                 mostrarToast('Producto encontrado en la base de datos común. Por favor, completa los datos adicionales.', 'info');
               } else {
-                mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
+                mostrarToast('Producto no encontrado en ninguna base de datos. Por favor, completa los datos manualmente.', 'info');
               }
             })
             .catch(err => {

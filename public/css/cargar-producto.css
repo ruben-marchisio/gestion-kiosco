@@ -128,13 +128,30 @@ main {
   box-sizing: border-box;
   font-size: 14px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  appearance: auto; /* Asegurar que el select se muestre como desplegable */
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  cursor: pointer; /* Indicar que es interactivo */
 }
 
-.form-campo input:focus,
 .form-campo select:focus {
   border-color: #3498db;
   box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
   outline: none;
+}
+
+/* Asegurar que los select de subcategorías sean interactivos */
+[id^="subcategoria-"] select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  cursor: pointer;
 }
 
 .form-acciones {
@@ -182,25 +199,6 @@ main {
 }
 
 /* Controles de Escaneo */
-.controles-escaneo {
-  text-align: center;
-  padding: 10px;
-  position: relative;
-}
-
-.toggle-escaneo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  font-size: 14px;
-  color: #2c3e50;
-}
-
-.toggle-escaneo input {
-  margin-right: 8px;
-}
-
 .botones-escaneo {
   display: flex;
   gap: 10px;
@@ -363,37 +361,48 @@ main {
 /* Toasts */
 .toast-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 2000;
+  top: 30px; /* Ajustado para mayor visibilidad */
+  right: 30px;
+  z-index: 3000; /* Aumentado para evitar superposición */
+  width: 350px; /* Ancho fijo para mejor legibilidad */
 }
 
 .toast {
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 15px 25px; /* Más espacio para el texto */
+  border-radius: 10px;
   color: white;
-  font-size: 14px;
-  margin-bottom: 10px;
+  font-size: 16px; /* Texto más grande */
+  font-weight: 500; /* Peso de fuente para mayor legibilidad */
+  margin-bottom: 15px;
   opacity: 0;
-  animation: fadeInToast 0.5s ease forwards, fadeOutToast 0.5s ease 2.5s forwards;
+  animation: fadeInToast 0.5s ease forwards, fadeOutToast 0.5s ease 4.5s forwards; /* Aumentado a 5 segundos */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra para destacar */
+  border-left: 5px solid; /* Borde izquierdo para indicar tipo */
 }
 
 .toast.exito {
-  background-color: #2ecc71;
+  background-color: #28a745; /* Verde más vibrante */
+  border-left-color: #218838;
 }
 
 .toast.error {
-  background-color: #e74c3c;
+  background-color: #dc3545; /* Rojo más vibrante */
+  border-left-color: #c82333;
+}
+
+.toast.info {
+  background-color: #17a2b8; /* Azul más vibrante */
+  border-left-color: #138496;
 }
 
 @keyframes fadeInToast {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeOutToast {
   from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 0; transform: translateY(-20px); }
 }
 
 /* Pie de Página */
@@ -517,6 +526,19 @@ footer a i {
   #tabla-productos-proceso th:nth-child(3), /* Categoría */
   #tabla-productos-proceso td:nth-child(3) {
     display: none;
+  }
+
+  /* Ajustar toasts en móviles */
+  .toast-container {
+    top: 20px;
+    right: 10px;
+    width: 90%; /* Más ancho para adaptarse a pantallas pequeñas */
+    max-width: 350px;
+  }
+
+  .toast {
+    font-size: 14px; /* Tamaño de fuente ligeramente más pequeño */
+    padding: 10px 15px;
   }
 }
 
