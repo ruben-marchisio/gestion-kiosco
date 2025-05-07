@@ -28,16 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCancelarTodo = document.querySelector('#cancelar-todo');
   const tablaProductosProceso = document.querySelector('#lista-productos-body');
   const completarInmediatamente = document.querySelector('#completar-inmediatamente');
-  const btnActivarEscaneo = document.querySelector('#activar-escaneo');
+  const btnEscanear = document.querySelector('#escanear'); // Cambiado de 'activar-escaneo' a 'escanear'
   const btnDetenerEscaneo = document.querySelector('#detener-escaneo');
   const camaraCarga = document.querySelector('#camara-carga');
+  const inputCodigo = document.querySelector('#codigo');
 
   // Estado para manejar los productos en proceso
   let productosEnProceso = [];
-  let escaneoActivo = false;
-  let ultimoCodigoEscaneado = null;
-  let tiempoUltimoEscaneo = 0;
-  const intervaloMinimoEscaneo = 2000; // 2 segundos entre escaneos
 
   // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
@@ -287,108 +284,36 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Manejar el escaneo continuo de códigos de barras
-  btnActivarEscaneo.addEventListener('click', () => {
-    if (escaneoActivo) return;
+  btnEscanear.addEventListener('click', () => {
+    const completarCallback = (producto) => {
+      document.querySelector('#nombre-producto').value = producto.nombre;
+      document.querySelector('#marca').value = producto.marca;
+      document.querySelector('#categoria').value = producto.categoria;
+      document.querySelector('#subcategoria-' + producto.categoria.toLowerCase()).value = producto.subcategoria || '';
+      document.querySelector('#precio-lista').value = producto.precioLista;
+      document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia;
+      document.querySelector('#precio-final').value = producto.precioFinal;
+      document.querySelector('#unidad').value = producto.unidad;
+      document.querySelector('#packs').value = producto.packs;
+      document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack;
+      document.querySelector('#docenas').value = producto.docenas;
+      document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas;
+      document.querySelector('#cantidad-total').value = producto.cantidadUnidades;
+      document.querySelector('#fecha-vencimiento').value = new Date(producto.fechaVencimiento).toISOString().split('T')[0];
+      document.querySelector('#icono-producto').value = producto.icono;
+      document.querySelector('#cantidad-actual').value = producto.cantidadUnidades;
+      document.querySelector('#cantidad-a-anadir').value = 0;
+      document.querySelector('#nuevo-total').value = producto.cantidadUnidades;
+      document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
+    };
 
-    Quagga.init({
-      inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: document.querySelector('#camara-carga'),
-        constraints: {
-          width: 1280, // Aumentado para mejor resolución
-          height: 720, // Ajustado para proporción rectangular
-          facingMode: "environment"
-        },
-        area: { // Área de escaneo (rectangular)
-          top: "40%",
-          right: "10%",
-          left: "10%",
-          bottom: "40%"
-        }
-      },
-      locator: {
-        patchSize: "medium", // Tamaño del parche para mejorar la detección
-        halfSample: true // Mejora el rendimiento
-      },
-      numOfWorkers: navigator.hardwareConcurrency || 4, // Usa más workers para mejor rendimiento
-      decoder: {
-        readers: ["ean_reader", "upc_reader", "code_128_reader"],
-        multiple: false // Evita lecturas múltiples del mismo código
-      },
-      locate: true // Mejora la localización del código
-    }, (err) => {
-      if (err) {
-        console.error('Error al inicializar Quagga:', err);
-        mostrarToast('Error al inicializar el escáner: ' + err.message, 'error');
-        return;
-      }
-
-      Quagga.start();
-      escaneoActivo = true;
-      camaraCarga.style.display = 'block';
-      btnActivarEscaneo.style.display = 'none';
-      btnDetenerEscaneo.style.display = 'block';
-    });
-
-    Quagga.onDetected((result) => {
-      const code = result.codeResult.code;
-      const ahora = Date.now();
-
-      // Evitar lecturas repetidas del mismo código
-      if (code === ultimoCodigoEscaneado && (ahora - tiempoUltimoEscaneo) < intervaloMinimoEscaneo) {
-        return;
-      }
-
-      ultimoCodigoEscaneado = code;
-      tiempoUltimoEscaneo = ahora;
-
-      document.querySelector('#codigo').value = code;
-      mostrarToast('Código escaneado: ' + code, 'success');
-
-      if (completarInmediatamente.checked) {
-        fetch(`${BASE_URL}/api/productos/codigo/${code}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.producto) {
-              document.querySelector('#nombre-producto').value = data.producto.nombre;
-              document.querySelector('#marca').value = data.producto.marca;
-              document.querySelector('#categoria').value = data.producto.categoria;
-              document.querySelector('#subcategoria-' + data.producto.categoria.toLowerCase()).value = data.producto.subcategoria || '';
-              document.querySelector('#precio-lista').value = data.producto.precioLista;
-              document.querySelector('#porcentaje-ganancia').value = data.producto.porcentajeGanancia;
-              document.querySelector('#precio-final').value = data.producto.precioFinal;
-              document.querySelector('#unidad').value = data.producto.unidad;
-              document.querySelector('#packs').value = data.producto.packs;
-              document.querySelector('#unidadesPorPack').value = data.producto.unidadesPorPack;
-              document.querySelector('#docenas').value = data.producto.docenas;
-              document.querySelector('#unidadesSueltas').value = data.producto.unidadesSueltas;
-              document.querySelector('#cantidad-total').value = data.producto.cantidadUnidades;
-              document.querySelector('#fecha-vencimiento').value = new Date(data.producto.fechaVencimiento).toISOString().split('T')[0];
-              document.querySelector('#icono-producto').value = data.producto.icono;
-              document.querySelector('#cantidad-actual').value = data.producto.cantidadUnidades;
-              document.querySelector('#cantidad-a-anadir').value = 0;
-              document.querySelector('#nuevo-total').value = data.producto.cantidadUnidades;
-              document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
-            } else {
-              mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
-            }
-          })
-          .catch(err => {
-            console.error('Error al buscar el producto:', err);
-            mostrarToast('Error al buscar el producto: ' + err.message, 'error');
-          });
-      }
-    });
-  });
-
-  btnDetenerEscaneo.addEventListener('click', () => {
-    Quagga.stop();
-    escaneoActivo = false;
-    camaraCarga.style.display = 'none';
-    btnActivarEscaneo.style.display = 'block';
-    btnDetenerEscaneo.style.display = 'none';
-    ultimoCodigoEscaneado = null;
-    tiempoUltimoEscaneo = 0;
+    iniciarEscaneoContinuo(
+      camaraCarga,
+      btnEscanear,
+      btnDetenerEscaneo,
+      inputCodigo,
+      completarInmediatamente.checked ? completarCallback : null,
+      null // No necesitamos un callback adicional por ahora
+    );
   });
 });
