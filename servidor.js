@@ -40,12 +40,14 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Redirigir la ruta raíz a presentacion.html
 app.get('/', (req, res) => {
-  console.log('Redirigiendo a /public/presentacion.html'); // Depuración
+  console.log('Solicitud recibida para la ruta raíz: /'); // Depuración adicional
+  console.log('Redirigiendo a /public/presentacion.html');
   res.redirect('/public/presentacion.html');
 });
 
 // Ruta de prueba para verificar archivos estáticos
 app.get('/test-static', (req, res) => {
+  console.log('Solicitud recibida para /test-static'); // Depuración
   res.sendFile(path.join(publicPath, 'presentacion.html'), (err) => {
     if (err) {
       console.error('Error al servir presentacion.html:', err);
