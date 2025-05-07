@@ -7,13 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputUnidad = document.querySelector('#unidad');
   const subcategoriaBebidas = document.querySelector('#subcategoria-bebidas');
   const subcategoriaGolosinas = document.querySelector('#subcategoria-golosinas');
-  const subcategoriaLacteos = document.querySelector('#subcategoria-lácteos');
+  const subcategoriaLacteos = document.querySelector('#subcategoria-lacteos');
   const subcategoriaCigarrillos = document.querySelector('#subcategoria-cigarrillos');
   const subcategoriaFiambre = document.querySelector('#subcategoria-fiambre');
   const subcategoriaCongelados = document.querySelector('#subcategoria-congelados');
-  const subcategoriaPanaderia = document.querySelector('#subcategoria-panadería');
-  const subcategoriaAlmacen = document.querySelector('#subcategoria-almacén');
-  const subcategoriaVerduleria = document.querySelector('#subcategoria-verdulería');
+  const subcategoriaPanaderia = document.querySelector('#subcategoria-panaderia');
+  const subcategoriaAlmacen = document.querySelector('#subcategoria-almacen');
+  const subcategoriaVerduleria = document.querySelector('#subcategoria-verduleria');
   const inputPacks = document.querySelector('#packs');
   const inputUnidadesPorPack = document.querySelector('#unidadesPorPack');
   const inputDocenas = document.querySelector('#docenas');
@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
   inputCategoria.addEventListener('change', () => {
     const categoria = inputCategoria.value;
     document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
-    if (categoria && document.querySelector(`#subcategoria-${categoria.toLowerCase()}`)) {
-      document.querySelector(`#subcategoria-${categoria.toLowerCase()}`).style.display = 'block';
+    if (categoria && document.querySelector(`#subcategoria-${categoria}`)) {
+      document.querySelector(`#subcategoria-${categoria}`).style.display = 'block';
     }
   });
 
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#nombre-producto').value = producto.nombre;
       document.querySelector('#marca').value = producto.marca;
       document.querySelector('#categoria').value = producto.categoria;
-      document.querySelector('#subcategoria-' + producto.categoria.toLowerCase()).value = producto.subcategoria || '';
+      document.querySelector('#subcategoria-' + producto.categoria).value = producto.subcategoria || '';
       document.querySelector('#precio-lista').value = producto.precioLista;
       document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia;
       document.querySelector('#precio-final').value = producto.precioFinal;
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnEscanear,
       btnDetenerEscaneo,
       inputCodigo,
-      completarCallback, // Siempre completar datos automáticamente
+      completarCallback,
       null // No necesitamos un callback adicional por ahora
     );
   });
