@@ -1,5 +1,3 @@
-//esto es para el escaneo de codigos de barras
-// Este archivo contiene funciones para manejar el escaneo de códigos de barras y mostrar toasts
 console.log('utils.js cargado'); // Depuración
 
 // Función para mostrar toasts
@@ -22,13 +20,11 @@ function mostrarToast(mensaje, tipo = 'info') {
   }, 3000);
 }
 
-// Función para iniciar el escaneo continuo de códigos de barras
-function iniciarEscaneoContinuo(contenedorCamara, btnActivar, btnDetener, inputCodigo, completarInmediatamenteCallback, onCodeDetected) {
+// Función para iniciar el escaneo continuo de códigos de barras con control manual
+function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, inputCodigo, completarInmediatamenteCallback, onCodeDetected) {
   let escaneoActivo = false;
+  let estaEscaneando = false; // Estado para controlar si el botón está presionado
   let ultimoCodigoEscaneado = null;
-  let tiempoUltimoEscaneo = 0;
-  const intervaloMinimoEscaneo = 3000; // 3 segundos entre escaneos
-  let deteccionPausada = false; // Estado para pausar la detección temporalmente
 
   // Sonido de escaneo
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3'); // URL del sonido (reemplaza con tu archivo si lo tienes)
@@ -74,34 +70,27 @@ function iniciarEscaneoContinuo(contenedorCamara, btnActivar, btnDetener, inputC
     Quagga.start();
     escaneoActivo = true;
     contenedorCamara.style.display = 'block';
-    btnActivar.style.display = 'none';
+    btnEscanear.style.display = 'block';
     btnDetener.style.display = 'block';
-    deteccionPausada = false; // Resetear estado de pausa
   });
 
   Quagga.onDetected((result) => {
-    if (deteccionPausada) return; // Ignorar detecciones mientras está pausado
+    if (!estaEscaneando) return; // Ignorar detecciones si el botón no está presionado
 
     const code = result.codeResult.code;
-    const ahora = Date.now();
 
     // Evitar lecturas repetidas del mismo código
-    if (code === ultimoCodigoEscaneado && (ahora - tiempoUltimoEscaneo) < intervaloMinimoEscaneo) {
+    if (code === ultimoCodigoEscaneado) {
       return;
     }
 
-    // Pausar detección temporalmente
-    deteccionPausada = true;
-    setTimeout(() => {
-      deteccionPausada = false;
-    }, intervaloMinimoEscaneo);
-
     ultimoCodigoEscaneado = code;
-    tiempoUltimoEscaneo = ahora;
+    estaEscaneando = false; // Pausar la detección hasta que el botón se presione de nuevo
 
     // Reproducir sonido de escaneo
     beepSound.play().catch(err => {
       console.error('Error al reproducir el sonido:', err);
+      mostrarToast('Error al reproducir el sonido: ' + err.message, 'error');
     });
 
     // Actualizar el input del código
@@ -131,15 +120,29 @@ function iniciarEscaneoContinuo(contenedorCamara, btnActivar, btnDetener, inputC
     }
   });
 
+  // Manejar el botón de escanear (mantener presionado)
+  btnEscanear.addEventListener('mousedown', () => {
+    if (!escaneoActivo) return;
+    estaEscaneando = true;
+    ultimoCodigoEscaneado = null; // Resetear para permitir un nuevo escaneo
+  });
+
+  btnEscanear.addEventListener('mouseup', () => {
+    estaEscaneando = false;
+  });
+
+  btnEscanear.addEventListener('mouseleave', () => {
+    estaEscaneando = false; // Si el usuario mueve el mouse fuera del botón mientras lo mantiene presionado
+  });
+
   // Manejar el botón de detener
   btnDetener.addEventListener('click', () => {
     Quagga.stop();
     escaneoActivo = false;
+    estaEscaneando = false;
     contenedorCamara.style.display = 'none';
-    btnActivar.style.display = 'block';
+    btnEscanear.style.display = 'block';
     btnDetener.style.display = 'none';
     ultimoCodigoEscaneado = null;
-    tiempoUltimoEscaneo = 0;
-    deteccionPausada = false; // Resetear estado de pausa
   });
 }
