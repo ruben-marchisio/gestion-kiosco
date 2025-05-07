@@ -38,13 +38,13 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-// Servir presentacion.html directamente en la ruta raíz
+// Servir index.html (antes presentacion.html) directamente en la ruta raíz
 app.get('/', (req, res) => {
   console.log('Solicitud recibida para la ruta raíz: /');
-  console.log('Sirviendo /public/presentacion.html directamente');
-  res.sendFile(path.join(publicPath, 'presentacion.html'), (err) => {
+  console.log('Sirviendo /public/index.html directamente');
+  res.sendFile(path.join(publicPath, 'index.html'), (err) => {
     if (err) {
-      console.error('Error al servir presentacion.html:', err);
+      console.error('Error al servir index.html:', err);
       res.status(500).send('Error al cargar la página de presentación');
     }
   });
@@ -53,9 +53,9 @@ app.get('/', (req, res) => {
 // Ruta de prueba para verificar archivos estáticos
 app.get('/test-static', (req, res) => {
   console.log('Solicitud recibida para /test-static'); // Depuración
-  res.sendFile(path.join(publicPath, 'presentacion.html'), (err) => {
+  res.sendFile(path.join(publicPath, 'index.html'), (err) => {
     if (err) {
-      console.error('Error al servir presentacion.html:', err);
+      console.error('Error al servir index.html:', err);
       res.status(500).send('Error al cargar el archivo estático');
     }
   });
@@ -270,7 +270,7 @@ app.post('/api/clientes', async (req, res) => {
       usuarioId: new mongoose.Types.ObjectId(usuarioId)
     });
 
-    await nuevoUsuario.save();
+    await nuevoCliente.save();
     console.log('Cliente guardado con éxito:', nombre);
     res.status(201).json({ mensaje: 'Cliente guardado con éxito.' });
   } catch (error) {

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Kiosco</title>
+  <link rel="stylesheet" href="/public/css/menu-principal.css">
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <div class="logo">
+      <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+    </div>
+    <h1>Gestión Kiosco - <span id="nombre-kiosco">Cargando...</span></h1>
+    <nav class="nav-principal">
+      <a href="/public/cargar-producto.html" class="activo"><i class="fas fa-box-open"></i> Cargar Producto</a>
+      <a href="/public/vender-producto.html"><i class="fas fa-shopping-cart"></i> Vender Producto</a>
+      <a href="/public/clientes.html"><i class="fas fa-users"></i> Clientes</a>
+      <a href="#"><i class="fas fa-chart-line"></i> Reportes</a>
+      <button class="cerrar-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+    </nav>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main>
+    <section id="inicio">
+      <div class="alert">
+        <i class="fas fa-exclamation-circle"></i> Tienes 3 productos por vencer en 10 días.
+      </div>
+      <div class="acciones-principales">
+        <a href="/public/cargar-producto.html" class="boton-accion"><i class="fas fa-box-open"></i> Cargar Producto</a>
+        <a href="/public/vender-producto.html" class="boton-accion"><i class="fas fa-shopping-cart"></i> Vender Producto</a>
+        <a href="/public/clientes.html" class="boton-accion"><i class="fas fa-users"></i> Clientes</a>
+        <a href="#" class="boton-accion"><i class="fas fa-chart-line"></i> Reportes</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pie de Página -->
+  <footer>
+    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    console.log('menu-principal.html cargado');
+  </script>
+  <script src="/public/js/menu-principal-logic.js"></script>
+</body>
+</html>

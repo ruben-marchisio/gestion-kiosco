@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (respuesta.ok) {
         localStorage.setItem('usuarioId', resultado.usuarioId);
         localStorage.setItem('nombreKiosco', resultado.nombreKiosco);
-        window.location.href = '/public/index.html';
+        window.location.href = '/public/menu-principal.html';
       } else {
         throw new Error(resultado.error || 'Error al iniciar sesión');
       }
