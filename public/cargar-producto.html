@@ -32,6 +32,18 @@
           <div class="form-campo">
             <label for="codigo">Código de Barras</label>
             <input type="text" id="codigo" name="codigo" readonly>
+            <!-- Checkbox para completar datos -->
+            <label class="toggle-escaneo" style="margin-top: 10px; display: flex; align-items: center;">
+              <input type="checkbox" id="completar-inmediatamente">
+              Completar datos inmediatamente
+            </label>
+            <!-- Botones de escaneo -->
+            <div class="botones-escaneo" style="margin-top: 10px;">
+              <button type="button" id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i> Escanear</button>
+              <button type="button" id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i> Detener Escaneo</button>
+            </div>
+            <!-- Área de la cámara -->
+            <div id="camara-carga" class="camara" style="display: none;"></div>
           </div>
           <div class="form-campo">
             <label for="nombre-producto">Nombre del Producto</label>
@@ -225,19 +237,6 @@
             <button type="button" id="cancelar-producto" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar</button>
           </div>
         </form>
-      </div>
-
-      <!-- Controles de Escaneo -->
-      <div class="controles-escaneo">
-        <label class="toggle-escaneo">
-          <input type="checkbox" id="completar-inmediatamente">
-          Completar datos inmediatamente
-        </label>
-        <div class="botones-escaneo">
-          <button type="button" id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i> Mantén Presionado para Escanear</button>
-          <button type="button" id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i> Detener Escaneo</button>
-        </div>
-        <div id="camara-carga" class="camara" style="display: none;"></div>
       </div>
 
       <!-- Lista de Productos en Proceso -->

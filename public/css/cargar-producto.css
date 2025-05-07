@@ -217,6 +217,10 @@ main {
   cursor: pointer;
   font-size: 14px;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  -webkit-user-select: none; /* Evitar selección de texto */
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; /* Evitar selección de texto */
 }
 
 .boton-escaneo i {
@@ -245,8 +249,8 @@ main {
 
 .camara {
   width: 100%;
-  max-width: 500px; /* Aumentado para un rectángulo más ancho */
-  height: 120px; /* Reducido para un rectángulo más pronunciado */
+  max-width: 600px;
+  height: 120px;
   margin: 10px auto;
   position: relative;
   overflow: hidden;
@@ -258,8 +262,8 @@ main {
 #camara-carga video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Mantengo el ajuste para evitar distorsión */
-  transform: scale(0.7); /* Reduzco el zoom para que se vea más "alejado" */
+  object-fit: cover;
+  transform: scale(0.7);
 }
 
 /* Rectángulo guía para el código de barras */
@@ -268,8 +272,8 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%; /* Más ancho para un rectángulo guía */
-  height: 30px; /* Más pequeño para un rectángulo guía */
+  width: 90%;
+  height: 30px;
   border: 2px dashed #ff0000;
   pointer-events: none;
 }
@@ -489,16 +493,16 @@ footer a i {
   }
 
   .camara {
-    max-width: 90%; /* Más ancho para móviles */
-    height: 100px; /* Más pequeño en altura para un rectángulo más pronunciado */
+    max-width: 90%;
+    height: 100px;
   }
 
   #camara-carga video {
-    transform: scale(0.6); /* Reduzco aún más el zoom en móviles */
+    transform: scale(0.6);
   }
 
   .guia-codigo {
-    height: 25px; /* Ajustado para móviles */
+    height: 25px;
   }
 
   #tabla-productos-proceso th,
