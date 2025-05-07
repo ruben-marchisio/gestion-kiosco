@@ -38,18 +38,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
 
+  // Ocultar inicialmente todos los elementos que deben estar ocultos
+  document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+  document.querySelector('#cantidad-packs').style.display = 'none';
+  document.querySelector('#unidades-por-pack').style.display = 'none';
+  document.querySelector('#cantidad-docenas').style.display = 'none';
+  document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
+
   // Mostrar u ocultar subcategorías según la categoría seleccionada
   inputCategoria.addEventListener('change', () => {
     const categoria = inputCategoria.value;
-    document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
-    if (categoria && document.querySelector(`#subcategoria-${categoria}`)) {
-      document.querySelector(`#subcategoria-${categoria}`).style.display = 'block';
+    console.log('Categoría seleccionada:', categoria); // Depuración
+    document.querySelectorAll('[id^="subcategoria-"]').forEach(el => {
+      console.log('Ocultando elemento:', el.id); // Depuración
+      el.style.display = 'none';
+    });
+    if (categoria) {
+      const subcategoriaElement = document.querySelector(`#subcategoria-${categoria}`);
+      if (subcategoriaElement) {
+        console.log('Mostrando subcategoría:', subcategoriaElement.id); // Depuración
+        subcategoriaElement.style.display = 'block';
+        console.log('Estilo display después de cambiar:', subcategoriaElement.style.display); // Depuración
+      } else {
+        console.log(`No se encontró subcategoría para la categoría: ${categoria}`); // Depuración
+      }
     }
   });
 
   // Mostrar u ocultar campos de cantidad según la unidad seleccionada
   inputUnidad.addEventListener('change', () => {
     const unidad = inputUnidad.value;
+    console.log('Unidad seleccionada:', unidad); // Depuración
     document.querySelector('#cantidad-packs').style.display = unidad === 'pack' ? 'block' : 'none';
     document.querySelector('#unidades-por-pack').style.display = unidad === 'pack' ? 'block' : 'none';
     document.querySelector('#cantidad-docenas').style.display = unidad === 'docena' ? 'block' : 'none';
@@ -288,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#nombre-producto').value = producto.nombre;
       document.querySelector('#marca').value = producto.marca;
       document.querySelector('#categoria').value = producto.categoria;
-      document.querySelector('#subcategoria-' + producto.categoria).value = producto.subcategoria || '';
+      document.querySelector(`#select-subcategoria-${producto.categoria}`).value = producto.subcategoria || '';
       document.querySelector('#precio-lista').value = producto.precioLista;
       document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia;
       document.querySelector('#precio-final').value = producto.precioFinal;
