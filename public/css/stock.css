@@ -222,22 +222,22 @@ main {
 .camara {
   width: 100%;
   max-width: 600px;
-  height: 200px; /* Aumentar altura para mejor visibilidad */
+  height: 240px; /* Aumentar altura para ampliar visión */
   margin: 10px auto;
   position: relative;
   border: 2px solid #2c3e50;
   border-radius: 8px;
   background-color: #000;
-  overflow: visible; /* Evitar que el video se corte */
-  display: block; /* Asegurar que el contenedor sea visible */
+  overflow: visible;
+  display: block;
 }
 
 #camara-stock video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: none; /* Eliminar escala para evitar problemas de visibilidad */
-  display: block; /* Asegurar que el video sea visible */
+  transform: none;
+  display: block;
   position: absolute;
   top: 0;
   left: 0;
@@ -250,10 +250,10 @@ main {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  height: 40px; /* Aumentar altura para mejor visibilidad */
+  height: 50px; /* Ajustar altura para el nuevo tamaño del contenedor */
   border: 2px dashed #ff0000;
   pointer-events: none;
-  z-index: 10; /* Asegurar que la guía esté sobre el video */
+  z-index: 10;
 }
 
 /* Lista de Productos (Tarjetas) */
@@ -566,10 +566,10 @@ footer a i {
   }
 
   .camara {
-    height: 150px; /* Ajustar altura para dispositivos móviles */
+    height: 180px; /* Aumentar altura para ampliar visión en móviles */
   }
 
   .guia-codigo {
-    height: 30px;
+    height: 40px;
   }
 }

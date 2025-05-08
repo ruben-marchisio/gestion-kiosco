@@ -70,7 +70,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
   function inicializarQuagga() {
     console.log('Inicializando Quagga...');
-    // Limpiar el contenedor para evitar duplicados
     contenedorCamara.innerHTML = '';
 
     const isMobile = isMobileDevice();
@@ -82,21 +81,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         type: "LiveStream",
         target: contenedorCamara,
         constraints: {
-          width: { ideal: 1280, min: 640 }, // Reducir resolución para mejorar compatibilidad
-          height: { ideal: 720, min: 480 },
+          width: { ideal: 1440, min: 640 }, // Aumentar resolución ideal
+          height: { ideal: 810, min: 480 },
           facingMode: "environment",
           focusMode: "continuous",
           focusDistance: { ideal: 0.5, min: 0.3, max: 0.7 },
           frameRate: { ideal: 30, min: 15 }
         },
-        area: { top: "5%", right: "1%", left: "1%", bottom: "5%" }
+        area: { top: "2%", right: "0%", left: "0%", bottom: "2%" } // Ampliar visión reduciendo márgenes
       },
       locator: {
         patchSize: "x-large",
         halfSample: false
       },
       numOfWorkers: numWorkers,
-      frequency: 15,
+      frequency: 20, // Aumentar frecuencia para mejorar precisión
       decoder: {
         readers: ["ean_reader", "upc_reader", "code_128_reader"],
         multiple: false,
@@ -130,7 +129,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       videoElement = contenedorCamara.querySelector('video');
       if (videoElement) {
         console.log('Elemento de video encontrado:', videoElement);
-        videoElement.style.display = 'block'; // Forzar visibilidad del video
+        videoElement.style.display = 'block';
         setTimeout(() => {
           console.log('Resolución real del video:', {
             width: videoElement.videoWidth,
@@ -153,6 +152,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
       const code = result.codeResult.code;
       console.log('Código detectado por Quagga:', code);
+      console.log('Detalles de la detección:', result.codeResult);
 
       if (code === ultimoCodigoEscaneado) {
         console.log('Código repetido, ignorando:', code);

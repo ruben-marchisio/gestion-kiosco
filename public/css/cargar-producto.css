@@ -128,10 +128,10 @@ main {
   box-sizing: border-box;
   font-size: 14px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  appearance: auto; /* Asegurar que el select se muestre como desplegable */
+  appearance: auto;
   -webkit-appearance: auto;
   -moz-appearance: auto;
-  cursor: pointer; /* Indicar que es interactivo */
+  cursor: pointer;
 }
 
 .form-campo select:focus {
@@ -140,7 +140,6 @@ main {
   outline: none;
 }
 
-/* Asegurar que los select de subcategorías sean interactivos */
 [id^="subcategoria-"] select {
   width: 100%;
   padding: 10px;
@@ -215,10 +214,10 @@ main {
   cursor: pointer;
   font-size: 14px;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
-  -webkit-user-select: none; /* Evitar selección de texto */
+  -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none; /* Evitar selección de texto */
+  user-select: none;
 }
 
 .boton-escaneo i {
@@ -248,20 +247,25 @@ main {
 .camara {
   width: 100%;
   max-width: 600px;
-  height: 120px;
+  height: 240px; /* Aumentar altura para ampliar visión */
   margin: 10px auto;
   position: relative;
-  overflow: hidden;
   border: 2px solid #2c3e50;
   border-radius: 8px;
   background-color: #000;
+  overflow: visible;
+  display: block;
 }
 
 #camara-carga video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(0.7);
+  transform: none;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* Rectángulo guía para el código de barras */
@@ -271,9 +275,10 @@ main {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  height: 30px;
-  border: 2px dashed #ff0000;
+  height: 50px; /* Ajustar altura para el nuevo tamaño del contenedor */
+  border: 3px dashed #ff0000;
   pointer-events: none;
+  z-index: 10;
 }
 
 /* Lista de Productos en Proceso */
@@ -361,37 +366,37 @@ main {
 /* Toasts */
 .toast-container {
   position: fixed;
-  top: 30px; /* Ajustado para mayor visibilidad */
+  top: 30px;
   right: 30px;
-  z-index: 3000; /* Aumentado para evitar superposición */
-  width: 350px; /* Ancho fijo para mejor legibilidad */
+  z-index: 3000;
+  width: 350px;
 }
 
 .toast {
-  padding: 15px 25px; /* Más espacio para el texto */
+  padding: 15px 25px;
   border-radius: 10px;
   color: white;
-  font-size: 16px; /* Texto más grande */
-  font-weight: 500; /* Peso de fuente para mayor legibilidad */
+  font-size: 16px;
+  font-weight: 500;
   margin-bottom: 15px;
   opacity: 0;
-  animation: fadeInToast 0.5s ease forwards, fadeOutToast 0.5s ease 4.5s forwards; /* Aumentado a 5 segundos */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra para destacar */
-  border-left: 5px solid; /* Borde izquierdo para indicar tipo */
+  animation: fadeInToast 0.5s ease forwards, fadeOutToast 0.5s ease 4.5s forwards;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-left: 5px solid;
 }
 
 .toast.exito {
-  background-color: #28a745; /* Verde más vibrante */
+  background-color: #28a745;
   border-left-color: #218838;
 }
 
 .toast.error {
-  background-color: #dc3545; /* Rojo más vibrante */
+  background-color: #dc3545;
   border-left-color: #c82333;
 }
 
 .toast.info {
-  background-color: #17a2b8; /* Azul más vibrante */
+  background-color: #17a2b8;
   border-left-color: #138496;
 }
 
@@ -470,7 +475,7 @@ footer a i {
   }
 
   main {
-    padding-top: 120px; /* Aumentado para evitar superposición */
+    padding-top: 120px;
     padding-bottom: 50px;
   }
 
@@ -503,15 +508,15 @@ footer a i {
 
   .camara {
     max-width: 90%;
-    height: 100px;
+    height: 180px; /* Aumentar altura para ampliar visión en móviles */
   }
 
   #camara-carga video {
-    transform: scale(0.6);
+    transform: none;
   }
 
   .guia-codigo {
-    height: 25px;
+    height: 40px;
   }
 
   #tabla-productos-proceso th,
@@ -520,24 +525,22 @@ footer a i {
     padding: 6px;
   }
 
-  /* Ocultar columnas adicionales en móviles para ahorrar espacio */
-  #tabla-productos-proceso th:nth-child(2), /* Marca */
+  #tabla-productos-proceso th:nth-child(2),
   #tabla-productos-proceso td:nth-child(2),
-  #tabla-productos-proceso th:nth-child(3), /* Categoría */
+  #tabla-productos-proceso th:nth-child(3),
   #tabla-productos-proceso td:nth-child(3) {
     display: none;
   }
 
-  /* Ajustar toasts en móviles */
   .toast-container {
     top: 20px;
     right: 10px;
-    width: 90%; /* Más ancho para adaptarse a pantallas pequeñas */
+    width: 90%;
     max-width: 350px;
   }
 
   .toast {
-    font-size: 14px; /* Tamaño de fuente ligeramente más pequeño */
+    font-size: 14px;
     padding: 10px 15px;
   }
 }
@@ -553,6 +556,6 @@ footer a i {
 
   .camara {
     max-width: 600px;
-    height: 120px;
+    height: 240px;
   }
 }
