@@ -79,22 +79,31 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         type: "LiveStream",
         target: contenedorCamara,
         constraints: {
-          width: { ideal: 1920, min: 1280 }, // Dejar que el navegador elija la mejor resolución
+          width: { ideal: 1920, min: 1280 },
           height: { ideal: 1080, min: 720 },
           facingMode: "environment",
-          focusMode: "continuous", // Intentar forzar autofocus continuo
-          focusDistance: { ideal: 0.5, min: 0.3, max: 0.7 } // Rango de enfoque para códigos de barras
+          focusMode: "continuous",
+          focusDistance: { ideal: 0.5, min: 0.3, max: 0.7 },
+          frameRate: { ideal: 30, min: 15 },
+          aspectRatio: { ideal: 16/9 } // Asegurar una relación de aspecto estándar
         },
-        area: { top: "20%", right: "5%", left: "5%", bottom: "20%" } // Aumentar área de escaneo
+        area: { top: "5%", right: "1%", left: "1%", bottom: "5%" } // Máxima área de escaneo
       },
       locator: {
-        patchSize: "large", // Mejorar detección en imágenes borrosas
-        halfSample: false // Priorizar precisión sobre rendimiento
+        patchSize: "x-large",
+        halfSample: false
       },
       numOfWorkers: numWorkers,
+      frequency: 10, // Aumentar la frecuencia de escaneo (frames por segundo)
       decoder: {
         readers: ["ean_reader", "upc_reader", "code_128_reader"],
-        multiple: false
+        multiple: false,
+        debug: {
+          drawBoundingBox: true,
+          showFrequency: true,
+          drawScanline: true,
+          showPattern: true
+        }
       },
       locate: true
     }, (err) => {
@@ -119,7 +128,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       videoElement = contenedorCamara.querySelector('video');
       if (videoElement) {
         console.log('Elemento de video encontrado:', videoElement);
-        // Depuración: Mostrar resolución real del video
         setTimeout(() => {
           console.log('Resolución real del video:', {
             width: videoElement.videoWidth,

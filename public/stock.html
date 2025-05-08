@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión Kiosco - Stock</title>
-  <link rel="stylesheet" href="/public/css/stock.css">
-  <!-- Font Awesome para íconos -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- QuaggaJS para escanear códigos de barras -->
+  <link rel="stylesheet" href="/public/css/stock.css">
   <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 </head>
 <body>
@@ -18,8 +17,9 @@
     </div>
     <h1>Stock</h1>
     <nav class="nav-principal">
-      <a href="/public/menu-principal.html" class="activo"><i class="fas fa-home"></i> Inicio</a>
+      <a href="/public/menu-principal.html"><i class="fas fa-home"></i> Inicio</a>
       <a href="/public/cargar-producto.html"><i class="fas fa-plus"></i> Agregar Producto</a>
+      <a href="/public/stock.html" class="activo"><i class="fas fa-boxes"></i> Stock</a>
     </nav>
   </header>
 
@@ -29,7 +29,7 @@
       <!-- Barra de Filtros y Buscador -->
       <div class="barra-filtros">
         <div class="buscador">
-          <input type="text" id="buscador" placeholder="Buscar por nombre o marca..." autocomplete="off">
+          <input type="text" id="buscador" placeholder="Buscar por nombre, marca o código..." autocomplete="off">
           <button id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i></button>
           <button id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i></button>
         </div>
@@ -75,7 +75,9 @@
       </div>
 
       <!-- Área de la Cámara (para el Escáner) -->
-      <div id="camara-stock" class="camara" style="display: none;"></div>
+      <div id="camara-stock" class="camara" style="display: none;">
+        <div class="guia-codigo"></div>
+      </div>
 
       <!-- Lista de Productos -->
       <div id="lista-stock" class="lista-stock">
@@ -104,11 +106,11 @@
           <h2>Editar Precios</h2>
           <div class="form-campo">
             <label for="edit-precio-lista">Precio de Lista</label>
-            <input type="number" id="edit-precio-lista" step="0.01">
+            <input type="number" id="edit-precio-lista" step="0.01" required>
           </div>
           <div class="form-campo">
             <label for="edit-porcentaje-ganancia">Porcentaje de Ganancia (%)</label>
-            <input type="number" id="edit-porcentaje-ganancia" step="0.01">
+            <input type="number" id="edit-porcentaje-ganancia" step="0.01" required>
           </div>
           <div class="form-campo">
             <label for="edit-precio-final">Precio Final</label>
@@ -127,11 +129,11 @@
           <h2>Agregar Stock</h2>
           <div class="form-campo">
             <label for="agregar-cantidad">Cantidad a Agregar</label>
-            <input type="number" id="agregar-cantidad">
+            <input type="number" id="agregar-cantidad" required>
           </div>
           <div class="form-campo">
             <label for="agregar-fecha-vencimiento">Fecha de Vencimiento</label>
-            <input type="date" id="agregar-fecha-vencimiento">
+            <input type="date" id="agregar-fecha-vencimiento" required>
           </div>
           <div class="modal-acciones">
             <button id="agregar-guardar-stock" class="boton-accion boton-primario"><i class="fas fa-save"></i> Guardar</button>
@@ -146,7 +148,7 @@
           <h2>Dar de Baja Producto</h2>
           <div class="form-campo">
             <label for="baja-cantidad">Cantidad a Dar de Baja</label>
-            <input type="number" id="baja-cantidad">
+            <input type="number" id="baja-cantidad" required>
           </div>
           <div class="form-campo">
             <label for="baja-motivo">Motivo</label>
@@ -175,7 +177,7 @@
 
   <!-- Pie de Página -->
   <footer>
-    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+    <a href="/public/menu-principal.html"><i class="fas fa-arrow-left"></i> Volver al Menú Principal</a>
   </footer>
 
   <!-- Scripts -->
