@@ -247,7 +247,7 @@ main {
 .camara {
   width: 100%;
   max-width: 600px;
-  height: 240px; /* Aumentar altura para ampliar visión */
+  height: 240px;
   margin: 10px auto;
   position: relative;
   border: 2px solid #2c3e50;
@@ -275,7 +275,7 @@ main {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  height: 50px; /* Ajustar altura para el nuevo tamaño del contenedor */
+  height: 50px;
   border: 3px dashed #ff0000;
   pointer-events: none;
   z-index: 10;
@@ -508,7 +508,7 @@ footer a i {
 
   .camara {
     max-width: 90%;
-    height: 180px; /* Aumentar altura para ampliar visión en móviles */
+    height: 180px;
   }
 
   #camara-carga video {
