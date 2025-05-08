@@ -147,6 +147,7 @@ h1 {
   align-items: center;
 }
 
+.boton-primario.cargando span:not(.cargando),
 .boton-primario.cargando .fas.fa-sign-in-alt {
   display: none;
 }

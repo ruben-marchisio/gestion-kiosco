@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('registrarse-logic.js cargado');
 
-  const formRegistrarse = document.querySelector('#form-registro'); // Corregido: #form-registrarse -> #form-registro
+  const formRegistrarse = document.querySelector('#form-registro');
   const btnRegistrarse = document.querySelector('#registrarse');
   const botonIrAInicioSesion = document.querySelector('#ir-a-inicio-sesion');
 
@@ -17,6 +17,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   } else {
     console.error('Botón "ir-a-inicio-sesion" no encontrado');
+  }
+
+  // Función para realizar la solicitud con reintentos continuos hasta un tiempo máximo
+  async function fetchWithRetry(url, options, maxDuration = 60000, delay = 2000) {
+    const startTime = Date.now();
+    let attempt = 1;
+
+    while (Date.now() - startTime < maxDuration) {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response;
+      } catch (error) {
+        console.log(`Intento ${attempt} fallido: ${error.message}. Reintentando en ${delay}ms...`);
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+
+    throw new Error('No se pudo conectar al servidor después de varios intentos. Por favor, intenta de nuevo más tarde.');
   }
 
   // Manejar el envío del formulario de registro
@@ -38,13 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         console.log('Enviando solicitud a:', `${BASE_URL}/api/registrar-usuario`);
-        const respuesta = await fetch(`${BASE_URL}/api/registrar-usuario`, {
+        const respuesta = await fetchWithRetry(`${BASE_URL}/api/registrar-usuario`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data),
-        });
+        }, 60000, 2000); // Reintentar durante 60 segundos, con 2 segundos de espera entre intentos
 
         console.log('Estado de la respuesta:', respuesta.status);
         console.log('¿Respuesta OK?', respuesta.ok);
@@ -62,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (error) {
         console.error('Error detallado al conectar con el servidor:', error);
-        alert('Error al conectar con el servidor: ' + error.message);
+        alert(error.message);
       } finally {
         // Ocultar estado de carga
         btnRegistrarse.classList.remove('cargando');

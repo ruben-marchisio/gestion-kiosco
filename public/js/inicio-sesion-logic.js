@@ -23,6 +23,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Función para realizar la solicitud con reintentos continuos hasta un tiempo máximo
+  async function fetchWithRetry(url, options, maxDuration = 60000, delay = 2000) {
+    const startTime = Date.now();
+    let attempt = 1;
+
+    while (Date.now() - startTime < maxDuration) {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response;
+      } catch (error) {
+        console.log(`Intento ${attempt} fallido: ${error.message}. Reintentando en ${delay}ms...`);
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+
+    throw new Error('No se pudo conectar al servidor después de varios intentos. Por favor, intenta de nuevo más tarde.');
+  }
+
   // Manejar el inicio de sesión
   formIniciarSesion.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -35,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = Object.fromEntries(formData);
 
     try {
-      const response = await fetch(`${BASE_URL}/api/iniciar-sesion`, {
+      const response = await fetchWithRetry(`${BASE_URL}/api/iniciar-sesion`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -44,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
           email: data.email,
           contrasena: data.contrasena
         })
-      });
+      }, 60000, 2000); // Reintentar durante 60 segundos, con 2 segundos de espera entre intentos
 
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Error al iniciar sesión');
@@ -57,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = '/public/menu-principal.html';
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      alert('Error al iniciar sesión: ' + error.message);
+      alert(error.message);
     } finally {
       // Ocultar estado de carga
       btnIniciarSesion.classList.remove('cargando');
