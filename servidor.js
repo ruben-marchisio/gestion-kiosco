@@ -33,9 +33,16 @@ mongoose.set('strictQuery', true);
 // Depuración: Mostrar el valor de MONGODB_URI
 console.log('MONGODB_URI:', process.env.MONGODB_URI);
 
-// Conectar a MongoDB
+// Conectar a MongoDB con opciones de reconexión y mayor tiempo de espera
 const startTime = Date.now();
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 30000, // Aumentar el tiempo de espera a 30 segundos
+  connectTimeoutMS: 30000, // Tiempo de espera para la conexión inicial
+  socketTimeoutMS: 45000, // Tiempo de espera para operaciones de socket
+  maxPoolSize: 10, // Máximo número de conexiones en el pool
+  retryWrites: true, // Reintentar escrituras fallidas
+  w: 'majority', // Modo de escritura
+})
   .then(() => {
     const connectionTime = Date.now() - startTime;
     console.log(`Conectado a MongoDB en ${connectionTime}ms`);
@@ -68,6 +75,7 @@ app.get('/test-static', (req, res) => {
 // Rutas para usuarios
 app.post('/api/registrar-usuario', async (req, res) => {
   console.log('Solicitud recibida en /api/registrar-usuario');
+  const startTime = Date.now();
   try {
     const { nombreKiosco, email, contrasena } = req.body;
     console.log('Datos recibidos:', { nombreKiosco, email, contrasena });
@@ -91,10 +99,12 @@ app.post('/api/registrar-usuario', async (req, res) => {
     });
 
     await nuevoUsuario.save();
-    console.log('Usuario registrado con éxito:', email);
+    const totalTime = Date.now() - startTime;
+    console.log(`Usuario registrado con éxito ${email} en ${totalTime}ms`);
     res.status(201).json({ mensaje: 'Usuario registrado con éxito.' });
   } catch (error) {
-    console.error('Error al registrar el usuario:', error);
+    const totalTime = Date.now() - startTime;
+    console.error(`Error al registrar el usuario después de ${totalTime}ms:`, error);
     res.status(500).json({ error: 'Error al registrar el usuario: ' + error.message });
   }
 });
@@ -111,7 +121,7 @@ app.post('/api/iniciar-sesion', async (req, res) => {
       return res.status(400).json({ error: 'Faltan campos requeridos.' });
     }
 
-    const usuario = await Usuario.findOne({ email, contrasena });
+    const usuario = await Usuario.findOne({ email, contrasena }, null, { timeout: 30000 }); // Aumentar el tiempo de espera a 30 segundos
     const queryTime = Date.now() - startTime;
     console.log(`Consulta a MongoDB completada en ${queryTime}ms`);
 
@@ -136,6 +146,7 @@ app.post('/api/iniciar-sesion', async (req, res) => {
 // Rutas para productos
 app.post('/api/productos', async (req, res) => {
   console.log('Solicitud recibida en /api/productos');
+  const startTime = Date.now();
   try {
     console.log('Datos recibidos:', req.body);
 
@@ -164,48 +175,85 @@ app.post('/api/productos', async (req, res) => {
       return res.status(400).json({ error: 'Faltan campos requeridos.' });
     }
 
-    const nuevoProducto = new Producto({
-      nombre,
-      cantidadUnidades: parseInt(cantidadUnidades),
-      packs: parseInt(packs) || 0,
-      unidadesPorPack: parseInt(unidadesPorPack) || 0,
-      docenas: parseInt(docenas) || 0,
-      unidadesSueltas: parseInt(unidadesSueltas) || 0,
-      marca,
-      precioLista: parseFloat(precioLista),
-      porcentajeGanancia: parseFloat(porcentajeGanancia),
-      precioFinal: parseFloat(precioFinal),
-      categoria,
-      subcategoria: subcategoria || '',
-      unidad,
-      fechaVencimiento: new Date(fechaVencimiento),
-      icono: icono || 'default',
-      usuarioId: new mongoose.Types.ObjectId(usuarioId),
-      codigo: codigo ? codigo.toString().trim() : '' // Normalizar el código
-    });
+    // Normalizar el código
+    const normalizedCodigo = codigo ? codigo.toString().trim() : '';
 
-    await nuevoProducto.save();
+    // Verificar si el producto ya existe (basado en código y usuarioId)
+    let productoExistente = null;
+    if (normalizedCodigo) {
+      productoExistente = await Producto.findOne({ 
+        codigo: normalizedCodigo, 
+        usuarioId: new mongoose.Types.ObjectId(usuarioId) 
+      });
+    }
 
-    // Si el producto tiene código de barras, guardarlo en la base de datos común (si no existe)
-    if (codigo && codigo.trim() !== '') {
-      const existeEnComunes = await ProductoComun.findOne({ codigo: codigo.toString().trim() });
-      if (!existeEnComunes) {
-        const nuevoProductoComun = new ProductoComun({
-          codigo: codigo.toString().trim(),
-          nombre,
-          marca,
-          categoria,
-          subcategoria: subcategoria || ''
-        });
-        await nuevoProductoComun.save();
-        console.log('Producto guardado en la base de datos común:', codigo);
+    if (productoExistente) {
+      // Actualizar el producto existente
+      console.log('Producto existente encontrado:', productoExistente);
+      productoExistente.cantidadUnidades += parseInt(cantidadUnidades);
+      productoExistente.packs += parseInt(packs) || 0;
+      productoExistente.unidadesPorPack = parseInt(unidadesPorPack) || 0;
+      productoExistente.docenas += parseInt(docenas) || 0;
+      productoExistente.unidadesSueltas += parseInt(unidadesSueltas) || 0;
+      productoExistente.marca = marca;
+      productoExistente.precioLista = parseFloat(precioLista);
+      productoExistente.porcentajeGanancia = parseFloat(porcentajeGanancia);
+      productoExistente.precioFinal = parseFloat(precioFinal);
+      productoExistente.categoria = categoria;
+      productoExistente.subcategoria = subcategoria || '';
+      productoExistente.unidad = unidad;
+      productoExistente.fechaVencimiento = new Date(fechaVencimiento);
+      productoExistente.icono = icono || 'default';
+
+      await productoExistente.save();
+      console.log('Producto existente actualizado:', productoExistente);
+    } else {
+      // Crear un nuevo producto
+      const nuevoProducto = new Producto({
+        nombre,
+        cantidadUnidades: parseInt(cantidadUnidades),
+        packs: parseInt(packs) || 0,
+        unidadesPorPack: parseInt(unidadesPorPack) || 0,
+        docenas: parseInt(docenas) || 0,
+        unidadesSueltas: parseInt(unidadesSueltas) || 0,
+        marca,
+        precioLista: parseFloat(precioLista),
+        porcentajeGanancia: parseFloat(porcentajeGanancia),
+        precioFinal: parseFloat(precioFinal),
+        categoria,
+        subcategoria: subcategoria || '',
+        unidad,
+        fechaVencimiento: new Date(fechaVencimiento),
+        icono: icono || 'default',
+        usuarioId: new mongoose.Types.ObjectId(usuarioId),
+        codigo: normalizedCodigo
+      });
+
+      await nuevoProducto.save();
+
+      // Si el producto tiene código de barras, guardarlo en la base de datos común (si no existe)
+      if (normalizedCodigo && normalizedCodigo !== '') {
+        const existeEnComunes = await ProductoComun.findOne({ codigo: normalizedCodigo });
+        if (!existeEnComunes) {
+          const nuevoProductoComun = new ProductoComun({
+            codigo: normalizedCodigo,
+            nombre,
+            marca,
+            categoria,
+            subcategoria: subcategoria || ''
+          });
+          await nuevoProductoComun.save();
+          console.log('Producto guardado en la base de datos común:', normalizedCodigo);
+        }
       }
     }
 
-    console.log('Producto cargado con éxito:', nombre);
-    res.status(201).json({ mensaje: 'Producto cargado con éxito.' });
+    const totalTime = Date.now() - startTime;
+    console.log(`Producto ${productoExistente ? 'actualizado' : 'cargado'} con éxito ${nombre} en ${totalTime}ms`);
+    res.status(201).json({ mensaje: productoExistente ? 'Producto actualizado con éxito.' : 'Producto cargado con éxito.' });
   } catch (error) {
-    console.error('Error al cargar el producto:', error);
+    const totalTime = Date.now() - startTime;
+    console.error(`Error al cargar el producto después de ${totalTime}ms:`, error);
     res.status(500).json({ error: 'Error al cargar el producto: ' + error.message });
   }
 });
