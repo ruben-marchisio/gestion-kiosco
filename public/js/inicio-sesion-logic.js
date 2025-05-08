@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Elementos del DOM
   const formIniciarSesion = document.querySelector('#form-iniciar-sesion');
   const btnIniciarSesion = document.querySelector('#iniciar-sesion');
+  const loadingMessage = document.querySelector('.loading-message');
 
   // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
@@ -48,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     // Mostrar estado de carga
-    btnIniciarSesion.classList.add('cargando');
     btnIniciarSesion.disabled = true;
+    loadingMessage.style.display = 'flex';
 
     const formData = new FormData(formIniciarSesion);
     const data = Object.fromEntries(formData);
@@ -80,8 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
       alert(error.message);
     } finally {
       // Ocultar estado de carga
-      btnIniciarSesion.classList.remove('cargando');
       btnIniciarSesion.disabled = false;
+      loadingMessage.style.display = 'none';
     }
   });
 });

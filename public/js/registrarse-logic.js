@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistrarse = document.querySelector('#form-registro');
   const btnRegistrarse = document.querySelector('#registrarse');
   const botonIrAInicioSesion = document.querySelector('#ir-a-inicio-sesion');
+  const loadingMessage = document.querySelector('.loading-message');
 
   // Construcción de la URL base sin especificar el puerto
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
@@ -46,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Evento submit disparado para registro');
 
       // Mostrar estado de carga
-      btnRegistrarse.classList.add('cargando');
       btnRegistrarse.disabled = true;
+      loadingMessage.style.display = 'flex';
 
       const formData = new FormData(formRegistrarse);
       const data = Object.fromEntries(formData);
@@ -85,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(error.message);
       } finally {
         // Ocultar estado de carga
-        btnRegistrarse.classList.remove('cargando');
         btnRegistrarse.disabled = false;
+        loadingMessage.style.display = 'none';
       }
     });
   } else {
