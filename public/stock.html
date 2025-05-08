@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Kiosco - Stock</title>
+  <link rel="stylesheet" href="/public/css/stock.css">
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- QuaggaJS para escanear códigos de barras -->
+  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+</head>
+<body>
+  <!-- Encabezado -->
+  <header>
+    <div class="logo">
+      <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+    </div>
+    <h1>Stock</h1>
+    <nav class="nav-principal">
+      <a href="/public/menu-principal.html" class="activo"><i class="fas fa-home"></i> Inicio</a>
+      <a href="/public/cargar-producto.html"><i class="fas fa-plus"></i> Agregar Producto</a>
+    </nav>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main>
+    <section id="stock">
+      <!-- Barra de Filtros y Buscador -->
+      <div class="barra-filtros">
+        <div class="buscador">
+          <input type="text" id="buscador" placeholder="Buscar por nombre o marca..." autocomplete="off">
+          <button id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i></button>
+          <button id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i></button>
+        </div>
+        <button id="boton-filtros" class="boton-filtros"><i class="fas fa-filter"></i> Filtros</button>
+        <!-- Menú de Filtros -->
+        <div id="menu-filtros" class="menu-filtros" style="display: none;">
+          <div class="filtro-opcion">
+            <button id="filtro-todo">Mostrar Todo</button>
+          </div>
+          <div class="filtro-opcion">
+            <label for="filtro-categoria">Categoría:</label>
+            <select id="filtro-categoria">
+              <option value="">Todas</option>
+              <option value="bebidas">Bebidas</option>
+              <option value="golosinas">Golosinas</option>
+              <option value="lacteos">Lácteos</option>
+              <option value="cigarrillos">Cigarrillos</option>
+              <option value="fiambre">Fiambre</option>
+              <option value="congelados">Congelados</option>
+              <option value="panaderia">Panadería</option>
+              <option value="almacen">Almacén</option>
+              <option value="verduleria">Verdulería</option>
+              <option value="limpieza">Limpieza</option>
+              <option value="higiene-personal">Higiene personal</option>
+              <option value="sin-tacc">Sin TACC</option>
+              <option value="productos-varios">Productos varios</option>
+            </select>
+          </div>
+          <div class="filtro-opcion">
+            <label for="filtro-subcategoria">Subcategoría:</label>
+            <select id="filtro-subcategoria">
+              <option value="">Todas</option>
+              <!-- Las opciones se llenarán dinámicamente según la categoría -->
+            </select>
+          </div>
+          <div class="filtro-opcion">
+            <label><input type="checkbox" id="filtro-sin-stock"> Sin Stock</label>
+          </div>
+          <div class="filtro-opcion">
+            <label><input type="checkbox" id="filtro-por-vencer"> Productos por Vencer</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área de la Cámara (para el Escáner) -->
+      <div id="camara-stock" class="camara" style="display: none;"></div>
+
+      <!-- Lista de Productos -->
+      <div id="lista-stock" class="lista-stock">
+        <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
+      </div>
+
+      <!-- Modal para Detalles y Acciones -->
+      <div id="modal-producto" class="modal" style="display: none;">
+        <div class="modal-contenido">
+          <h2 id="modal-titulo">Detalles del Producto</h2>
+          <div id="modal-detalles" class="modal-detalles">
+            <!-- Los detalles se llenarán dinámicamente -->
+          </div>
+          <div class="modal-acciones">
+            <button id="modal-editar-precios" class="boton-accion boton-primario"><i class="fas fa-edit"></i> Editar Precios</button>
+            <button id="modal-agregar-stock" class="boton-accion boton-primario"><i class="fas fa-plus"></i> Agregar Stock</button>
+            <button id="modal-dar-baja" class="boton-accion boton-cancelar"><i class="fas fa-minus-circle"></i> Dar de Baja</button>
+          </div>
+          <button id="modal-cerrar" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cerrar</button>
+        </div>
+      </div>
+
+      <!-- Modal para Editar Precios -->
+      <div id="modal-editar-precios" class="modal" style="display: none;">
+        <div class="modal-contenido">
+          <h2>Editar Precios</h2>
+          <div class="form-campo">
+            <label for="edit-precio-lista">Precio de Lista</label>
+            <input type="number" id="edit-precio-lista" step="0.01">
+          </div>
+          <div class="form-campo">
+            <label for="edit-porcentaje-ganancia">Porcentaje de Ganancia (%)</label>
+            <input type="number" id="edit-porcentaje-ganancia" step="0.01">
+          </div>
+          <div class="form-campo">
+            <label for="edit-precio-final">Precio Final</label>
+            <input type="number" id="edit-precio-final" readonly>
+          </div>
+          <div class="modal-acciones">
+            <button id="edit-guardar-precios" class="boton-accion boton-primario"><i class="fas fa-save"></i> Guardar</button>
+            <button id="edit-cancelar-precios" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para Agregar Stock -->
+      <div id="modal-agregar-stock" class="modal" style="display: none;">
+        <div class="modal-contenido">
+          <h2>Agregar Stock</h2>
+          <div class="form-campo">
+            <label for="agregar-cantidad">Cantidad a Agregar</label>
+            <input type="number" id="agregar-cantidad">
+          </div>
+          <div class="form-campo">
+            <label for="agregar-fecha-vencimiento">Fecha de Vencimiento</label>
+            <input type="date" id="agregar-fecha-vencimiento">
+          </div>
+          <div class="modal-acciones">
+            <button id="agregar-guardar-stock" class="boton-accion boton-primario"><i class="fas fa-save"></i> Guardar</button>
+            <button id="agregar-cancelar-stock" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para Dar de Baja -->
+      <div id="modal-dar-baja" class="modal" style="display: none;">
+        <div class="modal-contenido">
+          <h2>Dar de Baja Producto</h2>
+          <div class="form-campo">
+            <label for="baja-cantidad">Cantidad a Dar de Baja</label>
+            <input type="number" id="baja-cantidad">
+          </div>
+          <div class="form-campo">
+            <label for="baja-motivo">Motivo</label>
+            <select id="baja-motivo">
+              <option value="vencimiento">Vencimiento</option>
+              <option value="rotura">Rotura</option>
+              <option value="regalo">Regalo</option>
+              <option value="eliminacion-permanente">Eliminación Permanente</option>
+            </select>
+          </div>
+          <div class="form-campo">
+            <label for="baja-nota">Nota (Opcional)</label>
+            <textarea id="baja-nota" placeholder="Ej. Regalado a cliente VIP"></textarea>
+          </div>
+          <div class="modal-acciones">
+            <button id="baja-confirmar" class="boton-accion boton-primario"><i class="fas fa-check"></i> Confirmar</button>
+            <button id="baja-cancelar" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área para Toasts -->
+      <div id="toast-container" class="toast-container"></div>
+    </section>
+  </main>
+
+  <!-- Pie de Página -->
+  <footer>
+    <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/utils.js"></script>
+  <script src="/public/js/stock-logic.js"></script>
+</body>
+</html>

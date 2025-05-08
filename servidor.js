@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const { Usuario, Producto, Cliente, ProductoComun } = require('./usuario');
+const { Usuario, Producto, Cliente, ProductoComun, Baja } = require('./usuario');
 
 dotenv.config();
 const app = express();
@@ -278,6 +278,119 @@ app.get('/api/productos/:id', async (req, res) => {
   } catch (error) {
     console.error('Error al buscar el producto:', error);
     res.status(500).json({ error: 'Error al buscar el producto: ' + error.message });
+  }
+});
+
+// Nueva ruta para actualizar los precios de un producto
+app.put('/api/productos/:id/precios', async (req, res) => {
+  console.log('Solicitud recibida en /api/productos/:id/precios');
+  try {
+    const { id } = req.params;
+    const { precioLista, porcentajeGanancia, precioFinal } = req.body;
+
+    if (!precioLista || !porcentajeGanancia || !precioFinal) {
+      console.log('Faltan campos requeridos:', req.body);
+      return res.status(400).json({ error: 'Faltan campos requeridos.' });
+    }
+
+    const producto = await Producto.findById(id);
+    if (!producto) {
+      console.log('Producto no encontrado para el ID:', id);
+      return res.status(404).json({ error: 'Producto no encontrado.' });
+    }
+
+    producto.precioLista = parseFloat(precioLista);
+    producto.porcentajeGanancia = parseFloat(porcentajeGanancia);
+    producto.precioFinal = parseFloat(precioFinal);
+
+    await producto.save();
+    console.log('Precios actualizados con éxito para el producto:', id);
+    res.status(200).json({ mensaje: 'Precios actualizados con éxito.' });
+  } catch (error) {
+    console.error('Error al actualizar los precios:', error);
+    res.status(500).json({ error: 'Error al actualizar los precios: ' + error.message });
+  }
+});
+
+// Nueva ruta para agregar stock a un producto existente
+app.put('/api/productos/:id/agregar-stock', async (req, res) => {
+  console.log('Solicitud recibida en /api/productos/:id/agregar-stock');
+  try {
+    const { id } = req.params;
+    const { cantidad, fechaVencimiento } = req.body;
+
+    if (!cantidad || !fechaVencimiento) {
+      console.log('Faltan campos requeridos:', req.body);
+      return res.status(400).json({ error: 'Faltan campos requeridos.' });
+    }
+
+    const producto = await Producto.findById(id);
+    if (!producto) {
+      console.log('Producto no encontrado para el ID:', id);
+      return res.status(404).json({ error: 'Producto no encontrado.' });
+    }
+
+    producto.cantidadUnidades += parseInt(cantidad);
+    producto.fechaVencimiento = new Date(fechaVencimiento);
+
+    await producto.save();
+    console.log('Stock agregado con éxito para el producto:', id);
+    res.status(200).json({ mensaje: 'Stock agregado con éxito.' });
+  } catch (error) {
+    console.error('Error al agregar stock:', error);
+    res.status(500).json({ error: 'Error al agregar stock: ' + error.message });
+  }
+});
+
+// Nueva ruta para dar de baja un producto
+app.post('/api/productos/:id/dar-baja', async (req, res) => {
+  console.log('Solicitud recibida en /api/productos/:id/dar-baja');
+  try {
+    const { id } = req.params;
+    const { usuarioId, cantidad, motivo, nota } = req.body;
+
+    if (!usuarioId || !cantidad || !motivo) {
+      console.log('Faltan campos requeridos:', req.body);
+      return res.status(400).json({ error: 'Faltan campos requeridos.' });
+    }
+
+    const producto = await Producto.findById(id);
+    if (!producto) {
+      console.log('Producto no encontrado para el ID:', id);
+      return res.status(404).json({ error: 'Producto no encontrado.' });
+    }
+
+    if (cantidad > producto.cantidadUnidades) {
+      console.log('Cantidad a dar de baja excede el stock disponible:', cantidad, producto.cantidadUnidades);
+      return res.status(400).json({ error: 'La cantidad a dar de baja excede el stock disponible.' });
+    }
+
+    // Registrar la baja
+    const nuevaBaja = new Baja({
+      productoId: id,
+      usuarioId: new mongoose.Types.ObjectId(usuarioId),
+      cantidad: parseInt(cantidad),
+      motivo,
+      nota: nota || ''
+    });
+    await nuevaBaja.save();
+
+    // Actualizar la cantidad del producto
+    producto.cantidadUnidades -= parseInt(cantidad);
+
+    // Si la cantidad llega a 0 y el motivo es "eliminacion-permanente", eliminar el producto
+    if (producto.cantidadUnidades === 0 && motivo === 'eliminacion-permanente') {
+      await Producto.findByIdAndDelete(id);
+      console.log('Producto eliminado permanentemente:', id);
+      return res.status(200).json({ mensaje: 'Producto eliminado permanentemente.' });
+    }
+
+    await producto.save();
+    console.log('Producto dado de baja con éxito:', id);
+    res.status(200).json({ mensaje: 'Producto dado de baja con éxito.' });
+  } catch (error) {
+    console.error('Error al dar de baja el producto:', error);
+    res.status(500).json({ error: 'Error al dar de baja el producto: ' + error.message });
   }
 });
 

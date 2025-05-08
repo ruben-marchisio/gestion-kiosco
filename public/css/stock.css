@@ -1,0 +1,561 @@
+/* Estilos para stock.html */
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Encabezado */
+  header {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 0.5em 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .logo-img {
+    width: 50px;
+    height: auto;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+  }
+  
+  .nav-principal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .nav-principal a {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .nav-principal a:hover {
+    background-color: #3498db;
+    transform: scale(1.05);
+  }
+  
+  .nav-principal a.activo {
+    background-color: #3498db;
+  }
+  
+  .nav-principal a i {
+    margin-right: 5px;
+    font-size: 16px;
+  }
+  
+  /* Contenido Principal */
+  main {
+    flex: 1;
+    padding-top: 120px; /* Ajustado para el encabezado */
+    padding-bottom: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #stock {
+    width: 95%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Barra de Filtros */
+  .barra-filtros {
+    position: sticky;
+    top: 100px; /* Debajo del encabezado */
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .buscador {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  #buscador {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  
+  .boton-escaneo {
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  
+  .boton-escaneo i {
+    font-size: 16px;
+  }
+  
+  .boton-activar {
+    background-color: #2ecc71;
+    color: white;
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+  }
+  
+  .boton-activar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(46, 204, 113, 0.5);
+  }
+  
+  .boton-detener {
+    background-color: #e74c3c;
+    color: white;
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+  }
+  
+  .boton-detener:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
+  }
+  
+  .boton-filtros {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  
+  .boton-filtros:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+  }
+  
+  .menu-filtros {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    width: 200px;
+    z-index: 600;
+  }
+  
+  .filtro-opcion {
+    margin-bottom: 10px;
+  }
+  
+  .filtro-opcion label {
+    display: block;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+  }
+  
+  .filtro-opcion select,
+  .filtro-opcion input[type="checkbox"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  
+  #filtro-todo {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #filtro-todo:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Área de la Cámara */
+  .camara {
+    width: 100%;
+    max-width: 600px;
+    height: 120px;
+    margin: 10px auto;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #2c3e50;
+    border-radius: 8px;
+    background-color: #000;
+  }
+  
+  #camara-stock video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(0.7);
+  }
+  
+  /* Rectángulo guía para el código de barras */
+  .guia-codigo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 30px;
+    border: 2px dashed #ff0000;
+    pointer-events: none;
+  }
+  
+  /* Lista de Productos (Tarjetas) */
+  .lista-stock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 20px;
+  }
+  
+  .tarjeta-producto {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .tarjeta-producto.sin-stock {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid #dc3545;
+  }
+  
+  .tarjeta-producto:hover {
+    transform: translateY(-3px);
+  }
+  
+  .tarjeta-icono {
+    font-size: 24px;
+    color: #2c3e50;
+  }
+  
+  .tarjeta-info {
+    flex: 1;
+  }
+  
+  .tarjeta-nombre {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .tarjeta-marca {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .tarjeta-cantidad {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .tarjeta-cantidad.stock-bajo {
+    color: #e67e22; /* Naranja para cantidades bajas */
+  }
+  
+  .tarjeta-cantidad.sin-stock {
+    color: #dc3545; /* Rojo para sin stock */
+  }
+  
+  .tarjeta-precio {
+    font-size: 14px;
+    color: #2c3e50;
+  }
+  
+  /* Modales */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  
+  .modal-contenido {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  
+  .modal-contenido h2 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .modal-detalles {
+    margin-bottom: 20px;
+  }
+  
+  .detalle-item {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #2c3e50;
+  }
+  
+  .detalle-item span {
+    font-weight: 500;
+  }
+  
+  .modal-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .form-campo {
+    margin-bottom: 15px;
+  }
+  
+  .form-campo label {
+    display: block;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+  }
+  
+  .form-campo input,
+  .form-campo select,
+  .form-campo textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  .form-campo textarea {
+    height: 80px;
+    resize: none;
+  }
+  
+  /* Toasts */
+  .toast-container {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 3000;
+    width: 350px;
+  }
+  
+  .toast {
+    padding: 15px 25px;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    opacity: 0;
+    animation: fadeInToast 0.5s ease forwards, fadeOutToast 0.5s ease 4.5s forwards;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border-left: 5px solid;
+  }
+  
+  .toast.exito {
+    background-color: #28a745;
+    border-left-color: #218838;
+  }
+  
+  .toast.error {
+    background-color: #dc3545;
+    border-left-color: #c82333;
+  }
+  
+  .toast.info {
+    background-color: #17a2b8;
+    border-left-color: #138496;
+  }
+  
+  @keyframes fadeInToast {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes fadeOutToast {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); }
+  }
+  
+  /* Pie de Página */
+  footer {
+    text-align: center;
+    padding: 1em 0;
+    background-color: #2c3e50;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  
+  footer a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+  }
+  
+  footer a:hover {
+    color: #3498db;
+  }
+  
+  footer a i {
+    margin-right: 5px;
+  }
+  
+  /* Estilos Responsivos */
+  @media (max-width: 600px) {
+    header {
+      padding: 0.5em 0;
+    }
+  
+    .logo-img {
+      width: 40px;
+    }
+  
+    h1 {
+      font-size: 18px;
+    }
+  
+    .nav-principal {
+      gap: 5px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+  
+    .nav-principal a {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+  
+    main {
+      padding-top: 120px;
+      padding-bottom: 50px;
+    }
+  
+    #stock {
+      width: 90%;
+    }
+  
+    .barra-filtros {
+      top: 110px;
+      padding: 5px;
+      flex-direction: column;
+      gap: 5px;
+    }
+  
+    .buscador {
+      width: 100%;
+    }
+  
+    .boton-filtros {
+      width: 100%;
+      padding: 8px;
+    }
+  
+    .menu-filtros {
+      top: 90px;
+      width: 90%;
+      right: 5%;
+    }
+  
+    .tarjeta-producto {
+      padding: 10px;
+    }
+  
+    .tarjeta-nombre {
+      font-size: 14px;
+    }
+  
+    .tarjeta-marca,
+    .tarjeta-cantidad,
+    .tarjeta-precio {
+      font-size: 12px;
+    }
+  
+    .modal-contenido {
+      width: 90%;
+      padding: 15px;
+    }
+  
+    .toast-container {
+      top: 20px;
+      right: 10px;
+      width: 90%;
+      max-width: 350px;
+    }
+  
+    .toast {
+      font-size: 14px;
+      padding: 10px 15px;
+    }
+  }

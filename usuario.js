@@ -48,10 +48,21 @@ const clienteSchema = new Schema({
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true }
 });
 
+// Esquema para bajas (registro de acciones de dar de baja)
+const bajaSchema = new Schema({
+  productoId: { type: Schema.Types.ObjectId, ref: 'Producto', required: true },
+  usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  cantidad: { type: Number, required: true },
+  motivo: { type: String, enum: ['vencimiento', 'rotura', 'regalo', 'eliminacion-permanente'], required: true },
+  nota: { type: String, default: '' },
+  fecha: { type: Date, default: Date.now }
+});
+
 // Exportar los modelos
 module.exports = {
   Usuario: mongoose.model('Usuario', usuarioSchema),
   Producto: mongoose.model('Producto', productoSchema),
   Cliente: mongoose.model('Cliente', clienteSchema),
-  ProductoComun: mongoose.model('ProductoComun', productoComunSchema)
+  ProductoComun: mongoose.model('ProductoComun', productoComunSchema),
+  Baja: mongoose.model('Baja', bajaSchema)
 };
