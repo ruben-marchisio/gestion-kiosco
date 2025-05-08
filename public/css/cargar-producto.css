@@ -7,6 +7,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden; /* Evitar desplazamiento horizontal */
 }
 
 /* Encabezado */
@@ -82,6 +83,8 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  overflow-x: hidden; /* Evitar desplazamiento horizontal */
 }
 
 #cargar-producto {
@@ -90,6 +93,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow-x: hidden; /* Evitar desplazamiento horizontal */
 }
 
 .formulario-carga {
@@ -253,8 +257,9 @@ main {
   border: 2px solid #2c3e50;
   border-radius: 8px;
   background-color: #000;
-  overflow: visible;
+  overflow: hidden; /* Cambiar a hidden para evitar desbordamiento */
   display: block;
+  box-sizing: border-box;
 }
 
 #camara-carga video {

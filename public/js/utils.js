@@ -30,6 +30,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   let estaEscaneando = false;
   let ultimoCodigoEscaneado = null;
   let videoElement = null;
+  let inicializando = false; // Bandera para evitar múltiples inicializaciones
 
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
 
@@ -69,6 +70,12 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   }
 
   function inicializarQuagga() {
+    if (inicializando) {
+      console.log('Ya se está inicializando Quagga, ignorando nueva solicitud');
+      return;
+    }
+    inicializando = true;
+
     console.log('Inicializando Quagga...');
     contenedorCamara.innerHTML = '';
 
@@ -108,6 +115,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       },
       locate: true
     }, (err) => {
+      inicializando = false;
       if (err) {
         console.error('Error al inicializar Quagga:', err);
         mostrarToast('Error al inicializar la cámara: ' + err.message, 'error');
@@ -122,7 +130,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       console.log('Quagga inicializado correctamente');
       Quagga.start();
       escaneoActivo = true;
-      estaEscaneando = false; // Asegurar que estaEscaneando sea false al inicializar
+      estaEscaneando = false;
       contenedorCamara.style.display = 'block';
       btnEscanear.style.display = 'block';
       btnDetener.style.display = 'block';
@@ -148,13 +156,13 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     });
   }
 
-  // Simplificar eventos para evitar conflictos
+  // Configurar eventos para el botón Escanear
   const isMobile = isMobileDevice();
 
   if (isMobile) {
     btnEscanear.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      console.log('Touchstart en btnEscanear, escaneoActivo:', escaneoActivo);
+      console.log('Touchstart en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
       if (escaneoActivo) {
         estaEscaneando = true;
         ultimoCodigoEscaneado = null;
@@ -169,8 +177,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       estaEscaneando = false;
     });
   } else {
-    btnEscanear.addEventListener('click', () => {
-      console.log('Click en btnEscanear, escaneoActivo:', escaneoActivo);
+    btnEscanear.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('Click en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
       if (escaneoActivo) {
         estaEscaneando = true;
         ultimoCodigoEscaneado = null;
@@ -180,8 +189,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     });
   }
 
-  btnDetener.addEventListener('click', () => {
-    console.log('Click en btnDetener, escaneoActivo:', escaneoActivo);
+  // Configurar evento para el botón Detener
+  btnDetener.addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log('Click en btnDetener, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
     if (escaneoActivo) {
       Quagga.stop();
       stopVideoStream();
@@ -200,7 +211,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
   Quagga.offDetected();
   Quagga.onDetected((result) => {
-    if (!estaEscaneando) return;
+    if (!estaEscaneando) {
+      console.log('Ignorando detección, estaEscaneando es false');
+      return;
+    }
 
     const code = result.codeResult.code;
     console.log('Código detectado por Quagga:', code);
