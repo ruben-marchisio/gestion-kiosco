@@ -7,7 +7,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* Evitar desplazamiento horizontal */
+  overflow-x: hidden;
 }
 
 /* Encabezado */
@@ -84,7 +84,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 100%;
-  overflow-x: hidden; /* Evitar desplazamiento horizontal */
+  overflow-x: hidden;
 }
 
 #stock {
@@ -93,7 +93,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  overflow-x: hidden; /* Evitar desplazamiento horizontal */
+  overflow-x: hidden;
 }
 
 /* Barra de Filtros */
@@ -132,7 +132,7 @@ main {
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .boton-escaneo i {
@@ -148,6 +148,12 @@ main {
 .boton-activar:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(46, 204, 113, 0.5);
+}
+
+.boton-activar.boton-presionado {
+  background-color: #27ae60; /* Verde más oscuro para indicar presión */
+  transform: translateY(2px); /* Simular hundimiento */
+  box-shadow: 0 2px 5px rgba(46, 204, 113, 0.2); /* Reducir sombra */
 }
 
 .boton-detener {
@@ -234,7 +240,7 @@ main {
   border: 2px solid #2c3e50;
   border-radius: 8px;
   background-color: #000;
-  overflow: hidden; /* Cambiar a hidden para evitar desbordamiento */
+  overflow: hidden;
   display: block;
   box-sizing: border-box;
 }

@@ -30,7 +30,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   let estaEscaneando = false;
   let ultimoCodigoEscaneado = null;
   let videoElement = null;
-  let inicializando = false; // Bandera para evitar múltiples inicializaciones
+  let inicializando = false;
 
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
 
@@ -163,6 +163,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.addEventListener('touchstart', (e) => {
       e.preventDefault();
       console.log('Touchstart en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
+      btnEscanear.classList.add('boton-presionado'); // Añadir efecto visual
       if (escaneoActivo) {
         estaEscaneando = true;
         ultimoCodigoEscaneado = null;
@@ -174,18 +175,33 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.addEventListener('touchend', (e) => {
       e.preventDefault();
       console.log('Touchend en btnEscanear');
+      btnEscanear.classList.remove('boton-presionado'); // Remover efecto visual
       estaEscaneando = false;
     });
   } else {
-    btnEscanear.addEventListener('click', (e) => {
+    btnEscanear.addEventListener('mousedown', (e) => {
       e.preventDefault();
-      console.log('Click en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
+      console.log('Mousedown en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
+      btnEscanear.classList.add('boton-presionado'); // Añadir efecto visual
       if (escaneoActivo) {
         estaEscaneando = true;
         ultimoCodigoEscaneado = null;
       } else {
         inicializarQuagga();
       }
+    });
+
+    btnEscanear.addEventListener('mouseup', (e) => {
+      e.preventDefault();
+      console.log('Mouseup en btnEscanear');
+      btnEscanear.classList.remove('boton-presionado'); // Remover efecto visual
+      estaEscaneando = false;
+    });
+
+    btnEscanear.addEventListener('mouseleave', (e) => {
+      console.log('Mouseleave en btnEscanear');
+      btnEscanear.classList.remove('boton-presionado'); // Remover efecto visual si el mouse sale del botón
+      estaEscaneando = false;
     });
   }
 
