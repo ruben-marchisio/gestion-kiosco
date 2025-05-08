@@ -142,6 +142,19 @@ h1 {
   box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
 }
 
+.boton-primario.cargando .cargando {
+  display: inline-flex;
+  align-items: center;
+}
+
+.boton-primario.cargando .fas.fa-user-plus {
+  display: none;
+}
+
+.boton-primario.cargando .cargando i {
+  margin-right: 5px;
+}
+
 .boton-secundario {
   background-color: #3498db; /* Color azul para "Iniciar Sesión" */
   color: white;

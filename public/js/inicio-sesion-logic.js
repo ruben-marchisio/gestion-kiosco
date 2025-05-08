@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Elementos del DOM
   const formIniciarSesion = document.querySelector('#form-iniciar-sesion');
-  const irARegistroBtn = document.querySelector('#ir-a-registro');
+  const btnIniciarSesion = document.querySelector('#iniciar-sesion');
 
   // Construcción de la URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
 
   // Función para alternar visibilidad de la contraseña
   window.togglePassword = function(id) {
-    const input = document.querySelector(`#${id}`);
+    const input = document.getElementById(id);
     const icon = input.nextElementSibling;
     if (input.type === 'password') {
       input.type = 'text';
@@ -26,35 +26,42 @@ document.addEventListener('DOMContentLoaded', () => {
   // Manejar el inicio de sesión
   formIniciarSesion.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Mostrar estado de carga
+    btnIniciarSesion.classList.add('cargando');
+    btnIniciarSesion.disabled = true;
+
     const formData = new FormData(formIniciarSesion);
     const data = Object.fromEntries(formData);
 
     try {
-      const respuesta = await fetch(`${BASE_URL}/api/iniciar-sesion`, {
+      const response = await fetch(`${BASE_URL}/api/iniciar-sesion`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          email: data.email,
+          contrasena: data.contrasena
+        })
       });
 
-      const resultado = await respuesta.json();
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error al iniciar sesión');
 
-      if (respuesta.ok) {
-        localStorage.setItem('usuarioId', resultado.usuarioId);
-        localStorage.setItem('nombreKiosco', resultado.nombreKiosco);
-        window.location.href = '/public/menu-principal.html';
-      } else {
-        throw new Error(resultado.error || 'Error al iniciar sesión');
-      }
+      // Guardar datos en localStorage
+      localStorage.setItem('usuarioId', result.usuarioId);
+      localStorage.setItem('nombreKiosco', result.nombreKiosco);
+
+      // Redirigir al menú principal
+      window.location.href = '/public/menu-principal.html';
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       alert('Error al iniciar sesión: ' + error.message);
+    } finally {
+      // Ocultar estado de carga
+      btnIniciarSesion.classList.remove('cargando');
+      btnIniciarSesion.disabled = false;
     }
-  });
-
-  // Redirigir a la página de registro
-  irARegistroBtn.addEventListener('click', () => {
-    window.location.href = '/public/registrarse.html';
   });
 });

@@ -37,7 +37,10 @@
             <i class="fas fa-eye toggle-password" onclick="togglePassword('contrasena')"></i>
           </div>
         </div>
-        <button type="submit" class="boton-accion boton-primario"><i class="fas fa-user-plus"></i> Registrarse</button>
+        <button type="submit" id="registrarse" class="boton-accion boton-primario">
+          <i class="fas fa-user-plus"></i> Registrarse
+          <span class="cargando" style="display: none;"><i class="fas fa-spinner fa-spin"></i> Cargando...</span>
+        </button>
         <a href="/public/inicio-sesion.html" id="ir-a-inicio-sesion" class="boton-accion boton-secundario"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
       </form>
     </div>

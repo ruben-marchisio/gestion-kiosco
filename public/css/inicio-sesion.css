@@ -142,6 +142,19 @@ h1 {
   box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
 }
 
+.boton-primario.cargando .cargando {
+  display: inline-flex;
+  align-items: center;
+}
+
+.boton-primario.cargando .fas.fa-sign-in-alt {
+  display: none;
+}
+
+.boton-primario.cargando .cargando i {
+  margin-right: 5px;
+}
+
 .boton-secundario {
   background-color: #e74c3c;
   color: white;

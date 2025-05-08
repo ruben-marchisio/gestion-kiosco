@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('registrarse-logic.js cargado');
 
-  const formRegistrarse = document.querySelector('#form-registrarse');
+  const formRegistrarse = document.querySelector('#form-registro'); // Corregido: #form-registrarse -> #form-registro
+  const btnRegistrarse = document.querySelector('#registrarse');
   const botonIrAInicioSesion = document.querySelector('#ir-a-inicio-sesion');
 
   // Construcción de la URL base sin especificar el puerto
@@ -24,10 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       console.log('Evento submit disparado para registro');
 
+      // Mostrar estado de carga
+      btnRegistrarse.classList.add('cargando');
+      btnRegistrarse.disabled = true;
+
       const formData = new FormData(formRegistrarse);
       const data = Object.fromEntries(formData);
       // Ajustar el nombre del campo para que coincida con lo que espera el backend
-      data.nombreKiosco = data['nombre-kiosco'];
+      data.nombreKiosco = data['nombreKiosco'];
 
       console.log('Intentando registrarse con:', data);
 
@@ -58,6 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (error) {
         console.error('Error detallado al conectar con el servidor:', error);
         alert('Error al conectar con el servidor: ' + error.message);
+      } finally {
+        // Ocultar estado de carga
+        btnRegistrarse.classList.remove('cargando');
+        btnRegistrarse.disabled = false;
       }
     });
   } else {
