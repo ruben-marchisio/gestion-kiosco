@@ -1,394 +1,355 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('stock-logic.js cargado');
-  
-    // Elementos del DOM
-    const buscador = document.querySelector('#buscador');
-    const btnEscanear = document.querySelector('#escanear');
-    const btnDetenerEscaneo = document.querySelector('#detener-escaneo');
-    const camaraStock = document.querySelector('#camara-stock');
-    const btnFiltros = document.querySelector('#boton-filtros');
-    const menuFiltros = document.querySelector('#menu-filtros');
-    const btnFiltroTodo = document.querySelector('#filtro-todo');
-    const filtroCategoria = document.querySelector('#filtro-categoria');
-    const filtroSubcategoria = document.querySelector('#filtro-subcategoria');
-    const filtroSinStock = document.querySelector('#filtro-sin-stock');
-    const filtroPorVencer = document.querySelector('#filtro-por-vencer');
-    const listaStock = document.querySelector('#lista-stock');
-    const modalProducto = document.querySelector('#modal-producto');
-    const modalDetalles = document.querySelector('#modal-detalles');
-    const btnEditarPrecios = document.querySelector('#modal-editar-precios');
-    const btnAgregarStock = document.querySelector('#modal-agregar-stock');
-    const btnDarBaja = document.querySelector('#modal-dar-baja');
-    const btnCerrarModal = document.querySelector('#modal-cerrar');
-    const modalEditarPrecios = document.querySelector('#modal-editar-precios');
-    const editPrecioLista = document.querySelector('#edit-precio-lista');
-    const editPorcentajeGanancia = document.querySelector('#edit-porcentaje-ganancia');
-    const editPrecioFinal = document.querySelector('#edit-precio-final');
-    const btnGuardarPrecios = document.querySelector('#edit-guardar-precios');
-    const btnCancelarPrecios = document.querySelector('#edit-cancelar-precios');
-    const modalAgregarStock = document.querySelector('#modal-agregar-stock');
-    const agregarCantidad = document.querySelector('#agregar-cantidad');
-    const agregarFechaVencimiento = document.querySelector('#agregar-fecha-vencimiento');
-    const btnGuardarStock = document.querySelector('#agregar-guardar-stock');
-    const btnCancelarStock = document.querySelector('#agregar-cancelar-stock');
-    const modalDarBaja = document.querySelector('#modal-dar-baja');
-    const bajaCantidad = document.querySelector('#baja-cantidad');
-    const bajaMotivo = document.querySelector('#baja-motivo');
-    const bajaNota = document.querySelector('#baja-nota');
-    const btnConfirmarBaja = document.querySelector('#baja-confirmar');
-    const btnCancelarBaja = document.querySelector('#baja-cancelar');
-  
-    // Estado
-    let productos = []; // Lista completa de productos cargados desde el servidor
-    let productosFiltrados = []; // Productos después de aplicar filtros
-    let productoSeleccionado = null; // Producto actualmente seleccionado en el modal
-  
-    // Construcción de la URL base
-    const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
-  
-    // Cargar productos al iniciar
-    async function cargarProductos() {
-      try {
-        const usuarioId = localStorage.getItem('usuarioId');
-        const response = await fetch(`${BASE_URL}/api/productos?usuarioId=${usuarioId}`);
-        productos = await response.json();
-        productosFiltrados = [...productos];
-        console.log('Productos cargados:', productos.length);
-        actualizarListaProductos();
-      } catch (error) {
-        console.error('Error al cargar productos:', error);
-        mostrarToast('Error al cargar el stock: ' + error.message, 'error');
-      }
-    }
-  
-    // Actualizar la lista de productos en la interfaz
-    function actualizarListaProductos() {
-      listaStock.innerHTML = '';
-      productosFiltrados.forEach(producto => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = `tarjeta-producto ${producto.cantidadUnidades === 0 ? 'sin-stock' : ''}`;
-        tarjeta.innerHTML = `
-          <div class="tarjeta-icono">
-            <i class="${producto.icono !== 'default' ? `fas fa-${producto.icono}` : ''}"></i>
-          </div>
-          <div class="tarjeta-info">
-            <div class="tarjeta-nombre">${producto.nombre}</div>
-            <div class="tarjeta-marca">Marca: ${producto.marca}</div>
-            <div class="tarjeta-cantidad ${producto.cantidadUnidades === 0 ? 'sin-stock' : producto.cantidadUnidades < 5 ? 'stock-bajo' : ''}">
-              Cantidad: ${producto.cantidadUnidades} ${producto.unidad}
-            </div>
-            <div class="tarjeta-precio">Precio Final: $${producto.precioFinal.toFixed(2)}</div>
-          </div>
-        `;
-        tarjeta.addEventListener('click', () => abrirModalProducto(producto));
-        listaStock.appendChild(tarjeta);
-      });
-    }
-  
-    // Abrir el modal con los detalles del producto
-    function abrirModalProducto(producto) {
-      productoSeleccionado = producto;
-      modalDetalles.innerHTML = `
-        <div class="detalle-item"><strong>Nombre:</strong> ${producto.nombre}</div>
-        <div class="detalle-item"><strong>Marca:</strong> ${producto.marca}</div>
-        <div class="detalle-item"><strong>Categoría:</strong> ${producto.categoria}</div>
-        <div class="detalle-item"><strong>Subcategoría:</strong> ${producto.subcategoria || 'N/A'}</div>
-        <div class="detalle-item"><strong>Cantidad:</strong> ${producto.cantidadUnidades} ${producto.unidad}</div>
-        <div class="detalle-item"><strong>Precio de Lista:</strong> $${producto.precioLista.toFixed(2)}</div>
-        <div class="detalle-item"><strong>Porcentaje de Ganancia:</strong> ${producto.porcentajeGanancia}%</div>
-        <div class="detalle-item"><strong>Precio Final:</strong> $${producto.precioFinal.toFixed(2)}</div>
-        <div class="detalle-item"><strong>Fecha de Vencimiento:</strong> ${new Date(producto.fechaVencimiento).toLocaleDateString()}</div>
-      `;
-      modalProducto.style.display = 'flex';
-    }
-  
-    // Cerrar el modal de detalles
-    btnCerrarModal.addEventListener('click', () => {
-      modalProducto.style.display = 'none';
-      productoSeleccionado = null;
-    });
-  
-    // Buscador
-    buscador.addEventListener('input', () => {
-      const termino = buscador.value.toLowerCase();
-      aplicarFiltros({ termino });
-    });
-  
-    // Escáner
-    btnEscanear.addEventListener('click', () => {
-      const completarCallback = (producto) => {
-        if (producto) {
-          productosFiltrados = [producto];
-          actualizarListaProductos();
-          camaraStock.style.display = 'none';
-          btnEscanear.style.display = 'block';
-          btnDetenerEscaneo.style.display = 'none';
-        } else {
+  console.log('stock-logic.js cargado');
+
+  // Elementos del DOM
+  const contenedorCamara = document.querySelector('#contenedor-camara');
+  const btnEscanear = document.querySelector('#escanear');
+  const btnDetener = document.querySelector('#detener');
+  const inputBuscador = document.querySelector('#buscador');
+  const selectCategoria = document.querySelector('#filtro-categoria');
+  const selectSubcategoria = document.querySelector('#filtro-subcategoria');
+  const checkboxSinStock = document.querySelector('#filtro-sin-stock');
+  const checkboxPorVencer = document.querySelector('#filtro-por-vencer');
+  const btnMostrarTodo = document.querySelector('#mostrar-todo');
+  const listaProductos = document.querySelector('#lista-productos');
+  const modalDetalles = document.querySelector('#modal-detalles');
+  const modalContenido = document.querySelector('#modal-contenido');
+  const modalEditarPrecios = document.querySelector('#modal-editar-precios');
+  const formEditarPrecios = document.querySelector('#form-editar-precios');
+  const modalAgregarStock = document.querySelector('#modal-agregar-stock');
+  const formAgregarStock = document.querySelector('#form-agregar-stock');
+  const modalDarBaja = document.querySelector('#modal-dar-baja');
+  const formDarBaja = document.querySelector('#form-dar-baja');
+
+  let productos = [];
+  let productosFiltrados = [];
+  let productoSeleccionado = null;
+
+  // Construcción de la URL base
+  const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
+
+  // Obtener parámetros de la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoInicial = urlParams.get('codigo');
+
+  // Cargar productos al iniciar
+  async function cargarProductos() {
+    try {
+      const usuarioId = localStorage.getItem('usuarioId');
+      const response = await fetch(`${BASE_URL}/api/productos?usuarioId=${usuarioId}`);
+      productos = await response.json();
+      productosFiltrados = [...productos];
+      if (codigoInicial) {
+        productosFiltrados = productos.filter(producto => producto.codigo === codigoInicial);
+        if (productosFiltrados.length === 0) {
           mostrarToast('Producto no encontrado con ese código de barras.', 'info');
         }
-      };
-  
-      iniciarEscaneoContinuo(
-        camaraStock,
-        btnEscanear,
-        btnDetenerEscaneo,
-        { value: '' }, // Input ficticio para Quagga
-        completarCallback,
-        null
-      );
+      }
+      actualizarListaProductos();
+      actualizarFiltros();
+    } catch (error) {
+      console.error('Error al cargar productos:', error);
+      mostrarToast('Error al cargar productos: ' + error.message, 'error');
+    }
+  }
+
+  // Actualizar la lista de productos
+  function actualizarListaProductos() {
+    listaProductos.innerHTML = '';
+    productosFiltrados.forEach(producto => {
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'tarjeta-producto';
+      if (producto.cantidadUnidades === 0) {
+        tarjeta.classList.add('sin-stock');
+      }
+      tarjeta.innerHTML = `
+        <div class="icono-producto">
+          <i class="${producto.icono !== 'default' ? `fas fa-${producto.icono}` : ''}"></i>
+        </div>
+        <h3>${producto.nombre}</h3>
+        <p>Marca: ${producto.marca}</p>
+        <p>Cantidad: ${producto.cantidadUnidades}</p>
+        <p>Precio Final: $${producto.precioFinal.toFixed(2)}</p>
+      `;
+      tarjeta.addEventListener('click', () => mostrarDetallesProducto(producto));
+      listaProductos.appendChild(tarjeta);
     });
-  
-    // Mostrar/Ocultar el menú de filtros
-    btnFiltros.addEventListener('click', () => {
-      menuFiltros.style.display = menuFiltros.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // Actualizar los filtros de categoría y subcategoría
+  function actualizarFiltros() {
+    const categorias = [...new Set(productos.map(p => p.categoria))];
+    selectCategoria.innerHTML = '<option value="">Todas las categorías</option>';
+    categorias.forEach(categoria => {
+      const option = document.createElement('option');
+      option.value = categoria;
+      option.textContent = categoria.charAt(0).toUpperCase() + categoria.slice(1);
+      selectCategoria.appendChild(option);
     });
-  
-    // Actualizar subcategorías según la categoría seleccionada
-    filtroCategoria.addEventListener('change', () => {
-      const categoria = filtroCategoria.value;
-      const subcategorias = {
-        bebidas: ['con-alcohol', 'gaseosas', 'agua', 'energizante'],
-        golosinas: ['chocolate', 'caramelos', 'chicles'],
-        lacteos: ['leche', 'yogures', 'quesos'],
-        cigarrillos: ['comunes', 'convertibles', 'tabaco'],
-        fiambre: ['primera-marca', 'segunda-marca'],
-        congelados: ['carnes', 'helados'],
-        panaderia: ['dulce', 'salado'],
-        almacen: ['harinas', 'aceites-vinagres', 'aderezos-condimentos', 'fideos-arroz', 'enlatados-conservas'],
-        verduleria: ['frutas', 'vegetales', 'huevos']
-      };
-  
-      filtroSubcategoria.innerHTML = '<option value="">Todas</option>';
-      if (categoria && subcategorias[categoria]) {
-        subcategorias[categoria].forEach(sub => {
+
+    selectCategoria.addEventListener('change', () => {
+      const categoriaSeleccionada = selectCategoria.value;
+      selectSubcategoria.innerHTML = '<option value="">Todas las subcategorías</option>';
+      if (categoriaSeleccionada) {
+        const subcategorias = [...new Set(productos.filter(p => p.categoria === categoriaSeleccionada).map(p => p.subcategoria).filter(s => s))];
+        subcategorias.forEach(subcategoria => {
           const option = document.createElement('option');
-          option.value = sub;
-          option.textContent = sub.charAt(0).toUpperCase() + sub.slice(1).replace('-', ' ');
-          filtroSubcategoria.appendChild(option);
+          option.value = subcategoria;
+          option.textContent = subcategoria;
+          selectSubcategoria.appendChild(option);
         });
       }
-  
-      aplicarFiltros();
+      filtrarProductos();
     });
-  
-    // Aplicar filtros
-    function aplicarFiltros(opciones = {}) {
-      const termino = opciones.termino !== undefined ? opciones.termino : buscador.value.toLowerCase();
-      const categoria = filtroCategoria.value;
-      const subcategoria = filtroSubcategoria.value;
-      const sinStock = filtroSinStock.checked;
-      const porVencer = filtroPorVencer.checked;
-  
-      productosFiltrados = productos.filter(producto => {
-        // Filtro por término de búsqueda
-        const coincideTermino = termino ? 
-          producto.nombre.toLowerCase().includes(termino) || 
-          producto.marca.toLowerCase().includes(termino) : true;
-  
-        // Filtro por categoría
-        const coincideCategoria = categoria ? producto.categoria === categoria : true;
-  
-        // Filtro por subcategoría
-        const coincideSubcategoria = subcategoria ? producto.subcategoria === subcategoria : true;
-  
-        // Filtro sin stock
-        const coincideSinStock = sinStock ? producto.cantidadUnidades === 0 : true;
-  
-        // Filtro por vencer (próximos 7 días)
-        const coincidePorVencer = porVencer ? 
-          (new Date(producto.fechaVencimiento) >= new Date() && 
-           new Date(producto.fechaVencimiento) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) : true;
-  
-        return coincideTermino && coincideCategoria && coincideSubcategoria && coincideSinStock && coincidePorVencer;
-      });
-  
-      actualizarListaProductos();
-    }
-  
-    // Evento para el botón "Mostrar Todo"
-    btnFiltroTodo.addEventListener('click', () => {
-      buscador.value = '';
-      filtroCategoria.value = '';
-      filtroSubcategoria.innerHTML = '<option value="">Todas</option>';
-      filtroSubcategoria.value = '';
-      filtroSinStock.checked = false;
-      filtroPorVencer.checked = false;
+
+    selectSubcategoria.addEventListener('change', filtrarProductos);
+    inputBuscador.addEventListener('input', filtrarProductos);
+    checkboxSinStock.addEventListener('change', filtrarProductos);
+    checkboxPorVencer.addEventListener('change', filtrarProductos);
+
+    btnMostrarTodo.addEventListener('click', () => {
+      inputBuscador.value = '';
+      selectCategoria.value = '';
+      selectSubcategoria.innerHTML = '<option value="">Todas las subcategorías</option>';
+      checkboxSinStock.checked = false;
+      checkboxPorVencer.checked = false;
       productosFiltrados = [...productos];
       actualizarListaProductos();
-      menuFiltros.style.display = 'none';
     });
-  
-    // Eventos para los filtros
-    [filtroCategoria, filtroSubcategoria, filtroSinStock, filtroPorVencer].forEach(filtro => {
-      filtro.addEventListener('change', () => aplicarFiltros());
-    });
-  
-    // Abrir el modal para editar precios
-    btnEditarPrecios.addEventListener('click', () => {
-      modalProducto.style.display = 'none';
-      editPrecioLista.value = productoSeleccionado.precioLista;
-      editPorcentajeGanancia.value = productoSeleccionado.porcentajeGanancia;
-      editPrecioFinal.value = productoSeleccionado.precioFinal;
-      modalEditarPrecios.style.display = 'flex';
-    });
-  
-    // Recalcular precio final al cambiar precio de lista o porcentaje de ganancia
-    [editPrecioLista, editPorcentajeGanancia].forEach(input => {
-      input.addEventListener('input', () => {
-        const precioLista = parseFloat(editPrecioLista.value) || 0;
-        const porcentajeGanancia = parseFloat(editPorcentajeGanancia.value) || 0;
-        const precioFinal = precioLista * (1 + porcentajeGanancia / 100);
-        editPrecioFinal.value = precioFinal.toFixed(2);
+  }
+
+  // Filtrar productos según los criterios
+  function filtrarProductos() {
+    productosFiltrados = [...productos];
+
+    // Filtro por buscador
+    const terminoBusqueda = inputBuscador.value.toLowerCase();
+    if (terminoBusqueda) {
+      productosFiltrados = productosFiltrados.filter(producto =>
+        producto.nombre.toLowerCase().includes(terminoBusqueda) ||
+        producto.marca.toLowerCase().includes(terminoBusqueda)
+      );
+    }
+
+    // Filtro por categoría
+    const categoriaSeleccionada = selectCategoria.value;
+    if (categoriaSeleccionada) {
+      productosFiltrados = productosFiltrados.filter(producto => producto.categoria === categoriaSeleccionada);
+    }
+
+    // Filtro por subcategoría
+    const subcategoriaSeleccionada = selectSubcategoria.value;
+    if (subcategoriaSeleccionada) {
+      productosFiltrados = productosFiltrados.filter(producto => producto.subcategoria === subcategoriaSeleccionada);
+    }
+
+    // Filtro por sin stock
+    if (checkboxSinStock.checked) {
+      productosFiltrados = productosFiltrados.filter(producto => producto.cantidadUnidades === 0);
+    }
+
+    // Filtro por productos por vencer
+    if (checkboxPorVencer.checked) {
+      const hoy = new Date();
+      const limiteVencimiento = new Date();
+      limiteVencimiento.setDate(hoy.getDate() + 7);
+      productosFiltrados = productosFiltrados.filter(producto => {
+        const fechaVencimiento = new Date(producto.fechaVencimiento);
+        return fechaVencimiento >= hoy && fechaVencimiento <= limiteVencimiento;
       });
+    }
+
+    actualizarListaProductos();
+  }
+
+  // Mostrar detalles de un producto en un modal
+  function mostrarDetallesProducto(producto) {
+    productoSeleccionado = producto;
+    modalContenido.innerHTML = `
+      <h3>${producto.nombre}</h3>
+      <p><strong>Marca:</strong> ${producto.marca}</p>
+      <p><strong>Categoría:</strong> ${producto.categoria}${producto.subcategoria ? ` (${producto.subcategoria})` : ''}</p>
+      <p><strong>Cantidad Total:</strong> ${producto.cantidadUnidades}</p>
+      <p><strong>Unidad:</strong> ${producto.unidad}</p>
+      <p><strong>Packs:</strong> ${producto.packs}</p>
+      <p><strong>Unidades por Pack:</strong> ${producto.unidadesPorPack}</p>
+      <p><strong>Docenas:</strong> ${producto.docenas}</p>
+      <p><strong>Unidades Sueltas:</strong> ${producto.unidadesSueltas}</p>
+      <p><strong>Precio de Lista:</strong> $${producto.precioLista.toFixed(2)}</p>
+      <p><strong>Porcentaje de Ganancia:</strong> ${producto.porcentajeGanancia}%</p>
+      <p><strong>Precio Final:</strong> $${producto.precioFinal.toFixed(2)}</p>
+      <p><strong>Fecha de Vencimiento:</strong> ${new Date(producto.fechaVencimiento).toLocaleDateString()}</p>
+      <p><strong>Código:</strong> ${producto.codigo || 'Sin código'}</p>
+      <p><strong>Ícono:</strong> <i class="${producto.icono !== 'default' ? `fas fa-${producto.icono}` : ''}"></i></p>
+      <div class="acciones-modal">
+        <button id="editar-precios" class="boton-accion boton-primario"><i class="fas fa-edit"></i> Editar Precios</button>
+        <button id="agregar-stock" class="boton-accion boton-primario"><i class="fas fa-plus"></i> Agregar Stock</button>
+        <button id="dar-baja" class="boton-accion boton-secundario"><i class="fas fa-minus-circle"></i> Dar de Baja</button>
+      </div>
+    `;
+    modalDetalles.style.display = 'flex';
+
+    document.querySelector('#editar-precios').addEventListener('click', () => {
+      modalDetalles.style.display = 'none';
+      modalEditarPrecios.style.display = 'flex';
+      document.querySelector('#editar-precio-lista').value = producto.precioLista;
+      document.querySelector('#editar-porcentaje-ganancia').value = producto.porcentajeGanancia;
+      document.querySelector('#editar-precio-final').value = producto.precioFinal;
     });
-  
-    // Guardar los precios editados
-    btnGuardarPrecios.addEventListener('click', async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/precios`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            precioLista: parseFloat(editPrecioLista.value),
-            porcentajeGanancia: parseFloat(editPorcentajeGanancia.value),
-            precioFinal: parseFloat(editPrecioFinal.value)
-          })
-        });
-  
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Error al actualizar los precios');
-  
-        // Actualizar el producto localmente
-        productoSeleccionado.precioLista = parseFloat(editPrecioLista.value);
-        productoSeleccionado.porcentajeGanancia = parseFloat(editPorcentajeGanancia.value);
-        productoSeleccionado.precioFinal = parseFloat(editPrecioFinal.value);
-        actualizarListaProductos();
-  
-        modalEditarPrecios.style.display = 'none';
-        mostrarToast('Precios actualizados con éxito.', 'success');
-      } catch (error) {
-        console.error('Error al guardar los precios:', error);
-        mostrarToast('Error al guardar los precios: ' + error.message, 'error');
-      }
-    });
-  
-    // Cancelar edición de precios
-    btnCancelarPrecios.addEventListener('click', () => {
-      modalEditarPrecios.style.display = 'none';
-    });
-  
-    // Abrir el modal para agregar stock
-    btnAgregarStock.addEventListener('click', () => {
-      modalProducto.style.display = 'none';
-      agregarCantidad.value = '';
-      agregarFechaVencimiento.value = productoSeleccionado.fechaVencimiento ? new Date(productoSeleccionado.fechaVencimiento).toISOString().split('T')[0] : '';
+
+    document.querySelector('#agregar-stock').addEventListener('click', () => {
+      modalDetalles.style.display = 'none';
       modalAgregarStock.style.display = 'flex';
+      document.querySelector('#agregar-cantidad').value = 0;
+      document.querySelector('#agregar-fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
     });
-  
-    // Guardar el stock agregado
-    btnGuardarStock.addEventListener('click', async () => {
-      const cantidad = parseInt(agregarCantidad.value);
-      if (!cantidad || cantidad <= 0) {
-        mostrarToast('La cantidad a agregar debe ser mayor que 0.', 'error');
-        return;
-      }
-  
-      try {
-        const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/agregar-stock`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            cantidad,
-            fechaVencimiento: agregarFechaVencimiento.value
-          })
-        });
-  
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Error al agregar stock');
-  
-        // Actualizar el producto localmente
-        productoSeleccionado.cantidadUnidades += cantidad;
-        productoSeleccionado.fechaVencimiento = new Date(agregarFechaVencimiento.value);
-        actualizarListaProductos();
-  
-        modalAgregarStock.style.display = 'none';
-        mostrarToast('Stock agregado con éxito.', 'success');
-      } catch (error) {
-        console.error('Error al agregar stock:', error);
-        mostrarToast('Error al agregar stock: ' + error.message, 'error');
-      }
-    });
-  
-    // Cancelar agregar stock
-    btnCancelarStock.addEventListener('click', () => {
-      modalAgregarStock.style.display = 'none';
-    });
-  
-    // Abrir el modal para dar de baja
-    btnDarBaja.addEventListener('click', () => {
-      modalProducto.style.display = 'none';
-      bajaCantidad.value = '';
-      bajaMotivo.value = 'vencimiento';
-      bajaNota.value = '';
+
+    document.querySelector('#dar-baja').addEventListener('click', () => {
+      modalDetalles.style.display = 'none';
       modalDarBaja.style.display = 'flex';
+      document.querySelector('#dar-baja-cantidad').value = 0;
     });
-  
-    // Confirmar la baja
-    btnConfirmarBaja.addEventListener('click', async () => {
-      const cantidad = parseInt(bajaCantidad.value);
-      if (!cantidad || cantidad <= 0) {
-        mostrarToast('La cantidad a dar de baja debe ser mayor que 0.', 'error');
-        return;
+  }
+
+  // Cerrar modales
+  document.querySelectorAll('.modal .cerrar').forEach(cerrar => {
+    cerrar.addEventListener('click', () => {
+      cerrar.parentElement.parentElement.style.display = 'none';
+    });
+  });
+
+  // Manejar el formulario de editar precios
+  formEditarPrecios.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const precioLista = parseFloat(document.querySelector('#editar-precio-lista').value);
+    const porcentajeGanancia = parseFloat(document.querySelector('#editar-porcentaje-ganancia').value);
+    const precioFinal = parseFloat(document.querySelector('#editar-precio-final').value);
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/precios`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ precioLista, porcentajeGanancia, precioFinal })
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error al actualizar los precios');
+
+      mostrarToast('Precios actualizados con éxito.', 'success');
+      productoSeleccionado.precioLista = precioLista;
+      productoSeleccionado.porcentajeGanancia = porcentajeGanancia;
+      productoSeleccionado.precioFinal = precioFinal;
+      const index = productos.findIndex(p => p._id === productoSeleccionado._id);
+      productos[index] = { ...productoSeleccionado };
+      productosFiltrados = [...productos];
+      actualizarListaProductos();
+      modalEditarPrecios.style.display = 'none';
+    } catch (error) {
+      console.error('Error al actualizar precios:', error);
+      mostrarToast('Error al actualizar precios: ' + error.message, 'error');
+    }
+  });
+
+  // Actualizar precio final en el formulario de editar precios
+  document.querySelector('#editar-precio-lista').addEventListener('input', actualizarPrecioFinalEditar);
+  document.querySelector('#editar-porcentaje-ganancia').addEventListener('input', actualizarPrecioFinalEditar);
+
+  function actualizarPrecioFinalEditar() {
+    const precioLista = parseFloat(document.querySelector('#editar-precio-lista').value) || 0;
+    const porcentajeGanancia = parseFloat(document.querySelector('#editar-porcentaje-ganancia').value) || 0;
+    const precioFinal = precioLista * (1 + porcentajeGanancia / 100);
+    document.querySelector('#editar-precio-final').value = precioFinal.toFixed(2);
+  }
+
+  // Manejar el formulario de agregar stock
+  formAgregarStock.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const cantidad = parseInt(document.querySelector('#agregar-cantidad').value);
+    const fechaVencimiento = document.querySelector('#agregar-fecha-vencimiento').value;
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/agregar-stock`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cantidad, fechaVencimiento })
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error al agregar stock');
+
+      mostrarToast('Stock agregado con éxito.', 'success');
+      productoSeleccionado.cantidadUnidades += cantidad;
+      productoSeleccionado.fechaVencimiento = fechaVencimiento;
+      const index = productos.findIndex(p => p._id === productoSeleccionado._id);
+      productos[index] = { ...productoSeleccionado };
+      productosFiltrados = [...productos];
+      actualizarListaProductos();
+      modalAgregarStock.style.display = 'none';
+    } catch (error) {
+      console.error('Error al agregar stock:', error);
+      mostrarToast('Error al agregar stock: ' + error.message, 'error');
+    }
+  });
+
+  // Manejar el formulario de dar de baja
+  formDarBaja.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const cantidad = parseInt(document.querySelector('#dar-baja-cantidad').value);
+    const motivo = document.querySelector('#motivo-baja').value;
+    const nota = document.querySelector('#nota-baja').value;
+
+    try {
+      const usuarioId = localStorage.getItem('usuarioId');
+      const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/dar-baja`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ usuarioId, cantidad, motivo, nota })
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error al dar de baja el producto');
+
+      mostrarToast(result.mensaje || 'Producto dado de baja con éxito.', 'success');
+      if (motivo === 'eliminacion-permanente' && productoSeleccionado.cantidadUnidades === cantidad) {
+        productos = productos.filter(p => p._id !== productoSeleccionado._id);
+      } else {
+        productoSeleccionado.cantidadUnidades -= cantidad;
+        const index = productos.findIndex(p => p._id === productoSeleccionado._id);
+        productos[index] = { ...productoSeleccionado };
       }
-  
-      if (cantidad > productoSeleccionado.cantidadUnidades) {
-        mostrarToast('La cantidad a dar de baja excede el stock disponible.', 'error');
-        return;
-      }
-  
-      try {
-        const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/dar-baja`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            usuarioId: localStorage.getItem('usuarioId'),
-            cantidad,
-            motivo: bajaMotivo.value,
-            nota: bajaNota.value
-          })
-        });
-  
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Error al dar de baja el producto');
-  
-        // Actualizar el producto localmente
-        if (bajaMotivo.value === 'eliminacion-permanente' && cantidad === productoSeleccionado.cantidadUnidades) {
-          productos = productos.filter(p => p._id !== productoSeleccionado._id);
-          productosFiltrados = productosFiltrados.filter(p => p._id !== productoSeleccionado._id);
-        } else {
-          productoSeleccionado.cantidadUnidades -= cantidad;
+      productosFiltrados = [...productos];
+      actualizarListaProductos();
+      modalDarBaja.style.display = 'none';
+    } catch (error) {
+      console.error('Error al dar de baja el producto:', error);
+      mostrarToast('Error al dar de baja el producto: ' + error.message, 'error');
+    }
+  });
+
+  // Manejar el escaneo continuo de códigos de barras
+  btnEscanear.addEventListener('click', () => {
+    iniciarEscaneoContinuo(
+      contenedorCamara,
+      btnEscanear,
+      btnDetener,
+      null,
+      null,
+      (code) => {
+        productosFiltrados = productos.filter(producto => producto.codigo === code);
+        if (productosFiltrados.length === 0) {
+          mostrarToast('Producto no encontrado con ese código de barras.', 'info');
         }
         actualizarListaProductos();
-  
-        modalDarBaja.style.display = 'none';
-        mostrarToast('Producto dado de baja con éxito.', 'success');
-      } catch (error) {
-        console.error('Error al dar de baja el producto:', error);
-        mostrarToast('Error al dar de baja el producto: ' + error.message, 'error');
       }
-    });
-  
-    // Cancelar la baja
-    btnCancelarBaja.addEventListener('click', () => {
-      modalDarBaja.style.display = 'none';
-    });
-  
-    // Cargar los productos al iniciar
-    cargarProductos();
+    );
   });
+
+  // Cargar productos al iniciar
+  cargarProductos();
+});

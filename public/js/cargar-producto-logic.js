@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#cantidad-packs').style.display = 'none';
   document.querySelector('#unidades-por-pack').style.display = 'none';
   document.querySelector('#cantidad-docenas').style.display = 'none';
-  document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
 
   // Función para mostrar la subcategoría según la categoría seleccionada
   function mostrarSubcategoria(categoria) {
@@ -143,35 +142,45 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Verificar si el producto ya existe
-    fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
-      .then(res => res.json())
-      .then(result => {
-        if (result.producto) {
-          // Producto existente
-          document.querySelector('#cantidad-actual').value = result.producto.cantidadUnidades;
-          document.querySelector('#cantidad-a-anadir').value = producto.cantidadUnidades;
-          document.querySelector('#nuevo-total').value = result.producto.cantidadUnidades + producto.cantidadUnidades;
-          document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
-          producto.id = result.producto._id;
-          producto.existente = true;
-        } else {
-          document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
-          producto.existente = false;
-        }
-        productosEnProceso.push(producto);
-        actualizarTablaProductos();
-        formCargarProducto.reset();
-        inputPrecioFinal.value = '';
-        document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
-        document.querySelector('#cantidad-packs').style.display = 'none';
-        document.querySelector('#unidades-por-pack').style.display = 'none';
-        document.querySelector('#cantidad-docenas').style.display = 'none';
-        mostrarToast('Producto agregado a la lista en proceso.', 'success');
-      })
-      .catch(err => {
-        console.error('Error al verificar el producto:', err);
-        mostrarToast('Error al verificar el producto.', 'error');
-      });
+    if (producto.codigo) {
+      fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
+        .then(res => res.json())
+        .then(result => {
+          if (result.producto) {
+            // Producto existente
+            mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
+            setTimeout(() => {
+              window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
+            }, 3000); // Redirigir después de 3 segundos
+          } else {
+            // Producto no existe, añadir a la lista
+            productosEnProceso.push(producto);
+            actualizarTablaProductos();
+            formCargarProducto.reset();
+            inputPrecioFinal.value = '';
+            document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+            document.querySelector('#cantidad-packs').style.display = 'none';
+            document.querySelector('#unidades-por-pack').style.display = 'none';
+            document.querySelector('#cantidad-docenas').style.display = 'none';
+            mostrarToast('Producto agregado a la lista en proceso.', 'success');
+          }
+        })
+        .catch(err => {
+          console.error('Error al verificar el producto:', err);
+          mostrarToast('Error al verificar el producto.', 'error');
+        });
+    } else {
+      // Si no hay código, asumimos que es un producto nuevo
+      productosEnProceso.push(producto);
+      actualizarTablaProductos();
+      formCargarProducto.reset();
+      inputPrecioFinal.value = '';
+      document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+      document.querySelector('#cantidad-packs').style.display = 'none';
+      document.querySelector('#unidades-por-pack').style.display = 'none';
+      document.querySelector('#cantidad-docenas').style.display = 'none';
+      mostrarToast('Producto agregado a la lista en proceso.', 'success');
+    }
   });
 
   // Cancelar producto
@@ -182,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#cantidad-packs').style.display = 'none';
     document.querySelector('#unidades-por-pack').style.display = 'none';
     document.querySelector('#cantidad-docenas').style.display = 'none';
-    document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'none');
   });
 
   // Actualizar la tabla de productos en proceso
@@ -195,13 +203,18 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${producto.marca}</td>
         <td>${producto.categoria}${producto.subcategoria ? ` (${producto.subcategoria})` : ''}</td>
         <td>${producto.cantidadUnidades}</td>
-        <td>${producto.estado}</td>
+        <td class="estado">${producto.estado}</td>
         <td><i class="${producto.icono !== 'default' ? `fas fa-${producto.icono}` : ''}"></i></td>
-        <td>
-          <button class="boton-accion-tabla confirmar-producto" data-index="${index}"><i class="fas fa-check"></i></button>
-          <button class="boton-accion-tabla eliminar-producto" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
+        <td class="acciones">
+          <button class="boton-accion editar confirmar-producto" data-index="${index}"><i class="fas fa-check"></i></button>
+          <button class="boton-accion eliminar eliminar-producto" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
         </td>
       `;
+      if (producto.estado === 'Pendiente') {
+        fila.classList.add('pendiente');
+      } else if (producto.estado === 'Confirmado') {
+        fila.classList.add('completo');
+      }
       tablaProductosProceso.appendChild(fila);
     });
 
@@ -239,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Error al confirmar el producto');
 
-      mostrarToast('Producto confirmado con éxito.', 'success');
+      mostrarToast(result.mensaje || 'Producto confirmado con éxito.', 'success');
       productosEnProceso.splice(index, 1);
       actualizarTablaProductos();
     } catch (error) {
@@ -310,33 +323,46 @@ document.addEventListener('DOMContentLoaded', () => {
   btnEscanear.addEventListener('click', () => {
     const completarCallback = (producto) => {
       if (producto) {
-        document.querySelector('#nombre-producto').value = producto.nombre;
-        document.querySelector('#marca').value = producto.marca;
-        document.querySelector('#categoria').value = producto.categoria;
-        // Mostrar el campo de subcategoría correspondiente
-        mostrarSubcategoria(producto.categoria);
-        // Establecer el valor de la subcategoría
-        const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
-        if (subcategoriaSelect) {
-          subcategoriaSelect.value = producto.subcategoria || '';
-        }
-        document.querySelector('#precio-lista').value = producto.precioLista || '';
-        document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
-        document.querySelector('#precio-final').value = producto.precioFinal || '';
-        document.querySelector('#unidad').value = producto.unidad || 'unidad';
-        document.querySelector('#packs').value = producto.packs || 0;
-        document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
-        document.querySelector('#docenas').value = producto.docenas || 0;
-        document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
-        document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
-        document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
-        document.querySelector('#icono-producto').value = producto.icono || 'default';
-        document.querySelector('#cantidad-actual').value = producto.cantidadUnidades || 0;
-        document.querySelector('#cantidad-a-anadir').value = 0;
-        document.querySelector('#nuevo-total').value = producto.cantidadUnidades || 0;
-        document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
+        // Verificar si el producto ya existe antes de autocompletar
+        fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
+          .then(res => res.json())
+          .then(result => {
+            if (result.producto) {
+              // Producto existente
+              mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
+              setTimeout(() => {
+                window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
+              }, 3000); // Redirigir después de 3 segundos
+            } else {
+              // Autocompletar los campos
+              document.querySelector('#nombre-producto').value = producto.nombre;
+              document.querySelector('#marca').value = producto.marca;
+              document.querySelector('#categoria').value = producto.categoria;
+              // Mostrar el campo de subcategoría correspondiente
+              mostrarSubcategoria(producto.categoria);
+              // Establecer el valor de la subcategoría
+              const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
+              if (subcategoriaSelect) {
+                subcategoriaSelect.value = producto.subcategoria || '';
+              }
+              document.querySelector('#precio-lista').value = producto.precioLista || '';
+              document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
+              document.querySelector('#precio-final').value = producto.precioFinal || '';
+              document.querySelector('#unidad').value = producto.unidad || 'unidad';
+              document.querySelector('#packs').value = producto.packs || 0;
+              document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
+              document.querySelector('#docenas').value = producto.docenas || 0;
+              document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
+              document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
+              document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
+              document.querySelector('#icono-producto').value = producto.icono || 'default';
+            }
+          })
+          .catch(err => {
+            console.error('Error al verificar el producto:', err);
+            mostrarToast('Error al verificar el producto.', 'error');
+          });
       }
-      // No es necesario manejar el caso de producto null aquí, ya que utils.js muestra un toast
     };
 
     iniciarEscaneoContinuo(

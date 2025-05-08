@@ -11,13 +11,18 @@ function mostrarToast(mensaje, tipo = 'info') {
 
   const toast = document.createElement('div');
   toast.className = `toast ${tipo === 'success' ? 'exito' : tipo === 'error' ? 'error' : 'info'}`;
-  toast.textContent = mensaje;
+  toast.innerHTML = mensaje; // Usar innerHTML para permitir enlaces
   toastContainer.appendChild(toast);
 
   // Eliminar el toast después de 7 segundos
   setTimeout(() => {
     toast.remove();
   }, 7000);
+}
+
+// Función para detectar si es un dispositivo móvil
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 // Función para iniciar el escaneo continuo de códigos de barras con control manual
@@ -72,14 +77,20 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     console.log('Inicializando Quagga...'); // Depuración
     // Limpiar el contenedor de la cámara para evitar duplicados
     contenedorCamara.innerHTML = '';
+
+    // Configuración dinámica según el dispositivo
+    const isMobile = isMobileDevice();
+    const videoResolution = isMobile ? { width: 800, height: 600 } : { width: 1280, height: 720 };
+    const numWorkers = isMobile ? 2 : navigator.hardwareConcurrency || 4;
+
     Quagga.init({
       inputStream: {
         name: "Live",
         type: "LiveStream",
         target: contenedorCamara,
         constraints: {
-          width: 1280, // Aumentado para mejor resolución
-          height: 720, // Ajustado para proporción rectangular
+          width: videoResolution.width,
+          height: videoResolution.height,
           facingMode: "environment"
         },
         area: { // Área de escaneo (rectangular)
@@ -93,7 +104,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         patchSize: "medium", // Tamaño del parche para mejorar la detección
         halfSample: true // Mejora el rendimiento
       },
-      numOfWorkers: navigator.hardwareConcurrency || 4, // Usa más workers para mejor rendimiento
+      numOfWorkers: numWorkers, // Ajustado dinámicamente según el dispositivo
       decoder: {
         readers: ["ean_reader", "upc_reader", "code_128_reader"],
         multiple: false // Evita lecturas múltiples del mismo código
