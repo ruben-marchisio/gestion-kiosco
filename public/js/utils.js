@@ -14,10 +14,10 @@ function mostrarToast(mensaje, tipo = 'info') {
   toast.textContent = mensaje;
   toastContainer.appendChild(toast);
 
-  // Eliminar el toast después de 5 segundos (ajustado para coincidir con el CSS)
+  // Eliminar el toast después de 7 segundos
   setTimeout(() => {
     toast.remove();
-  }, 5000);
+  }, 7000);
 }
 
 // Función para iniciar el escaneo continuo de códigos de barras con control manual
@@ -25,6 +25,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   let escaneoActivo = false;
   let estaEscaneando = false; // Estado para controlar si el botón está presionado
   let ultimoCodigoEscaneado = null;
+  let videoElement = null; // Para almacenar el elemento de video
 
   // Sonido de escaneo
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3'); // URL del sonido (reemplaza con tu archivo si lo tienes)
@@ -50,9 +51,27 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     mostrarToast('Error al verificar permisos de la cámara: ' + err.message, 'error');
   });
 
+  // Función para detener el stream de video
+  function stopVideoStream() {
+    if (videoElement && videoElement.srcObject) {
+      const stream = videoElement.srcObject;
+      const tracks = stream.getTracks();
+      tracks.forEach(track => {
+        console.log('Deteniendo pista de video:', track);
+        track.stop();
+      });
+      videoElement.srcObject = null;
+      console.log('Stream de video detenido');
+    } else {
+      console.log('No se encontró un stream de video para detener');
+    }
+  }
+
   // Función para inicializar Quagga
   function inicializarQuagga() {
     console.log('Inicializando Quagga...'); // Depuración
+    // Limpiar el contenedor de la cámara para evitar duplicados
+    contenedorCamara.innerHTML = '';
     Quagga.init({
       inputStream: {
         name: "Live",
@@ -84,6 +103,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       if (err) {
         console.error('Error al inicializar Quagga:', err);
         mostrarToast('Error al inicializar la cámara: ' + err.message, 'error');
+        escaneoActivo = false;
+        estaEscaneando = false;
+        contenedorCamara.style.display = 'none';
+        btnEscanear.style.display = 'block';
+        btnDetener.style.display = 'none';
         return;
       }
 
@@ -93,96 +117,120 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       contenedorCamara.style.display = 'block';
       btnEscanear.style.display = 'block';
       btnDetener.style.display = 'block';
-    });
-  }
 
-  // Abrir la cámara al inicializar
-  inicializarQuagga();
-
-  Quagga.onDetected((result) => {
-    if (!estaEscaneando) return; // Ignorar detecciones si el botón no está presionado
-
-    const code = result.codeResult.code;
-
-    // Evitar lecturas repetidas del mismo código
-    if (code === ultimoCodigoEscaneado) {
-      return;
-    }
-
-    ultimoCodigoEscaneado = code;
-    estaEscaneando = false; // Pausar la detección hasta que el botón se presione de nuevo
-
-    // Reproducir sonido de escaneo
-    beepSound.play().catch(err => {
-      console.error('Error al reproducir el sonido:', err);
-      mostrarToast('Error al reproducir el sonido: ' + err.message, 'error');
+      // Obtener el elemento de video creado por Quagga
+      videoElement = contenedorCamara.querySelector('video');
+      if (videoElement) {
+        console.log('Elemento de video encontrado:', videoElement);
+      } else {
+        console.error('Elemento de video no encontrado después de inicializar Quagga');
+      }
     });
 
-    // Actualizar el input del código
-    inputCodigo.value = code;
-    mostrarToast('Código escaneado: ' + code, 'success');
+    // Asegurarse de que los eventos de Quagga estén limpios
+    Quagga.offDetected();
+    Quagga.onDetected((result) => {
+      if (!estaEscaneando) return; // Ignorar detecciones si el botón no está presionado
 
-    // Primero buscar en el stock local del usuario
-    const usuarioId = localStorage.getItem('usuarioId');
-    fetch(`${BASE_URL}/api/productos/codigo/${code}?usuarioId=${usuarioId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.producto) {
-          console.log('Producto encontrado en el stock local:', data.producto); // Depuración
-          completarCallback(data.producto);
-          mostrarToast('Producto encontrado en tu stock local. Verifica y completa los datos.', 'success');
-        } else {
-          // Si no se encuentra en el stock local, buscar en la base de datos común
-          fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`)
+      const code = result.codeResult.code;
+
+      // Evitar lecturas repetidas del mismo código
+      if (code === ultimoCodigoEscaneado) {
+        return;
+      }
+
+      ultimoCodigoEscaneado = code;
+      estaEscaneando = false; // Pausar la detección hasta que el botón se presione de nuevo
+
+      // Reproducir sonido de escaneo
+      beepSound.play().catch(err => {
+        console.error('Error al reproducir el sonido:', err);
+        mostrarToast('Error al reproducir el sonido: ' + err.message, 'error');
+      });
+
+      // Actualizar el input del código si existe
+      if (inputCodigo) {
+        inputCodigo.value = code;
+      }
+      mostrarToast('Código escaneado: ' + code, 'success');
+
+      // Primero buscar en el stock local del usuario
+      const usuarioId = localStorage.getItem('usuarioId');
+      console.log('Buscando código:', code, 'para usuario:', usuarioId); // Depuración
+      fetch(`${BASE_URL}/api/productos/codigo/${code}?usuarioId=${usuarioId}`, {
+        signal: AbortSignal.timeout(15000) // Aumentar el tiempo de espera a 15 segundos
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.producto) {
+            console.log('Producto encontrado en el stock local:', data.producto); // Depuración
+            completarCallback(data.producto);
+            mostrarToast('Producto encontrado en tu stock local. Verifica y completa los datos.', 'success');
+          } else {
+            // Si no se encuentra en el stock local, buscar en la base de datos común
+            fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`, {
+              signal: AbortSignal.timeout(15000) // Aumentar el tiempo de espera a 15 segundos
+            })
+              .then(res => res.json())
+              .then(dataComun => {
+                if (dataComun.producto) {
+                  console.log('Producto encontrado en la base de datos común:', dataComun.producto); // Depuración
+                  completarCallback(dataComun.producto);
+                  mostrarToast('Producto encontrado en la base de datos común. Por favor, completa los datos adicionales.', 'info');
+                } else {
+                  console.log('Producto no encontrado en ninguna base de datos para el código:', code); // Depuración
+                  completarCallback(null);
+                  mostrarToast('Producto no encontrado con ese código de barras. Intenta cargarlo manualmente.', 'info');
+                }
+              })
+              .catch(err => {
+                console.error('Error al buscar en la base de datos común:', err);
+                mostrarToast('Error de conexión al buscar en la base de datos común. Intenta de nuevo en unos segundos.', 'error');
+                completarCallback(null);
+              });
+          }
+        })
+        .catch(err => {
+          console.error('Error al buscar en el stock local:', err);
+          mostrarToast('Error de conexión al buscar en el stock local. Intenta de nuevo en unos segundos.', 'error');
+          // Si falla la solicitud al stock local, intentar con la base de datos común
+          fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`, {
+            signal: AbortSignal.timeout(15000) // Aumentar el tiempo de espera a 15 segundos
+          })
             .then(res => res.json())
             .then(dataComun => {
               if (dataComun.producto) {
-                console.log('Producto encontrado en la base de datos común:', dataComun.producto); // Depuración
+                console.log('Producto encontrado en la base de datos común (respaldo):', dataComun.producto); // Depuración
                 completarCallback(dataComun.producto);
-                mostrarToast('Producto encontrado en la base de datos común. Por favor, completa los datos adicionales.', 'info');
+                mostrarToast('Producto encontrado en la base de datos común (respaldo). Por favor, completa los datos adicionales.', 'info');
               } else {
-                mostrarToast('Producto no encontrado en ninguna base de datos. Por favor, completa los datos manualmente.', 'info');
+                console.log('Producto no encontrado en ninguna base de datos (respaldo) para el código:', code); // Depuración
+                completarCallback(null);
+                mostrarToast('Error de conexión al servidor. Intenta de nuevo en unos segundos.', 'error');
               }
             })
             .catch(err => {
-              console.error('Error al buscar en la base de datos común:', err);
-              mostrarToast('Error al buscar en la base de datos común: ' + err.message, 'error');
-              mostrarToast('Producto no encontrado. Por favor, completa los datos manualmente.', 'info');
+              console.error('Error al buscar en la base de datos común (respaldo):', err);
+              mostrarToast('Error de conexión al servidor. Intenta de nuevo en unos segundos.', 'error');
+              completarCallback(null);
             });
-        }
-      })
-      .catch(err => {
-        console.error('Error al buscar en el stock local:', err);
-        mostrarToast('Error al buscar en el stock local: ' + err.message, 'error');
-        // Si falla la solicitud al stock local, intentar con la base de datos común
-        fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`)
-          .then(res => res.json())
-          .then(dataComun => {
-            if (dataComun.producto) {
-              console.log('Producto encontrado en la base de datos común (respaldo):', dataComun.producto); // Depuración
-              completarCallback(dataComun.producto);
-              mostrarToast('Producto encontrado en la base de datos común (respaldo). Por favor, completa los datos adicionales.', 'info');
-            } else {
-              mostrarToast('Producto no encontrado y stock local no disponible. Por favor, completa los datos manualmente.', 'error');
-            }
-          })
-          .catch(err => {
-            console.error('Error al buscar en la base de datos común (respaldo):', err);
-            mostrarToast('Producto no encontrado y servidor no disponible. Por favor, completa los datos manualmente.', 'error');
-          });
-      });
+        });
 
-    // Ejecutar callback adicional si se proporciona
-    if (onCodeDetected) {
-      onCodeDetected(code);
-    }
-  });
+      // Ejecutar callback adicional si se proporciona
+      if (onCodeDetected) {
+        onCodeDetected(code);
+      }
+    });
+  }
 
   // Manejar el botón de escanear (mantener presionado)
   btnEscanear.addEventListener('mousedown', () => {
-    if (!escaneoActivo) return;
-    estaEscaneando = true;
-    ultimoCodigoEscaneado = null; // Resetear para permitir un nuevo escaneo
+    if (escaneoActivo) {
+      estaEscaneando = true;
+      ultimoCodigoEscaneado = null; // Resetear para permitir un nuevo escaneo
+    } else {
+      inicializarQuagga(); // Reintentar inicializar si no está activo
+    }
   });
 
   btnEscanear.addEventListener('mouseup', () => {
@@ -196,9 +244,12 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   // Soporte para dispositivos táctiles
   btnEscanear.addEventListener('touchstart', (e) => {
     e.preventDefault(); // Prevenir comportamiento predeterminado (como selección de texto)
-    if (!escaneoActivo) return;
-    estaEscaneando = true;
-    ultimoCodigoEscaneado = null; // Resetear para permitir un nuevo escaneo
+    if (escaneoActivo) {
+      estaEscaneando = true;
+      ultimoCodigoEscaneado = null; // Resetear para permitir un nuevo escaneo
+    } else {
+      inicializarQuagga(); // Reintentar inicializar si no está activo
+    }
   });
 
   btnEscanear.addEventListener('touchend', (e) => {
@@ -208,12 +259,17 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
   // Manejar el botón de detener
   btnDetener.addEventListener('click', () => {
+    console.log('Deteniendo Quagga y liberando la cámara...');
     Quagga.stop();
+    stopVideoStream(); // Detener explícitamente el stream de video
     escaneoActivo = false;
     estaEscaneando = false;
     contenedorCamara.style.display = 'none';
     btnEscanear.style.display = 'block';
     btnDetener.style.display = 'none';
     ultimoCodigoEscaneado = null;
+    // Limpiar eventos para evitar duplicados
+    Quagga.offDetected();
+    console.log('Quagga detenido y eventos limpiados');
   });
 }

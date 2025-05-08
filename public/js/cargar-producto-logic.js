@@ -309,31 +309,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // Manejar el escaneo continuo de códigos de barras
   btnEscanear.addEventListener('click', () => {
     const completarCallback = (producto) => {
-      document.querySelector('#nombre-producto').value = producto.nombre;
-      document.querySelector('#marca').value = producto.marca;
-      document.querySelector('#categoria').value = producto.categoria;
-      // Mostrar el campo de subcategoría correspondiente
-      mostrarSubcategoria(producto.categoria);
-      // Establecer el valor de la subcategoría
-      const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
-      if (subcategoriaSelect) {
-        subcategoriaSelect.value = producto.subcategoria || '';
+      if (producto) {
+        document.querySelector('#nombre-producto').value = producto.nombre;
+        document.querySelector('#marca').value = producto.marca;
+        document.querySelector('#categoria').value = producto.categoria;
+        // Mostrar el campo de subcategoría correspondiente
+        mostrarSubcategoria(producto.categoria);
+        // Establecer el valor de la subcategoría
+        const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
+        if (subcategoriaSelect) {
+          subcategoriaSelect.value = producto.subcategoria || '';
+        }
+        document.querySelector('#precio-lista').value = producto.precioLista || '';
+        document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
+        document.querySelector('#precio-final').value = producto.precioFinal || '';
+        document.querySelector('#unidad').value = producto.unidad || 'unidad';
+        document.querySelector('#packs').value = producto.packs || 0;
+        document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
+        document.querySelector('#docenas').value = producto.docenas || 0;
+        document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
+        document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
+        document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
+        document.querySelector('#icono-producto').value = producto.icono || 'default';
+        document.querySelector('#cantidad-actual').value = producto.cantidadUnidades || 0;
+        document.querySelector('#cantidad-a-anadir').value = 0;
+        document.querySelector('#nuevo-total').value = producto.cantidadUnidades || 0;
+        document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
       }
-      document.querySelector('#precio-lista').value = producto.precioLista || '';
-      document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
-      document.querySelector('#precio-final').value = producto.precioFinal || '';
-      document.querySelector('#unidad').value = producto.unidad || 'unidad';
-      document.querySelector('#packs').value = producto.packs || 0;
-      document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
-      document.querySelector('#docenas').value = producto.docenas || 0;
-      document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
-      document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
-      document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
-      document.querySelector('#icono-producto').value = producto.icono || 'default';
-      document.querySelector('#cantidad-actual').value = producto.cantidadUnidades || 0;
-      document.querySelector('#cantidad-a-anadir').value = 0;
-      document.querySelector('#nuevo-total').value = producto.cantidadUnidades || 0;
-      document.querySelectorAll('.cantidad-existente').forEach(el => el.style.display = 'block');
+      // No es necesario manejar el caso de producto null aquí, ya que utils.js muestra un toast
     };
 
     iniciarEscaneoContinuo(
