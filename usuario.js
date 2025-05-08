@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 // Esquema para productos (stock local de cada usuario)
 const productoSchema = new Schema({
   nombre: { type: String, required: true },
-  cantidadUnidades: { type: Number, required: true }, // Total de unidades (calculado)
-  packs: { type: Number, default: 0 }, // Cantidad de packs
-  unidadesPorPack: { type: Number, default: 0 }, // Unidades por pack
-  docenas: { type: Number, default: 0 }, // Cantidad de docenas
-  unidadesSueltas: { type: Number, default: 0 }, // Unidades sueltas
+  cantidadUnidades: { type: Number, required: true },
+  packs: { type: Number, default: 0 },
+  unidadesPorPack: { type: Number, default: 0 },
+  docenas: { type: Number, default: 0 },
+  unidadesSueltas: { type: Number, default: 0 },
   marca: { type: String, required: true },
   precioLista: { type: Number, required: true },
   porcentajeGanancia: { type: Number, required: true },
@@ -17,14 +17,14 @@ const productoSchema = new Schema({
   subcategoria: { type: String },
   unidad: { type: String, enum: ['kilo', 'unidad', 'docena', 'pack'], required: true },
   fechaVencimiento: { type: Date, required: true },
-  imagen: { type: String, required: false }, // Hacer opcional
+  imagen: { type: String, required: false },
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
-  codigo: { type: String, default: '' } // Código del producto (vacío si no tiene)
+  codigo: { type: String, default: '' }
 });
 
 // Esquema para productos comunes (base de datos común)
 const productoComunSchema = new Schema({
-  codigo: { type: String, required: true, unique: true }, // Código de barras (clave única)
+  codigo: { type: String, required: true, unique: true },
   nombre: { type: String, required: true },
   marca: { type: String, required: true },
   categoria: { type: String, required: true },

@@ -1,88 +1,75 @@
 const mongoose = require('mongoose');
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
+const { Usuario } = require('../usuario');
 
-// Importar rutas
-const usuarioRoutes = require('./routes/usuarios');
-const productoRoutes = require('./routes/productos');
-const clienteRoutes = require('./routes/clientes');
+module.exports = (app) => {
+  // Rutas para usuarios
+  app.post('/api/registrar-usuario', async (req, res) => {
+    console.log('Solicitud recibida en /api/registrar-usuario');
+    const startTime = Date.now();
+    try {
+      const { nombreKiosco, email, contrasena } = req.body;
+      console.log('Datos recibidos:', { nombreKiosco, email, contrasena });
 
-dotenv.config();
-const app = express();
-app.use(cors());
-app.use(express.json());
+      if (!nombreKiosco || !email || !contrasena) {
+        console.log('Faltan campos requeridos:', { nombreKiosco, email, contrasena });
+        return res.status(400).json({ error: 'Faltan campos requeridos.' });
+      }
 
-// Ajustar la ruta para servir archivos estáticos desde public/
-const publicPath = path.join(__dirname, 'public');
-console.log('Ruta del directorio public:', publicPath);
-app.use(express.static(publicPath));
+      const usuarioExistente = await Usuario.findOne({ email });
+      if (usuarioExistente) {
+        console.log('El email ya está registrado:', email);
+        return res.status(400).json({ error: 'El email ya está registrado.' });
+      }
 
-// Manejar rutas bajo /public/ explícitamente
-app.get('/public/*', (req, res) => {
-  const filePath = path.join(publicPath, req.path.replace('/public', ''));
-  console.log('Intentando servir archivo:', filePath);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('Error al servir archivo:', err);
-      res.status(404).send('Archivo no encontrado');
+      const nuevoUsuario = new Usuario({
+        nombre: nombreKiosco,
+        nombreKiosco,
+        email,
+        contrasena
+      });
+
+      await nuevoUsuario.save();
+      const totalTime = Date.now() - startTime;
+      console.log(`Usuario registrado con éxito ${email} en ${totalTime}ms`);
+      res.status(201).json({ mensaje: 'Usuario registrado con éxito.' });
+    } catch (error) {
+      const totalTime = Date.now() - startTime;
+      console.error(`Error al registrar el usuario después de ${totalTime}ms:`, error);
+      res.status(500).json({ error: 'Error al registrar el usuario: ' + error.message });
     }
   });
-});
 
-// Configurar strictQuery para suprimir la advertencia de Mongoose
-mongoose.set('strictQuery', true);
+  app.post('/api/iniciar-sesion', async (req, res) => {
+    console.log('Solicitud recibida en /api/iniciar-sesion');
+    const startTime = Date.now();
+    try {
+      const { email, contrasena } = req.body;
+      console.log('Datos recibidos:', { email, contrasena });
 
-// Depuración: Mostrar el valor de MONGODB_URI
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
+      if (!email || !contrasena) {
+        console.log('Faltan campos requeridos:', { email, contrasena });
+        return res.status(400).json({ error: 'Faltan campos requeridos.' });
+      }
 
-// Conectar a MongoDB con opciones de reconexión y mayor tiempo de espera
-const startTime = Date.now();
-mongoose.connect(process.env.MONGODB_URI, {
-  serverSelectionTimeoutMS: 30000,
-  connectTimeoutMS: 30000,
-  socketTimeoutMS: 45000,
-  maxPoolSize: 10,
-  retryWrites: true,
-  w: 'majority',
-})
-  .then(() => {
-    const connectionTime = Date.now() - startTime;
-    console.log(`Conectado a MongoDB en ${connectionTime}ms`);
-  })
-  .catch(err => console.error('Error al conectar a MongoDB:', err));
+      const usuario = await Usuario.findOne({ email, contrasena }, null, { timeout: 30000 });
+      const queryTime = Date.now() - startTime;
+      console.log(`Consulta a MongoDB completada en ${queryTime}ms`);
 
-// Servir index.html directamente en la ruta raíz
-app.get('/', (req, res) => {
-  console.log('Solicitud recibida para la ruta raíz: /');
-  console.log('Sirviendo /public/index.html directamente');
-  res.sendFile(path.join(publicPath, 'index.html'), (err) => {
-    if (err) {
-      console.error('Error al servir index.html:', err);
-      res.status(500).send('Error al cargar la página de presentación');
+      if (!usuario) {
+        console.log('Credenciales incorrectas para:', email);
+        return res.status(401).json({ error: 'Credenciales incorrectas.' });
+      }
+
+      console.log('Inicio de sesión exitoso para:', email);
+      res.status(200).json({
+        mensaje: 'Inicio de sesión exitoso.',
+        usuarioId: usuario._id,
+        nombreKiosco: usuario.nombreKiosco
+      });
+    } catch (error) {
+      const totalTime = Date.now() - startTime;
+      console.error(`Error al iniciar sesión después de ${totalTime}ms:`, error);
+      res.status(500).json({ error: 'Error al iniciar sesión: ' + error.message });
     }
   });
-});
-
-// Ruta de prueba para verificar archivos estáticos
-app.get('/test-static', (req, res) => {
-  console.log('Solicitud recibida para /test-static');
-  res.sendFile(path.join(publicPath, 'index.html'), (err) => {
-    if (err) {
-      console.error('Error al servir index.html:', err);
-      res.status(500).send('Error al cargar el archivo estático');
-    }
-  });
-});
-
-// Usar las rutas
-usuarioRoutes(app);
-productoRoutes(app);
-clienteRoutes(app);
-
-// Iniciar el servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+};
