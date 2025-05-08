@@ -45,6 +45,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     console.log('Estado de permiso de la cámara:', permissionStatus.state);
     if (permissionStatus.state === 'denied') {
       mostrarToast('Permiso para acceder a la cámara denegado. Por favor, habilita el acceso en la configuración de tu navegador.', 'error');
+    } else if (permissionStatus.state === 'prompt') {
+      console.log('Solicitando permiso para acceder a la cámara...');
     }
   }).catch(err => {
     console.error('Error al verificar permisos de la cámara:', err);
@@ -68,6 +70,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
   function inicializarQuagga() {
     console.log('Inicializando Quagga...');
+    // Limpiar el contenedor para evitar duplicados
     contenedorCamara.innerHTML = '';
 
     const isMobile = isMobileDevice();
@@ -79,22 +82,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         type: "LiveStream",
         target: contenedorCamara,
         constraints: {
-          width: { ideal: 1920, min: 1280 },
-          height: { ideal: 1080, min: 720 },
+          width: { ideal: 1280, min: 640 }, // Reducir resolución para mejorar compatibilidad
+          height: { ideal: 720, min: 480 },
           facingMode: "environment",
           focusMode: "continuous",
           focusDistance: { ideal: 0.5, min: 0.3, max: 0.7 },
-          frameRate: { ideal: 30, min: 15 },
-          aspectRatio: { ideal: 16/9 } // Asegurar una relación de aspecto estándar
+          frameRate: { ideal: 30, min: 15 }
         },
-        area: { top: "5%", right: "1%", left: "1%", bottom: "5%" } // Máxima área de escaneo
+        area: { top: "5%", right: "1%", left: "1%", bottom: "5%" }
       },
       locator: {
         patchSize: "x-large",
         halfSample: false
       },
       numOfWorkers: numWorkers,
-      frequency: 10, // Aumentar la frecuencia de escaneo (frames por segundo)
+      frequency: 15,
       decoder: {
         readers: ["ean_reader", "upc_reader", "code_128_reader"],
         multiple: false,
@@ -128,11 +130,17 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       videoElement = contenedorCamara.querySelector('video');
       if (videoElement) {
         console.log('Elemento de video encontrado:', videoElement);
+        videoElement.style.display = 'block'; // Forzar visibilidad del video
         setTimeout(() => {
           console.log('Resolución real del video:', {
             width: videoElement.videoWidth,
             height: videoElement.videoHeight
           });
+          console.log('Estado de Quagga:', {
+            isRunning: Quagga.isRunning(),
+            hasCamera: navigator.mediaDevices && navigator.mediaDevices.getUserMedia
+          });
+          console.log('Estilos aplicados al video:', window.getComputedStyle(videoElement));
         }, 1000);
       } else {
         console.error('Elemento de video no encontrado después de inicializar Quagga');
@@ -144,8 +152,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       if (!estaEscaneando) return;
 
       const code = result.codeResult.code;
+      console.log('Código detectado por Quagga:', code);
 
       if (code === ultimoCodigoEscaneado) {
+        console.log('Código repetido, ignorando:', code);
         return;
       }
 

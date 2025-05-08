@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fiambre: ["Queso", "Jamón", "Salame"],
     congelados: ["Helados", "Hamburguesas", "Pizzas"],
     panaderia: ["Pan", "Facturas", "Tortas"],
-    almacen: ["Arroz", "Fideos", "Conservas", "Aceites"],
+    almacen: ["Harinas", "Aceites vinagres", "Aderezos condimentos", "Fideos arroz", "Enlatados conservas", "Infusiones"],
     verduleria: ["Frutas", "Verduras"],
     limpieza: ["Detergente", "Lavandina", "Esponjas"],
     "higiene-personal": ["Jabón", "Shampoo", "Pasta Dental"],

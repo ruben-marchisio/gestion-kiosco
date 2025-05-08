@@ -222,20 +222,25 @@ main {
 .camara {
   width: 100%;
   max-width: 600px;
-  height: 120px;
+  height: 200px; /* Aumentar altura para mejor visibilidad */
   margin: 10px auto;
   position: relative;
-  overflow: hidden;
   border: 2px solid #2c3e50;
   border-radius: 8px;
   background-color: #000;
+  overflow: visible; /* Evitar que el video se corte */
+  display: block; /* Asegurar que el contenedor sea visible */
 }
 
 #camara-stock video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(0.7);
+  transform: none; /* Eliminar escala para evitar problemas de visibilidad */
+  display: block; /* Asegurar que el video sea visible */
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* Rectángulo guía para el código de barras */
@@ -245,9 +250,10 @@ main {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  height: 30px;
+  height: 40px; /* Aumentar altura para mejor visibilidad */
   border: 2px dashed #ff0000;
   pointer-events: none;
+  z-index: 10; /* Asegurar que la guía esté sobre el video */
 }
 
 /* Lista de Productos (Tarjetas) */
@@ -557,5 +563,13 @@ footer a i {
   .toast {
     font-size: 14px;
     padding: 10px 15px;
+  }
+
+  .camara {
+    height: 150px; /* Ajustar altura para dispositivos móviles */
+  }
+
+  .guia-codigo {
+    height: 30px;
   }
 }
