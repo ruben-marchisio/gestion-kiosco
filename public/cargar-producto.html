@@ -79,29 +79,108 @@
             <input type="text" id="marca" name="marca" placeholder="Ej. Coca-Cola" required>
             <!-- Input para la marca, obligatorio -->
           </div>
-          <!-- Selección de categoría y subcategorías -->
+          <!-- Selección de categoría -->
           <div class="form-campo">
             <label for="categoria">Categoría</label>
             <select id="categoria" name="categoria" required>
               <!-- Menú desplegable con categorías de productos -->
               <option value="">Selecciona una categoría</option>
               <option value="bebidas">Bebidas</option>
-              <!-- Otras opciones: golosinas, lácteos, cigarrillos, etc. -->
-              <!-- ... (más opciones) ... -->
+              <option value="golosinas">Golosinas</option>
+              <option value="lacteos">Lácteos</option>
+              <option value="cigarrillos">Cigarrillos</option>
+              <option value="fiambre">Fiambre</option>
+              <option value="congelados">Congelados</option>
+              <option value="panaderia">Panadería</option>
+              <option value="almacen">Almacén</option>
+              <option value="verduleria">Verdulería</option>
             </select>
           </div>
           <!-- Subcategorías dinámicas, mostradas según la categoría seleccionada -->
-          <div class="form-campo" id="subcategoria-bebidas">
+          <div class="form-campo" id="subcategoria-bebidas" style="display: none;">
             <label for="select-subcategoria-bebidas">Subcategoría Bebidas</label>
             <select id="select-subcategoria-bebidas" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
               <option value="con-alcohol">Con alcohol</option>
-              <!-- Otras opciones: gaseosas, agua, energizante -->
-              <!-- ... (más opciones) ... -->
+              <option value="gaseosas">Gaseosas</option>
+              <option value="agua">Agua</option>
+              <option value="energizante">Energizante</option>
             </select>
           </div>
-          <!-- Otros bloques de subcategorías para golosinas, lácteos, etc., ocultos por defecto -->
-          <!-- ... (bloques similares para subcategoria-golosinas, subcategoria-lacteos, etc.) ... -->
+          <div class="form-campo" id="subcategoria-golosinas" style="display: none;">
+            <label for="select-subcategoria-golosinas">Subcategoría Golosinas</label>
+            <select id="select-subcategoria-golosinas" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+              <option value="chocolates">Chocolates</option>
+              <option value="caramelos">Caramelos</option>
+              <option value="chicles">Chicles</option>
+              <option value="galletitas">Galletitas</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-lacteos" style="display: none;">
+            <label for="select-subcategoria-lacteos">Subcategoría Lácteos</label>
+            <select id="select-subcategoria-lacteos" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+              <option value="leche">Leche</option>
+              <option value="yogur">Yogur</option>
+              <option value="queso">Queso</option>
+              <option value="manteca">Manteca</option>
+            </select>
+          </div>
+          <!-- Otros subcategorías similares para cigarrillos, fiambre, congelados, etc. -->
+          <div class="form-campo" id="subcategoria-cigarrillos" style="display: none;">
+            <label for="select-subcategoria-cigarrillos">Subcategoría Cigarrillos</label>
+            <select id="select-subcategoria-cigarrillos" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-fiambre" style="display: none;">
+            <label for="select-subcategoria-fiambre">Subcategoría Fiambre</label>
+            <select id="select-subcategoria-fiambre" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+              <option value="queso">Queso</option>
+              <option value="jamon">Jamón</option>
+              <option value="salame">Salame</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-congelados" style="display: none;">
+            <label for="select-subcategoria-congelados">Subcategoría Congelados</label>
+            <select id="select-subcategoria-congelados" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+              <option value="helados">Helados</option>
+              <option value="hamburguesas">Hamburguesas</option>
+              <option value="pizzas">Pizzas</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-panaderia" style="display: none;">
+            <label for="select-subcategoria-panaderia">Subcategoría Panadería</label>
+            <select id="select-subcategoria-panaderia" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+              <option value="pan">Pan</option>
+              <option value="facturas">Facturas</option>
+              <option value="tortas">Tortas</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-almacen" style="display: none;">
+            <label for="select-subcategoria-almacen">Subcategoría Almacén</label>
+            <select id="select-subcategoria-almacen" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+              <option value="harinas">Harinas</option>
+              <option value="aceites-vinagres">Aceites y vinagres</option>
+              <option value="aderezos-condimentos">Aderezos y condimentos</option>
+              <option value="fideos-arroz">Fideos y arroz</option>
+              <option value="enlatados-conservas">Enlatados y conservas</option>
+              <option value="infusiones">Infusiones</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-verduleria" style="display: none;">
+            <label for="select-subcategoria-verduleria">Subcategoría Verdulería</label>
+            <select id="select-subcategoria-verduleria" name="subcategoria">
+              <option value="">Selecciona una subcategoría</option>
+              <option value="frutas">Frutas</option>
+              <option value="verduras">Verduras</option>
+            </select>
+          </div>
           <!-- Campos de precios y cantidades -->
           <div class="form-campo">
             <label for="precio-lista">Precio de Lista</label>
@@ -122,18 +201,33 @@
           <div class="form-campo">
             <label for="unidad">Unidad</label>
             <select id="unidad" name="unidad" required>
+              <option value="">Selecciona una unidad</option>
+              <option value="kilo">Kilo</option>
               <option value="unidad">Unidad</option>
-              <!-- Otras opciones: pack, docena, kilo -->
-              <!-- ... (más opciones) ... -->
+              <option value="docena">Docena</option>
+              <option value="pack">Pack</option>
             </select>
           </div>
-          <div class="form-campo" id="cantidad-packs">
+          <div class="form-campo" id="cantidad-packs" style="display: none;">
             <label for="packs">Cantidad de Packs</label>
             <input type="number" id="packs" name="packs" value="0">
             <!-- Input para la cantidad de packs, opcional -->
           </div>
-          <!-- Otros campos para unidades por pack, docenas, unidades sueltas -->
-          <!-- ... (campos similares para unidadesPorPack, docenas, unidadesSueltas) ... -->
+          <div class="form-campo" id="unidades-por-pack" style="display: none;">
+            <label for="unidadesPorPack">Unidades por Pack</label>
+            <input type="number" id="unidadesPorPack" name="unidadesPorPack" value="0">
+            <!-- Input para unidades por pack, opcional -->
+          </div>
+          <div class="form-campo" id="cantidad-docenas" style="display: none;">
+            <label for="docenas">Cantidad de Docenas</label>
+            <input type="number" id="docenas" name="docenas" value="0">
+            <!-- Input para docenas, opcional -->
+          </div>
+          <div class="form-campo">
+            <label for="unidadesSueltas">Unidades Sueltas</label>
+            <input type="number" id="unidadesSueltas" name="unidadesSueltas" value="0">
+            <!-- Input para unidades sueltas, opcional -->
+          </div>
           <div class="form-campo">
             <label for="cantidad-total">Cantidad Total (Unidades)</label>
             <input type="number" id="cantidad-total" name="cantidadUnidades" readonly>
@@ -150,9 +244,10 @@
             <label for="icono-producto">Ícono del Producto (Opcional)</label>
             <select id="icono-producto" name="icono">
               <option value="default">Sin ícono</option>
-              <option value="bottle-water"><i class="fas fa-bottle-water"></i> Botella (Bebida)</option>
-              <!-- Otras opciones: caramelos, leche, cigarrillos, etc. -->
-              <!-- ... (más opciones) ... -->
+              <option value="bottle-water">Botella (Bebida)</option>
+              <option value="candy">Caramelo</option>
+              <option value="milk">Leche</option>
+              <option value="smoking">Cigarrillo</option>
             </select>
           </div>
           <!-- Botones de acción del formulario -->
@@ -198,19 +293,19 @@
       <!-- Área para Toasts -->
       <div id="toast-container" class="toast-container"></div>
       <!-- Contenedor para notificaciones, usado por mostrarToast en utils.js -->
-  </section>
-</main>
+    </section>
+  </main>
 
-<!-- Pie de Página -->
-<footer>
-  <!-- Enlace para volver al menú principal -->
-  <a href="/public/menu-principal.html"><i class="fas fa-arrow-left"></i> Volver al Menú Principal</a>
-</footer>
+  <!-- Pie de Página -->
+  <footer>
+    <!-- Enlace para volver al menú principal -->
+    <a href="/public/menu-principal.html"><i class="fas fa-arrow-left"></i> Volver al Menú Principal</a>
+  </footer>
 
-<!-- Scripts -->
-<script src="/public/js/utils.js"></script>
-<!-- Enlaza utils.js, que contiene la lógica del escáner (iniciarEscaneoContinuo) -->
-<script src="/public/js/cargar-producto-logic.js"></script>
-<!-- Enlaza el JS que maneja el formulario, el escáner, y la tabla -->
+  <!-- Scripts -->
+  <script src="/public/js/utils.js"></script>
+  <!-- Enlaza utils.js, que contiene la lógica del escáner (iniciarEscaneoContinuo) -->
+  <script src="/public/js/cargar-producto-logic.js"></script>
+  <!-- Enlaza el JS que maneja el formulario, el escáner, y la tabla -->
 </body>
 </html>
