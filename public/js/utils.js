@@ -124,7 +124,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     const permisosConcedidos = await solicitarPermisosCamara();
     if (!permisosConcedidos) {
       inicializando = false;
-      intentos = 0; // Resetear intentos si falla por permisos
+      intentos = 0;
       return;
     }
 
@@ -176,7 +176,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           btnEscanear.style.display = 'block';
           btnDetener.style.display = 'none';
           stopVideoStream();
-          // Reintentar inicialización
           setTimeout(() => {
             console.log('Reintentando inicialización de Quagga...');
             inicializarQuagga();
@@ -217,7 +216,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         }
       });
 
-      // Timeout para evitar bloqueos
       setTimeout(() => {
         if (inicializando) {
           console.error('Timeout en inicialización de Quagga');
