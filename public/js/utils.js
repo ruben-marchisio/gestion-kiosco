@@ -66,6 +66,19 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     return { inicializar: () => Promise.resolve(false), detener: () => {} };
   }
 
+  // Función para verificar el estado de la cámara
+  async function verificarEstadoCamara() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      console.log('Dispositivos de video disponibles:', videoDevices);
+      return videoDevices.length > 0;
+    } catch (err) {
+      console.error('Error al verificar estado de la cámara:', err);
+      return false;
+    }
+  }
+
   // Función para solicitar permisos de cámara
   async function solicitarPermisosCamara() {
     try {
@@ -104,9 +117,15 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         videoElement.srcObject = null;
         videoElement = null;
       }
-      contenedorCamara.innerHTML = '';
-      contenedorCamara.style.display = 'none';
-      console.log('Stream de video detenido y contenedor limpiado');
+      // Recrear contenedor de cámara para evitar conflictos
+      const parent = contenedorCamara.parentNode;
+      const newContainer = document.createElement('div');
+      newContainer.id = contenedorCamara.id;
+      newContainer.className = contenedorCamara.className;
+      newContainer.style.display = 'none';
+      parent.replaceChild(newContainer, contenedorCamara);
+      contenedorCamara = newContainer;
+      console.log('Contenedor de cámara recreado y stream detenido');
       // Forzar liberación de recursos en móvil con retraso
       if (isMobileDevice()) {
         console.log('Forzando liberación de recursos de cámara en móvil');
@@ -117,7 +136,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               console.log('Recursos de cámara liberados en móvil');
             })
             .catch(err => console.error('Error al liberar recursos en móvil:', err));
-        }, 500);
+        }, 1000);
       }
     } catch (error) {
       console.error('Error al detener el stream de video:', error);
@@ -159,6 +178,16 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
     console.log('Inicializando Quagga, intento:', intentos);
 
+    // Verificar estado de la cámara
+    const camaraDisponible = await verificarEstadoCamara();
+    if (!camaraDisponible) {
+      console.error('No se detectaron dispositivos de video');
+      mostrarToast('Error: No se detectaron cámaras disponibles.', 'error');
+      inicializando = false;
+      intentos = 0;
+      return false;
+    }
+
     // Solicitar permisos antes de inicializar
     const permisosConcedidos = await solicitarPermisosCamara();
     if (!permisosConcedidos) {
@@ -195,7 +224,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           halfSample: true
         },
         numOfWorkers: numWorkers,
-        frequency: 20, // Reducir frecuencia para dar tiempo a alinear
+        frequency: 22, // Aumentar ligeramente la velocidad
         decoder: {
           readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"],
           multiple: false,

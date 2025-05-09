@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tablaProductosProceso = document.querySelector('#lista-productos-body');
   const btnEscanear = document.querySelector('#escanear');
   const btnDetenerEscaneo = document.querySelector('#detener-escaneo');
-  const camaraCarga = document.querySelector('#camara-carga');
+  let camaraCarga = document.querySelector('#camara-carga');
   const inputCodigo = document.querySelector('#codigo');
 
   // Estado para manejar los productos en proceso
@@ -51,6 +51,21 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
   console.log('Botón #escanear encontrado:', btnEscanear);
+
+  // Función para recrear el contenedor de la cámara
+  function recrearContenedorCamara() {
+    const parent = camaraCarga.parentNode;
+    const newContainer = document.createElement('div');
+    newContainer.id = 'camara-carga';
+    newContainer.className = 'camara';
+    newContainer.style.display = 'none';
+    const guia = document.createElement('div');
+    guia.className = 'guia-codigo';
+    newContainer.appendChild(guia);
+    parent.replaceChild(newContainer, camaraCarga);
+    camaraCarga = newContainer;
+    console.log('Contenedor de cámara recreado');
+  }
 
   // Función para mostrar la subcategoría según la categoría seleccionada
   function mostrarSubcategoria(categoria) {
@@ -370,49 +385,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Iniciar escaneo al hacer clic en el botón
   let escaner = null;
-  btnEscanear.addEventListener('click', async () => {
+  async function intentarInicializarEscanner(reintentosRestantes = 3) {
+    if (reintentosRestantes <= 0) {
+      console.error('Máximo de reintentos alcanzado para inicializar el escáner');
+      mostrarToast('Error: No se pudo inicializar el escáner tras varios intentos.', 'error');
+      escaner = null;
+      return;
+    }
+
+    console.log('Intentando inicializar escáner, reintentos restantes:', reintentosRestantes);
+    try {
+      // Verificar permisos antes de inicializar
+      const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+      console.log('Estado de permiso de cámara antes de inicializar:', permissionStatus.state);
+      if (permissionStatus.state === 'denied') {
+        mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración del navegador.', 'error');
+        return;
+      }
+      if (permissionStatus.state === 'prompt') {
+        console.log('Permisos de cámara no otorgados, solicitando...');
+      }
+
+      // Retrasar inicialización para asegurar liberación de recursos
+      setTimeout(() => {
+        escaner = iniciarEscaneoContinuo(
+          camaraCarga,
+          btnEscanear,
+          btnDetenerEscaneo,
+          inputCodigo,
+          completarCallback,
+          null
+        );
+        escaner.inicializar().then(success => {
+          if (!success) {
+            console.error('Fallo al inicializar el escáner, reintentando...');
+            recrearContenedorCamara(); // Recrear contenedor si falla
+            intentarInicializarEscanner(reintentosRestantes - 1);
+          }
+        }).catch(err => {
+          console.error('Error al inicializar el escáner:', err);
+          recrearContenedorCamara(); // Recrear contenedor si falla
+          intentarInicializarEscanner(reintentosRestantes - 1);
+        });
+      }, 1000);
+    } catch (error) {
+      console.error('Error al iniciar el escaneo:', error);
+      mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
+      recrearContenedorCamara(); // Recrear contenedor si falla
+      intentarInicializarEscanner(reintentosRestantes - 1);
+    }
+  }
+
+  btnEscanear.addEventListener('click', () => {
     console.log('Evento click en btnEscanear disparado, escaner:', escaner ? 'activo' : 'inactivo');
     mostrarToast('Iniciando escaneo...', 'info');
     if (!escaner) {
-      try {
-        // Verificar permisos antes de inicializar
-        const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-        console.log('Estado de permiso de cámara antes de inicializar:', permissionStatus.state);
-        if (permissionStatus.state === 'denied') {
-          mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración del navegador.', 'error');
-          return;
-        }
-        if (permissionStatus.state === 'prompt') {
-          console.log('Permisos de cámara no otorgados, solicitando...');
-        }
-
-        // Retrasar inicialización para asegurar liberación de recursos
-        setTimeout(() => {
-          escaner = iniciarEscaneoContinuo(
-            camaraCarga,
-            btnEscanear,
-            btnDetenerEscaneo,
-            inputCodigo,
-            completarCallback,
-            null
-          );
-          escaner.inicializar().then(success => {
-            if (!success) {
-              console.error('Fallo al inicializar el escáner');
-              escaner = null;
-              mostrarToast('Error al inicializar el escáner.', 'error');
-            }
-          }).catch(err => {
-            console.error('Error al inicializar el escáner:', err);
-            mostrarToast('Error al inicializar el escáner: ' + err.message, 'error');
-            escaner = null;
-          });
-        }, 500);
-      } catch (error) {
-        console.error('Error al iniciar el escaneo:', error);
-        mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
-        escaner = null;
-      }
+      intentarInicializarEscanner();
     } else {
       console.log('Escáner ya activo, ignorando solicitud');
     }
@@ -424,6 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (escaner) {
       escaner.detener();
       escaner = null; // Reiniciar escaner para permitir nueva inicialización
+      recrearContenedorCamara(); // Recrear contenedor tras detener
     }
   });
 });
