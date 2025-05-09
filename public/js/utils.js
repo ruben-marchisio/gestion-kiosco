@@ -117,15 +117,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         videoElement.srcObject = null;
         videoElement = null;
       }
-      // Recrear contenedor de cámara para evitar conflictos
-      const parent = contenedorCamara.parentNode;
-      const newContainer = document.createElement('div');
-      newContainer.id = contenedorCamara.id;
-      newContainer.className = contenedorCamara.className;
-      newContainer.style.display = 'none';
-      parent.replaceChild(newContainer, contenedorCamara);
-      contenedorCamara = newContainer;
-      console.log('Contenedor de cámara recreado y stream detenido');
+      contenedorCamara.innerHTML = '';
+      contenedorCamara.style.display = 'none';
+      console.log('Stream de video detenido y contenedor limpiado');
       // Forzar liberación de recursos en móvil con retraso
       if (isMobileDevice()) {
         console.log('Forzando liberación de recursos de cámara en móvil');
@@ -224,7 +218,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           halfSample: true
         },
         numOfWorkers: numWorkers,
-        frequency: 22, // Aumentar ligeramente la velocidad
+        frequency: 22,
         decoder: {
           readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"],
           multiple: false,
@@ -272,7 +266,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               height: videoElement.videoHeight
             });
             console.log('Estado de Quagga:', {
-              isRunning: Quagga.isRunning(),
+              isRunning: escaneoActivo,
               hasCamera: navigator.mediaDevices && navigator.mediaDevices.getUserMedia
             });
           }, 1000);
@@ -356,7 +350,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         btnDetener.style.display = 'none';
         console.log('Quagga detenido y eventos limpiados');
         mostrarToast('Escaneo detenido.', 'info');
-        asignarEventosEscaneo(); // Reasignar eventos tras detener
+        asignarEventosEscaneo();
       } catch (error) {
         console.error('Error al detener Quagga:', error);
         mostrarToast('Error al detener el escáner: ' + error.message, 'error');
@@ -422,7 +416,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       btnDetener.style.display = 'none';
       console.log('Quagga detenido tras detectar código');
       mostrarToast('Cámara cerrada. Escanea otro producto o completa los datos.', 'info');
-      asignarEventosEscaneo(); // Reasignar eventos para permitir nuevo escaneo
+      asignarEventosEscaneo();
     } catch (error) {
       console.error('Error al detener Quagga tras detección:', error);
       mostrarToast('Error al cerrar la cámara: ' + error.message, 'error');
@@ -519,7 +513,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           btnDetener.style.display = 'none';
           console.log('Quagga detenido y eventos limpiados');
           mostrarToast('Escaneo detenido.', 'info');
-          asignarEventosEscaneo(); // Reasignar eventos tras detener
+          asignarEventosEscaneo();
         } catch (error) {
           console.error('Error al detener Quagga:', error);
           mostrarToast('Error al detener el escáner: ' + error.message, 'error');

@@ -54,17 +54,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Función para recrear el contenedor de la cámara
   function recrearContenedorCamara() {
-    const parent = camaraCarga.parentNode;
-    const newContainer = document.createElement('div');
-    newContainer.id = 'camara-carga';
-    newContainer.className = 'camara';
-    newContainer.style.display = 'none';
-    const guia = document.createElement('div');
-    guia.className = 'guia-codigo';
-    newContainer.appendChild(guia);
-    parent.replaceChild(newContainer, camaraCarga);
-    camaraCarga = newContainer;
-    console.log('Contenedor de cámara recreado');
+    try {
+      const oldContainer = document.querySelector('#camara-carga');
+      if (!oldContainer || !oldContainer.parentNode) {
+        console.error('Contenedor de cámara no encontrado o sin padre');
+        return false;
+      }
+      const parent = oldContainer.parentNode;
+      const newContainer = document.createElement('div');
+      newContainer.id = 'camara-carga';
+      newContainer.className = 'camara';
+      newContainer.style.display = 'none';
+      const guia = document.createElement('div');
+      guia.className = 'guia-codigo';
+      newContainer.appendChild(guia);
+      parent.replaceChild(newContainer, oldContainer);
+      camaraCarga = newContainer;
+      console.log('Contenedor de cámara recreado');
+      return true;
+    } catch (error) {
+      console.error('Error al recrear contenedor de cámara:', error);
+      return false;
+    }
   }
 
   // Función para mostrar la subcategoría según la categoría seleccionada
@@ -385,10 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Iniciar escaneo al hacer clic en el botón
   let escaner = null;
-  async function intentarInicializarEscanner(reintentosRestantes = 3) {
+  async function intentarInicializarEscanner(reintentosRestantes = 2) {
     if (reintentosRestantes <= 0) {
       console.error('Máximo de reintentos alcanzado para inicializar el escáner');
-      mostrarToast('Error: No se pudo inicializar el escáner tras varios intentos.', 'error');
+      mostrarToast('Error: No se pudo inicializar el escáner. Por favor, recarga la página.', 'error');
       escaner = null;
       return;
     }
@@ -406,6 +417,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Permisos de cámara no otorgados, solicitando...');
       }
 
+      // Asegurar que el contenedor exista
+      if (!document.querySelector('#camara-carga') || !recrearContenedorCamara()) {
+        console.error('Fallo al recrear contenedor de cámara');
+        intentarInicializarEscanner(reintentosRestantes - 1);
+        return;
+      }
+
       // Retrasar inicialización para asegurar liberación de recursos
       setTimeout(() => {
         escaner = iniciarEscaneoContinuo(
@@ -419,19 +437,16 @@ document.addEventListener('DOMContentLoaded', () => {
         escaner.inicializar().then(success => {
           if (!success) {
             console.error('Fallo al inicializar el escáner, reintentando...');
-            recrearContenedorCamara(); // Recrear contenedor si falla
             intentarInicializarEscanner(reintentosRestantes - 1);
           }
         }).catch(err => {
           console.error('Error al inicializar el escáner:', err);
-          recrearContenedorCamara(); // Recrear contenedor si falla
           intentarInicializarEscanner(reintentosRestantes - 1);
         });
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error('Error al iniciar el escaneo:', error);
       mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
-      recrearContenedorCamara(); // Recrear contenedor si falla
       intentarInicializarEscanner(reintentosRestantes - 1);
     }
   }
