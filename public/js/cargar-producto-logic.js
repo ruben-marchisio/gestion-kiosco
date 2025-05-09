@@ -386,20 +386,28 @@ document.addEventListener('DOMContentLoaded', () => {
           console.log('Permisos de cámara no otorgados, solicitando...');
         }
 
-        escaner = iniciarEscaneoContinuo(
-          camaraCarga,
-          btnEscanear,
-          btnDetenerEscaneo,
-          inputCodigo,
-          completarCallback,
-          null
-        );
-        const success = await escaner.inicializar();
-        if (!success) {
-          console.error('Fallo al inicializar el escáner');
-          escaner = null;
-          mostrarToast('Error al inicializar el escáner.', 'error');
-        }
+        // Retrasar inicialización para asegurar liberación de recursos
+        setTimeout(() => {
+          escaner = iniciarEscaneoContinuo(
+            camaraCarga,
+            btnEscanear,
+            btnDetenerEscaneo,
+            inputCodigo,
+            completarCallback,
+            null
+          );
+          escaner.inicializar().then(success => {
+            if (!success) {
+              console.error('Fallo al inicializar el escáner');
+              escaner = null;
+              mostrarToast('Error al inicializar el escáner.', 'error');
+            }
+          }).catch(err => {
+            console.error('Error al inicializar el escáner:', err);
+            mostrarToast('Error al inicializar el escáner: ' + err.message, 'error');
+            escaner = null;
+          });
+        }, 500);
       } catch (error) {
         console.error('Error al iniciar el escaneo:', error);
         mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');

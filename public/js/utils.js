@@ -34,6 +34,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   let stream = null;
   let intentos = 0;
   const maxIntentos = 3;
+  let codigoCandidato = null;
+  let contadorConfirmaciones = 0;
+  const confirmacionesRequeridas = 3; // Número de detecciones consecutivas para confirmar un código
 
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
 
@@ -104,20 +107,40 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       contenedorCamara.innerHTML = '';
       contenedorCamara.style.display = 'none';
       console.log('Stream de video detenido y contenedor limpiado');
-      // Forzar liberación de recursos en móvil
+      // Forzar liberación de recursos en móvil con retraso
       if (isMobileDevice()) {
         console.log('Forzando liberación de recursos de cámara en móvil');
-        navigator.mediaDevices.getUserMedia({ video: true })
-          .then(tempStream => {
-            tempStream.getTracks().forEach(track => track.stop());
-            console.log('Recursos de cámara liberados en móvil');
-          })
-          .catch(err => console.error('Error al liberar recursos en móvil:', err));
+        setTimeout(() => {
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then(tempStream => {
+              tempStream.getTracks().forEach(track => track.stop());
+              console.log('Recursos de cámara liberados en móvil');
+            })
+            .catch(err => console.error('Error al liberar recursos en móvil:', err));
+        }, 500);
       }
     } catch (error) {
       console.error('Error al detener el stream de video:', error);
       mostrarToast('Error al liberar recursos de la cámara: ' + error.message, 'error');
     }
+  }
+
+  function resetQuagga() {
+    console.log('Reiniciando estado de Quagga');
+    if (Quagga) {
+      Quagga.stop();
+      Quagga.offDetected();
+      Quagga.offProcessed();
+    }
+    escaneoActivo = false;
+    estaEscaneando = false;
+    ultimoCodigoEscaneado = null;
+    codigoCandidato = null;
+    contadorConfirmaciones = 0;
+    videoElement = null;
+    stream = null;
+    intentos = 0;
+    inicializando = false;
   }
 
   async function inicializarQuagga() {
@@ -172,7 +195,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           halfSample: true
         },
         numOfWorkers: numWorkers,
-        frequency: 30,
+        frequency: 20, // Reducir frecuencia para dar tiempo a alinear
         decoder: {
           readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"],
           multiple: false,
@@ -274,6 +297,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     if (escaneoActivo) {
       estaEscaneando = true;
       ultimoCodigoEscaneado = null;
+      codigoCandidato = null;
+      contadorConfirmaciones = 0;
     }
   }
 
@@ -323,6 +348,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     const code = result.codeResult.code;
     console.log('Código detectado por Quagga:', code, 'Formato:', result.codeResult.format);
 
+    // Confirmación de código
+    if (code === codigoCandidato) {
+      contadorConfirmaciones++;
+      console.log(`Confirmación ${contadorConfirmaciones} para código: ${code}`);
+    } else {
+      codigoCandidato = code;
+      contadorConfirmaciones = 1;
+      console.log(`Nuevo candidato: ${code}, confirmación 1`);
+    }
+
+    if (contadorConfirmaciones < confirmacionesRequeridas) {
+      return; // Esperar más confirmaciones
+    }
+
+    // Código confirmado
     if (code === ultimoCodigoEscaneado) {
       console.log('Código repetido, ignorando:', code);
       return;
