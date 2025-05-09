@@ -130,7 +130,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               console.log('Recursos de cámara liberados en móvil');
             })
             .catch(err => console.error('Error al liberar recursos en móvil:', err));
-        }, 1000);
+        }, 2000);
       }
     } catch (error) {
       console.error('Error al detener el stream de video:', error);
@@ -144,6 +144,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       Quagga.stop();
       Quagga.offDetected();
       Quagga.offProcessed();
+      // Finalizar workers y requestAnimationFrame
+      if (Quagga.Worker) {
+        Quagga.Worker.terminate();
+      }
     }
     escaneoActivo = false;
     estaEscaneando = false;
@@ -193,13 +197,19 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     contenedorCamara.innerHTML = '';
 
     const isMobile = isMobileDevice();
-    const numWorkers = isMobile ? 2 : 4;
+    const numWorkers = isMobile ? 1 : 4; // Reducir workers en móvil
+    const frequency = isMobile ? 20 : 22; // Reducir frecuencia en móvil
 
     try {
       const videoContainer = document.createElement('div');
       videoContainer.style.width = '100%';
       videoContainer.style.height = '100%';
       contenedorCamara.appendChild(videoContainer);
+
+      // Crear canvas con willReadFrequently: true
+      const canvas = document.createElement('canvas');
+      canvas.setAttribute('willReadFrequently', 'true');
+      videoContainer.appendChild(canvas);
 
       Quagga.init({
         inputStream: {
@@ -218,7 +228,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           halfSample: true
         },
         numOfWorkers: numWorkers,
-        frequency: 22,
+        frequency: frequency,
         decoder: {
           readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"],
           multiple: false,
@@ -322,6 +332,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       ultimoCodigoEscaneado = null;
       codigoCandidato = null;
       contadorConfirmaciones = 0;
+      if (Quagga && !Quagga.isPaused()) {
+        Quagga.start();
+      }
     }
   }
 
@@ -330,6 +343,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     console.log('Evento de fin de escaneo, tipo:', e.type);
     btnEscanear.classList.remove('boton-presionado');
     estaEscaneando = false;
+    if (Quagga) {
+      Quagga.pause();
+    }
   }
 
   asignarEventosEscaneo();

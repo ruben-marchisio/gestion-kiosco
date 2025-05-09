@@ -52,6 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   console.log('Botón #escanear encontrado:', btnEscanear);
 
+  // Función para limpiar eventos del contenedor
+  function limpiarEventosContenedor() {
+    if (camaraCarga) {
+      const clone = camaraCarga.cloneNode(true);
+      camaraCarga.parentNode.replaceChild(clone, camaraCarga);
+      camaraCarga = clone;
+      console.log('Eventos del contenedor de cámara limpiados');
+    }
+  }
+
   // Función para recrear el contenedor de la cámara
   function recrearContenedorCamara() {
     try {
@@ -399,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function intentarInicializarEscanner(reintentosRestantes = 2) {
     if (reintentosRestantes <= 0) {
       console.error('Máximo de reintentos alcanzado para inicializar el escáner');
-      mostrarToast('Error: No se pudo inicializar el escáner. Por favor, recarga la página.', 'error');
+      mostrarToast('Error: No se pudo inicializar el escáner. Verifica los permisos de la cámara o recarga la página.', 'error');
       escaner = null;
       return;
     }
@@ -424,6 +434,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Limpiar eventos residuales
+      limpiarEventosContenedor();
+
       // Retrasar inicialización para asegurar liberación de recursos
       setTimeout(() => {
         escaner = iniciarEscaneoContinuo(
@@ -443,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Error al inicializar el escáner:', err);
           intentarInicializarEscanner(reintentosRestantes - 1);
         });
-      }, 1500);
+      }, 2000);
     } catch (error) {
       console.error('Error al iniciar el escaneo:', error);
       mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
@@ -468,6 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
       escaner.detener();
       escaner = null; // Reiniciar escaner para permitir nueva inicialización
       recrearContenedorCamara(); // Recrear contenedor tras detener
+      limpiarEventosContenedor(); // Limpiar eventos residuales
     }
   });
 });
