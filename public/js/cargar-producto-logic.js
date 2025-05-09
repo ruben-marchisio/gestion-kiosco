@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(result => {
           if (result.producto) {
-            mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
+            mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color:禁止: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
             setTimeout(() => {
               window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
             }, 3000);
@@ -370,11 +370,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Iniciar escaneo al hacer clic en el botón
   let escaner = null;
-  btnEscanear.addEventListener('click', () => {
+  btnEscanear.addEventListener('click', async () => {
     console.log('Evento click en btnEscanear disparado, escaner:', escaner ? 'activo' : 'inactivo');
     mostrarToast('Iniciando escaneo...', 'info');
     if (!escaner) {
       try {
+        // Verificar permisos antes de inicializar
+        const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+        console.log('Estado de permiso de cámara antes de inicializar:', permissionStatus.state);
+        if (permissionStatus.state === 'denied') {
+          mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración del navegador.', 'error');
+          return;
+        }
+
         escaner = iniciarEscaneoContinuo(
           camaraCarga,
           btnEscanear,
@@ -383,12 +391,12 @@ document.addEventListener('DOMContentLoaded', () => {
           completarCallback,
           null
         );
-        escaner.inicializar().then(success => {
-          if (!success) {
-            console.error('Fallo al inicializar el escáner');
-            escaner = null;
-          }
-        });
+        const success = await escaner.inicializar();
+        if (!success) {
+          console.error('Fallo al inicializar el escáner');
+          escaner = null;
+          mostrarToast('Error al inicializar el escáner.', 'error');
+        }
       } catch (error) {
         console.error('Error al iniciar el escaneo:', error);
         mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');

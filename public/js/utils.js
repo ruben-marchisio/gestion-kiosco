@@ -327,6 +327,23 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     }
     mostrarToast('Código escaneado: ' + code, 'success');
 
+    // Cerrar la cámara tras detectar un código
+    try {
+      Quagga.stop();
+      stopVideoStream();
+      Quagga.offDetected();
+      escaneoActivo = false;
+      estaEscaneando = false;
+      btnEscanear.style.display = 'block';
+      btnDetener.style.display = 'none';
+      console.log('Quagga detenido tras detectar código');
+      mostrarToast('Cámara cerrada. Escanea otro producto o completa los datos.', 'info');
+      asignarEventosEscaneo(); // Reasignar eventos para permitir nuevo escaneo
+    } catch (error) {
+      console.error('Error al detener Quagga tras detección:', error);
+      mostrarToast('Error al cerrar la cámara: ' + error.message, 'error');
+    }
+
     const usuarioId = localStorage.getItem('usuarioId');
     console.log('Buscando código:', code, 'para usuario:', usuarioId);
     fetch(`${BASE_URL}/api/productos/codigo/${code}?usuarioId=${usuarioId}`, {
@@ -337,7 +354,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         if (data.producto) {
           console.log('Producto encontrado en el stock local:', data.producto);
           completarCallback(data.producto);
-          mostrarToast('Producto encontrado en tu stock local. Verifica y completa los datos.', 'success');
+          mostrarToast(`Producto encontrado en tu stock. Redirigiendo a <a href="/public/stock.html?codigo=${code}" style="color: #3498db; text-decoration: underline;">Stock</a>.`, 'info');
+          setTimeout(() => {
+            window.location.href = `/public/stock.html?codigo=${code}`;
+          }, 3000);
         } else {
           fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`, {
             signal: AbortSignal.timeout(15000)
@@ -351,7 +371,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               } else {
                 console.log('Producto no encontrado en ninguna base de datos para el código:', code);
                 completarCallback(null);
-                mostrarToast('Producto no encontrado con ese código de barras. Intenta cargarlo manualmente.', 'info');
+                mostrarToast('Producto no encontrado con ese código de barras. Ingresa los datos manualmente.', 'info');
               }
             })
             .catch(err => {
