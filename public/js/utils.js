@@ -88,21 +88,36 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   }
 
   function stopVideoStream() {
-    if (stream) {
-      const tracks = stream.getTracks();
-      tracks.forEach(track => {
-        console.log('Deteniendo pista de video:', track);
-        track.stop();
-      });
-      stream = null;
+    try {
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach(track => {
+          console.log('Deteniendo pista de video:', track);
+          track.stop();
+        });
+        stream = null;
+      }
+      if (videoElement) {
+        videoElement.srcObject = null;
+        videoElement = null;
+      }
+      contenedorCamara.innerHTML = '';
+      contenedorCamara.style.display = 'none';
+      console.log('Stream de video detenido y contenedor limpiado');
+      // Forzar liberación de recursos en móvil
+      if (isMobileDevice()) {
+        console.log('Forzando liberación de recursos de cámara en móvil');
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(tempStream => {
+            tempStream.getTracks().forEach(track => track.stop());
+            console.log('Recursos de cámara liberados en móvil');
+          })
+          .catch(err => console.error('Error al liberar recursos en móvil:', err));
+      }
+    } catch (error) {
+      console.error('Error al detener el stream de video:', error);
+      mostrarToast('Error al liberar recursos de la cámara: ' + error.message, 'error');
     }
-    if (videoElement) {
-      videoElement.srcObject = null;
-      videoElement = null;
-    }
-    contenedorCamara.innerHTML = '';
-    contenedorCamara.style.display = 'none';
-    console.log('Stream de video detenido y contenedor limpiado');
   }
 
   async function inicializarQuagga() {

@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(result => {
           if (result.producto) {
-            mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color:禁止: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
+            mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
             setTimeout(() => {
               window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
             }, 3000);
@@ -382,6 +382,9 @@ document.addEventListener('DOMContentLoaded', () => {
           mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración del navegador.', 'error');
           return;
         }
+        if (permissionStatus.state === 'prompt') {
+          console.log('Permisos de cámara no otorgados, solicitando...');
+        }
 
         escaner = iniciarEscaneoContinuo(
           camaraCarga,
@@ -402,6 +405,8 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
         escaner = null;
       }
+    } else {
+      console.log('Escáner ya activo, ignorando solicitud');
     }
   });
 
