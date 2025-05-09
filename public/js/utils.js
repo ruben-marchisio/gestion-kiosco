@@ -40,7 +40,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
 
   console.log('Iniciando escaneo continuo...');
-  console.log('Protocolo actual:', window.location.protocol);
+  console.log('Protocolo actual:', window.location.protocol, 'URL:', window.location.href);
 
   // Verificar soporte para getUserMedia
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -74,7 +74,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       mediaStream.getTracks().forEach(track => track.stop());
       return true;
     } catch (err) {
-      console.error('Error al solicitar permisos de cámara:', err);
+      console.error('Error al solicitar permisos de cámara:', err.name, err.message);
       mostrarToast('Error al solicitar acceso a la cámara: ' + err.message, 'error');
       return false;
     }
@@ -162,7 +162,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         locate: true
       }, (err) => {
         if (err) {
-          console.error('Error al inicializar Quagga:', err);
+          console.error('Error al inicializar Quagga:', err.name, err.message);
           mostrarToast('Error al inicializar la cámara: ' + err.message, 'error');
           escaneoActivo = false;
           estaEscaneando = false;
@@ -223,7 +223,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         }
       }, 5000);
     } catch (error) {
-      console.error('Excepción al inicializar Quagga:', error);
+      console.error('Excepción al inicializar Quagga:', error.name, error.message);
       mostrarToast('Excepción al inicializar el escáner: ' + error.message, 'error');
       inicializando = false;
       stopVideoStream();

@@ -324,53 +324,54 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Manejar el escaneo continuo de códigos de barras
-  btnEscanear.addEventListener('click', () => {
-    console.log('Botón Escanear clicado'); // Depuración
-    mostrarToast('Iniciando escaneo...', 'info'); // Feedback al usuario
-    const completarCallback = (producto) => {
-      if (producto) {
-        console.log('Producto detectado:', producto);
-        fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
-          .then(res => res.json())
-          .then(result => {
-            if (result.producto) {
-              mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
-              setTimeout(() => {
-                window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
-              }, 3000);
-            } else {
-              console.log('Autocompletando formulario con producto:', producto);
-              document.querySelector('#nombre-producto').value = producto.nombre;
-              document.querySelector('#marca').value = producto.marca;
-              document.querySelector('#categoria').value = producto.categoria;
-              mostrarSubcategoria(producto.categoria);
-              const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
-              if (subcategoriaSelect) {
-                subcategoriaSelect.value = producto.subcategoria || '';
-              }
-              document.querySelector('#precio-lista').value = producto.precioLista || '';
-              document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
-              document.querySelector('#precio-final').value = producto.precioFinal || '';
-              document.querySelector('#unidad').value = producto.unidad || 'unidad';
-              document.querySelector('#packs').value = producto.packs || 0;
-              document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
-              document.querySelector('#docenas').value = producto.docenas || 0;
-              document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
-              document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
-              document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
-              document.querySelector('#icono-producto').value = producto.icono || 'default';
+  const completarCallback = (producto) => {
+    if (producto) {
+      console.log('Producto detectado:', producto);
+      fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
+        .then(res => res.json())
+        .then(result => {
+          if (result.producto) {
+            mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
+            setTimeout(() => {
+              window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
+            }, 3000);
+          } else {
+            console.log('Autocompletando formulario con producto:', producto);
+            document.querySelector('#nombre-producto').value = producto.nombre;
+            document.querySelector('#marca').value = producto.marca;
+            document.querySelector('#categoria').value = producto.categoria;
+            mostrarSubcategoria(producto.categoria);
+            const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
+            if (subcategoriaSelect) {
+              subcategoriaSelect.value = producto.subcategoria || '';
             }
-          })
-          .catch(err => {
-            console.error('Error al verificar el producto:', err);
-            mostrarToast('Error al verificar el producto.', 'error');
-          });
-      } else {
-        console.log('No se encontró producto para el código escaneado');
-        mostrarToast('Producto no encontrado. Ingresa los datos manualmente.', 'info');
-      }
-    };
+            document.querySelector('#precio-lista').value = producto.precioLista || '';
+            document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
+            document.querySelector('#precio-final').value = producto.precioFinal || '';
+            document.querySelector('#unidad').value = producto.unidad || 'unidad';
+            document.querySelector('#packs').value = producto.packs || 0;
+            document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
+            document.querySelector('#docenas').value = producto.docenas || 0;
+            document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
+            document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
+            document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
+            document.querySelector('#icono-producto').value = producto.icono || 'default';
+          }
+        })
+        .catch(err => {
+          console.error('Error al verificar el producto:', err);
+          mostrarToast('Error al verificar el producto.', 'error');
+        });
+    } else {
+      console.log('No se encontró producto para el código escaneado');
+      mostrarToast('Producto no encontrado. Ingresa los datos manualmente.', 'info');
+    }
+  };
 
+  // Iniciar escaneo al hacer clic en el botón
+  btnEscanear.addEventListener('click', () => {
+    console.log('Evento click en btnEscanear disparado');
+    mostrarToast('Iniciando escaneo...', 'info');
     try {
       iniciarEscaneoContinuo(
         camaraCarga,
