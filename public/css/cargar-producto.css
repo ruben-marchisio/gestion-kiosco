@@ -9,9 +9,6 @@ body {
   flex-direction: column;
   overflow-x: hidden;
 }
-  /* Propósito: Configura la base visual de cargar-producto.html */
-  /* Usa la fuente Poppins (coherente con otras páginas), fondo gradiente azul-gris */
-  /* Organiza el contenido en columna, evita desplazamiento horizontal no deseado */
 
 /* Encabezado */
 header {
@@ -69,10 +66,6 @@ h1 {
   margin-right: 5px;
   font-size: 16px;
 }
-  /* Propósito: Estiliza el encabezado con logo, título, y navegación */
-  /* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra */
-  /* Logo centrado, más pequeño (50px), con borde blanco circular */
-  /* Título compacto (22px), navegación centrada con enlaces que resaltan en azul (#3498db) al pasar el mouse o estar activos */
 
 /* Contenido Principal */
 main {
@@ -93,9 +86,6 @@ main {
   gap: 20px;
   overflow-x: hidden;
 }
-  /* Propósito: Organiza el contenido principal (formulario y tabla) */
-  /* Main centra el contenido con flexbox, con padding para evitar superposición con el encabezado y pie de página */
-  /* #cargar-producto es un contenedor ancho (95%), organizado en columna con espacio entre secciones, evita desplazamiento horizontal */
 
 /* Formulario de carga */
 .formulario-carga {
@@ -183,10 +173,6 @@ main {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(102, 102, 102, 0.5);
 }
-  /* Propósito: Estiliza el formulario para ingresar datos del producto */
-  /* Contenedor blanco semitransparente con bordes redondeados y sombra */
-  /* Campos de entrada y selectores con etiquetas, bordes suaves, y efecto de foco (borde azul, sombra) */
-  /* Botones de acción (Agregar, Cancelar) centrados, con primario en azul y cancelar en gris, con efectos de hover */
 
 /* Controles de Escaneo */
 .botones-escaneo {
@@ -203,7 +189,7 @@ main {
   border: none;
   cursor: pointer;
   font-size: 14px;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   -webkit-user-select: none;
 }
 .boton-escaneo i {
@@ -216,6 +202,11 @@ main {
 .boton-activar:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(46, 204, 113, 0.5);
+}
+.boton-activar.boton-presionado {
+  background-color: #27ae60;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.7), 0 0 30px rgba(46, 204, 113, 0.3);
 }
 .boton-detener {
   background-color: #e74c3c;
@@ -259,10 +250,6 @@ main {
   pointer-events: none;
   z-index: 10;
 }
-  /* Propósito: Estiliza los controles del escáner y el área de la cámara */
-  /* Botones de escanear (verde) y detener (rojo) centrados, con efectos de hover */
-  /* Cámara con borde oscuro, fondo negro, y video que cubre todo el espacio */
-  /* Guía de código (rectángulo rojo punteado) centrada para alinear el código de barras */
 
 /* Lista de Productos en Proceso */
 .lista-productos-proceso {
@@ -332,11 +319,6 @@ main {
   gap: 10px;
   justify-content: center;
 }
-  /* Propósito: Estiliza la tabla de productos en proceso */
-  /* Contenedor blanco semitransparente con bordes redondeados y sombra */
-  /* Tabla con celdas centradas, cabecera gris claro, y filas coloreadas según estado (amarillo para pendiente, verde para completo) */
-  /* Botones de acción (editar en azul, eliminar en rojo) pequeños, con efecto de escalado al hover */
-  /* Botones globales (Confirmar Todos, Cancelar Todo) centrados */
 
 /* Toasts */
 .toast-container {
@@ -378,9 +360,6 @@ main {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-20px); }
 }
-  /* Propósito: Estiliza las notificaciones (toasts) usadas por utils.js */
-  /* Contenedor fijo en la esquina superior derecha */
-  /* Toasts con colores según tipo (verde para éxito, rojo para error, azul para info), animaciones de entrada/salida, y borde izquierdo destacado */
 
 /* Pie de Página */
 footer {
@@ -405,16 +384,12 @@ footer a:hover {
 footer a i {
   margin-right: 5px;
 }
-  /* Propósito: Estiliza el pie de página con el enlace de volver */
-  /* Fondo oscuro, fijo en la parte inferior, enlace blanco que cambia a azul al pasar el mouse */
 
 /* Animación para la entrada del contenido */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-  /* Propósito: Añade animación suave al formulario y tabla */
-  /* Desvanece y desplaza hacia arriba el contenido al cargar */
 
 /* Estilos responsivos */
 @media (max-width: 600px) {
@@ -444,6 +419,3 @@ footer a i {
   .boton-accion { padding: 12px 20px; }
   .camara { max-width: 600px; height: 240px; }
 }
-  /* Propósito: Ajusta los estilos para diferentes dispositivos */
-  /* En móviles (≤600px): Reduce tamaños, oculta columnas de la tabla (marca, categoría), ajusta la cámara (180px de alto) */
-  /* En pantallas grandes (≥601px): Mantiene la cámara más grande (240px) y botones más espaciosos */
