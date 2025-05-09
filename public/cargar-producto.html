@@ -1,89 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
-<!-- Declara un documento HTML5 en español -->
 <head>
-  <!-- Metadatos y recursos externos -->
-  <!-- Configura codificación UTF-8 y hace la página responsive -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Título de la página, mostrado en la pestaña del navegador -->
   <title>Gestión Kiosco - Cargar Producto</title>
-  <!-- Enlaza el CSS específico para esta página -->
   <link rel="stylesheet" href="/public/css/cargar-producto.css">
-  <!-- Incluye Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- Incluye QuaggaJS desde un CDN para el escáner de códigos de barras -->
-  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.2/dist/quagga.min.js" onload="console.log('QuaggaJS cargado')" onerror="console.error('Error al cargar QuaggaJS'); mostrarToast('Error al cargar la librería de escaneo.', 'error')"></script>
 </head>
 <body>
-  <!-- Contenido visible de la página -->
-
-  <!-- Encabezado -->
   <header>
-    <!-- Muestra el logo, título, y navegación -->
-    <!-- Propósito: Identifica la página y ofrece navegación a otras secciones -->
-    <!-- Contiene el logo y el título "Cargar Producto" -->
     <div class="logo">
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
     </div>
     <h1>Cargar Producto</h1>
-    <!-- Barra de navegación con enlaces a otras páginas -->
     <nav class="nav-principal">
-      <!-- Enlace al menú principal -->
       <a href="/public/menu-principal.html"><i class="fas fa-home"></i> Inicio</a>
-      <!-- Enlace activo a esta página (cargar producto) -->
       <a href="/public/cargar-producto.html" class="activo"><i class="fas fa-plus"></i> Agregar Producto</a>
-      <!-- Enlace a la página de inventario -->
       <a href="/public/stock.html"><i class="fas fa-boxes"></i> Stock</a>
     </nav>
   </header>
 
-  <!-- Contenido Principal -->
   <main>
-    <!-- Sección principal para cargar productos -->
-    <!-- Propósito: Permite registrar nuevos productos con escáner o manualmente -->
     <section id="cargar-producto">
-      <!-- Formulario para Cargar Producto -->
       <div class="formulario-carga">
-        <!-- Contenedor del formulario -->
-        <!-- Propósito: Recoge datos del producto (código, nombre, categoría, etc.) -->
         <h2>Cargar Producto</h2>
         <form id="form-cargar-producto">
-          <!-- Formulario para ingresar datos; el ID es usado por cargar-producto-logic.js -->
-          <!-- Campo para el código de barras, llenado por el escáner -->
           <div class="form-campo">
             <label for="codigo">Código de Barras</label>
             <input type="text" id="codigo" name="codigo" readonly>
-            <!-- Input de solo lectura; se llena automáticamente con el escáner -->
-            <!-- Área donde se muestra la cámara del escáner -->
             <div id="camara-carga" class="camara" style="display: none;">
               <div class="guia-codigo"></div>
-              <!-- Contenedor para el video de la cámara, oculto por defecto; la guía ayuda a alinear el código -->
             </div>
-            <!-- Botones para controlar el escáner -->
             <div class="botones-escaneo" style="margin-top: 10px;">
               <button type="button" id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i> Escanear</button>
-              <!-- Activa el escáner; conectado a utils.js vía cargar-producto-logic.js -->
               <button type="button" id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i> Detener Escaneo</button>
-              <!-- Detiene el escáner; oculto hasta que el escaneo comienza -->
             </div>
           </div>
-          <!-- Campos para datos del producto -->
           <div class="form-campo">
             <label for="nombre-producto">Nombre del Producto</label>
             <input type="text" id="nombre-producto" name="nombre" placeholder="Ej. Coca-Cola 500ml" required>
-            <!-- Input para el nombre, obligatorio -->
           </div>
           <div class="form-campo">
             <label for="marca">Marca</label>
             <input type="text" id="marca" name="marca" placeholder="Ej. Coca-Cola" required>
-            <!-- Input para la marca, obligatorio -->
           </div>
-          <!-- Selección de categoría -->
           <div class="form-campo">
             <label for="categoria">Categoría</label>
             <select id="categoria" name="categoria" required>
-              <!-- Menú desplegable con categorías de productos -->
               <option value="">Selecciona una categoría</option>
               <option value="bebidas">Bebidas</option>
               <option value="golosinas">Golosinas</option>
@@ -96,7 +60,6 @@
               <option value="verduleria">Verdulería</option>
             </select>
           </div>
-          <!-- Subcategorías dinámicas, mostradas según la categoría seleccionada -->
           <div class="form-campo" id="subcategoria-bebidas" style="display: none;">
             <label for="select-subcategoria-bebidas">Subcategoría Bebidas</label>
             <select id="select-subcategoria-bebidas" name="subcategoria">
@@ -127,7 +90,6 @@
               <option value="manteca">Manteca</option>
             </select>
           </div>
-          <!-- Otros subcategorías similares para cigarrillos, fiambre, congelados, etc. -->
           <div class="form-campo" id="subcategoria-cigarrillos" style="display: none;">
             <label for="select-subcategoria-cigarrillos">Subcategoría Cigarrillos</label>
             <select id="select-subcategoria-cigarrillos" name="subcategoria">
@@ -181,23 +143,18 @@
               <option value="verduras">Verduras</option>
             </select>
           </div>
-          <!-- Campos de precios y cantidades -->
           <div class="form-campo">
             <label for="precio-lista">Precio de Lista</label>
             <input type="number" id="precio-lista" name="precioLista" placeholder="Ej. 1000" step="0.01" required>
-            <!-- Input numérico para el precio base, obligatorio -->
           </div>
           <div class="form-campo">
             <label for="porcentaje-ganancia">Porcentaje de Ganancia (%)</label>
             <input type="number" id="porcentaje-ganancia" name="porcentajeGanancia" placeholder="Ej. 20" step="0.01" required>
-            <!-- Input para el margen de ganancia, usado para calcular el precio final -->
           </div>
           <div class="form-campo">
             <label for="precio-final">Precio Final</label>
             <input type="number" id="precio-final" name="precioFinal" readonly>
-            <!-- Input de solo lectura, calculado automáticamente en cargar-producto-logic.js -->
           </div>
-          <!-- Selección de unidad y cantidades -->
           <div class="form-campo">
             <label for="unidad">Unidad</label>
             <select id="unidad" name="unidad" required>
@@ -211,35 +168,27 @@
           <div class="form-campo" id="cantidad-packs" style="display: none;">
             <label for="packs">Cantidad de Packs</label>
             <input type="number" id="packs" name="packs" value="0">
-            <!-- Input para la cantidad de packs, opcional -->
           </div>
           <div class="form-campo" id="unidades-por-pack" style="display: none;">
             <label for="unidadesPorPack">Unidades por Pack</label>
             <input type="number" id="unidadesPorPack" name="unidadesPorPack" value="0">
-            <!-- Input para unidades por pack, opcional -->
           </div>
           <div class="form-campo" id="cantidad-docenas" style="display: none;">
             <label for="docenas">Cantidad de Docenas</label>
             <input type="number" id="docenas" name="docenas" value="0">
-            <!-- Input para docenas, opcional -->
           </div>
           <div class="form-campo">
             <label for="unidadesSueltas">Unidades Sueltas</label>
             <input type="number" id="unidadesSueltas" name="unidadesSueltas" value="0">
-            <!-- Input para unidades sueltas, opcional -->
           </div>
           <div class="form-campo">
             <label for="cantidad-total">Cantidad Total (Unidades)</label>
             <input type="number" id="cantidad-total" name="cantidadUnidades" readonly>
-            <!-- Input de solo lectura, calcula el total de unidades -->
           </div>
-          <!-- Fecha de vencimiento -->
           <div class="form-campo">
             <label for="fecha-vencimiento">Fecha de Vencimiento</label>
             <input type="date" id="fecha-vencimiento" name="fechaVencimiento" required>
-            <!-- Input para la fecha de vencimiento, obligatorio -->
           </div>
-          <!-- Selector de ícono opcional -->
           <div class="form-campo">
             <label for="icono-producto">Ícono del Producto (Opcional)</label>
             <select id="icono-producto" name="icono">
@@ -250,23 +199,16 @@
               <option value="smoking">Cigarrillo</option>
             </select>
           </div>
-          <!-- Botones de acción del formulario -->
           <div class="form-acciones">
             <button type="button" id="agregar-producto" class="boton-accion boton-primario"><i class="fas fa-plus"></i> Agregar Producto</button>
-            <!-- Añade el producto a la lista en proceso; manejado por cargar-producto-logic.js -->
             <button type="button" id="cancelar-producto" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar</button>
-            <!-- Cancela el formulario, limpia los campos -->
           </div>
         </form>
       </div>
 
-      <!-- Lista de Productos en Proceso -->
       <div class="lista-productos-proceso">
-        <!-- Muestra productos añadidos temporalmente antes de confirmarlos -->
-        <!-- Propósito: Permite revisar y gestionar productos antes de guardarlos en el backend -->
         <h3>Productos en Proceso</h3>
         <table id="tabla-productos-proceso">
-          <!-- Tabla para listar productos en proceso -->
           <thead>
             <tr>
               <th>Nombre</th>
@@ -279,33 +221,22 @@
             </tr>
           </thead>
           <tbody id="lista-productos-body"></tbody>
-          <!-- Cuerpo de la tabla, llenado dinámicamente por cargar-producto-logic.js -->
         </table>
-        <!-- Botones para gestionar todos los productos en proceso -->
         <div class="acciones-globales">
           <button type="button" id="confirmar-todos" class="boton-accion boton-primario"><i class="fas fa-check"></i> Confirmar Todos</button>
-          <!-- Envía todos los productos al backend -->
           <button type="button" id="cancelar-todo" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar Todo</button>
-          <!-- Elimina todos los productos en proceso -->
         </div>
       </div>
 
-      <!-- Área para Toasts -->
       <div id="toast-container" class="toast-container"></div>
-      <!-- Contenedor para notificaciones, usado por mostrarToast en utils.js -->
     </section>
   </main>
 
-  <!-- Pie de Página -->
   <footer>
-    <!-- Enlace para volver al menú principal -->
     <a href="/public/menu-principal.html"><i class="fas fa-arrow-left"></i> Volver al Menú Principal</a>
   </footer>
 
-  <!-- Scripts -->
   <script src="/public/js/utils.js"></script>
-  <!-- Enlaza utils.js, que contiene la lógica del escáner (iniciarEscaneoContinuo) -->
   <script src="/public/js/cargar-producto-logic.js"></script>
-  <!-- Enlaza el JS que maneja el formulario, el escáner, y la tabla -->
 </body>
 </html>
