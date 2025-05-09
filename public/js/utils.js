@@ -65,7 +65,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     try {
       console.log('Solicitando permisos de cámara...');
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }
+        video: { facingMode: "environment", width: 640, height: 480 }
       });
       console.log('Permiso de cámara concedido');
       mediaStream.getTracks().forEach(track => track.stop());
@@ -128,10 +128,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           type: "LiveStream",
           target: videoContainer,
           constraints: {
-            width: { ideal: 640, min: 320 },
-            height: { ideal: 480, min: 240 },
-            facingMode: "environment",
-            frameRate: { ideal: 30, min: 15 }
+            width: 640,
+            height: 480,
+            facingMode: "environment"
           },
           area: { top: "10%", right: "10%", left: "10%", bottom: "10%" }
         },
@@ -163,6 +162,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           btnEscanear.style.display = 'block';
           btnDetener.style.display = 'none';
           stopVideoStream();
+          // Reintentar inicialización
+          setTimeout(() => {
+            console.log('Reintentando inicialización de Quagga...');
+            inicializarQuagga();
+          }, 1000);
           return;
         }
 
@@ -207,6 +211,13 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   // Configurar eventos para el botón Escanear
   const isMobile = isMobileDevice();
 
+  // Limpiar eventos previos para evitar duplicados
+  btnEscanear.removeEventListener('touchstart', manejarInicioEscaneo);
+  btnEscanear.removeEventListener('touchend', manejarFinEscaneo);
+  btnEscanear.removeEventListener('mousedown', manejarInicioEscaneo);
+  btnEscanear.removeEventListener('mouseup', manejarFinEscaneo);
+  btnEscanear.removeEventListener('mouseleave', manejarFinEscaneo);
+
   // Forzar inicialización al primer clic/touch
   function manejarInicioEscaneo(e) {
     e.preventDefault();
@@ -238,6 +249,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   }
 
   // Configurar evento para el botón Detener
+  btnDetener.removeEventListener('click', null); // Limpiar eventos previos
   btnDetener.addEventListener('click', (e) => {
     e.preventDefault();
     console.log('Click en btnDetener, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
