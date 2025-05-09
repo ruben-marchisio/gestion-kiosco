@@ -150,16 +150,16 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
             width: { ideal: 1280, min: 640 },
             height: { ideal: 720, min: 480 }
           },
-          area: { top: "5%", right: "5%", left: "5%", bottom: "5%" } // Ampliar área para códigos pequeños
+          area: { top: "5%", right: "5%", left: "5%", bottom: "5%" }
         },
         locator: {
-          patchSize: "small", // Mejorar detección de códigos pequeños
+          patchSize: "small",
           halfSample: true
         },
         numOfWorkers: numWorkers,
-        frequency: 30, // Aumentar frecuencia para mejor respuesta
+        frequency: 30,
         decoder: {
-          readers: ["ean_reader", "upc_reader", "code_128_reader"],
+          readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"],
           multiple: false,
           debug: {
             drawBoundingBox: true,
@@ -230,13 +230,26 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   // Configurar eventos para el botón Escanear
   const isMobile = isMobileDevice();
 
-  // Limpiar eventos previos
-  btnEscanear.removeEventListener('click', null);
-  btnEscanear.removeEventListener('touchstart', null);
-  btnEscanear.removeEventListener('touchend', null);
-  btnEscanear.removeEventListener('mousedown', null);
-  btnEscanear.removeEventListener('mouseup', null);
-  btnEscanear.removeEventListener('mouseleave', null);
+  function limpiarEventos() {
+    btnEscanear.removeEventListener('click', null);
+    btnEscanear.removeEventListener('touchstart', null);
+    btnEscanear.removeEventListener('touchend', null);
+    btnEscanear.removeEventListener('mousedown', null);
+    btnEscanear.removeEventListener('mouseup', null);
+    btnEscanear.removeEventListener('mouseleave', null);
+  }
+
+  function asignarEventosEscaneo() {
+    limpiarEventos();
+    if (isMobile) {
+      btnEscanear.addEventListener('touchstart', manejarInicioEscaneo);
+      btnEscanear.addEventListener('touchend', manejarFinEscaneo);
+    } else {
+      btnEscanear.addEventListener('mousedown', manejarInicioEscaneo);
+      btnEscanear.addEventListener('mouseup', manejarFinEscaneo);
+      btnEscanear.addEventListener('mouseleave', manejarFinEscaneo);
+    }
+  }
 
   // Manejar mantener presionado para escanear
   function manejarInicioEscaneo(e) {
@@ -256,14 +269,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     estaEscaneando = false;
   }
 
-  if (isMobile) {
-    btnEscanear.addEventListener('touchstart', manejarInicioEscaneo);
-    btnEscanear.addEventListener('touchend', manejarFinEscaneo);
-  } else {
-    btnEscanear.addEventListener('mousedown', manejarInicioEscaneo);
-    btnEscanear.addEventListener('mouseup', manejarFinEscaneo);
-    btnEscanear.addEventListener('mouseleave', manejarFinEscaneo);
-  }
+  asignarEventosEscaneo();
 
   // Configurar evento para el botón Detener
   btnDetener.removeEventListener('click', null);
@@ -281,6 +287,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         btnDetener.style.display = 'none';
         console.log('Quagga detenido y eventos limpiados');
         mostrarToast('Escaneo detenido.', 'info');
+        asignarEventosEscaneo(); // Reasignar eventos tras detener
       } catch (error) {
         console.error('Error al detener Quagga:', error);
         mostrarToast('Error al detener el escáner: ' + error.message, 'error');
@@ -408,6 +415,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           btnDetener.style.display = 'none';
           console.log('Quagga detenido y eventos limpiados');
           mostrarToast('Escaneo detenido.', 'info');
+          asignarEventosEscaneo(); // Reasignar eventos tras detener
         } catch (error) {
           console.error('Error al detener Quagga:', error);
           mostrarToast('Error al detener el escáner: ' + error.message, 'error');

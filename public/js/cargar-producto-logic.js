@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Iniciar escaneo al hacer clic en el botón
   let escaner = null;
   btnEscanear.addEventListener('click', () => {
-    console.log('Evento click en btnEscanear disparado');
+    console.log('Evento click en btnEscanear disparado, escaner:', escaner ? 'activo' : 'inactivo');
     mostrarToast('Iniciando escaneo...', 'info');
     if (!escaner) {
       try {
