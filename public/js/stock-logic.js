@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('stock-logic.js cargado');
+  /* Propósito: Inicializa el script cuando stock.html está cargado */
+  /* Imprime un mensaje en la consola para confirmar la carga del script */
 
-  // Elementos del DOM
+  /* Selección de elementos del DOM */
   const buscador = document.querySelector('#buscador');
   const btnEscanear = document.querySelector('#escanear');
   const btnDetenerEscaneo = document.querySelector('#detener-escaneo');
@@ -38,15 +40,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const textareaBajaNota = document.querySelector('#baja-nota');
   const btnBajaConfirmar = document.querySelector('#baja-confirmar');
   const btnBajaCancelar = document.querySelector('#baja-cancelar');
+  /* Propósito: Obtiene referencias a elementos clave para búsqueda, filtros, escáner, lista de productos, y modales */
+  /* Incluye inputs, botones, contenedores, y modales para gestionar el inventario */
 
-  // Construcción de la URL base
+  /* Construcción de la URL base */
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
+  /* Propósito: Crea una URL base dinámica (por ejemplo, http://localhost o https://gestion-kiosco.vercel.app) */
+  /* Evita hardcodear el puerto para mayor portabilidad */
 
-  // Estado para manejar los productos
+  /* Estado para manejar productos */
   let productos = [];
   let productoSeleccionado = null;
+  /* Propósito: Almacena la lista de productos y el producto seleccionado para modales */
 
-  // Subcategorías por categoría
+  /* Subcategorías por categoría */
   const subcategorias = {
     bebidas: ["Agua", "Gaseosa", "Jugo", "Energizante", "Alcohol"],
     golosinas: ["Chocolates", "Caramelos", "Chicles", "Galletitas"],
@@ -62,19 +69,21 @@ document.addEventListener('DOMContentLoaded', () => {
     "sin-tacc": [],
     "productos-varios": []
   };
+  /* Propósito: Define las subcategorías disponibles para cada categoría */
+  /* Usado para poblar el selector de subcategorías dinámicamente */
 
-  // Obtener el código de la URL si existe
+  /* Obtener código inicial de la URL */
   const urlParams = new URLSearchParams(window.location.search);
   const codigoInicial = urlParams.get('codigo');
   console.log('Código inicial desde la URL:', codigoInicial);
-
-  // Limpiar el campo de búsqueda si hay un código inicial
   if (codigoInicial) {
     buscador.value = '';
     console.log('Campo de búsqueda limpiado debido a código inicial');
   }
+  /* Propósito: Lee el parámetro 'codigo' de la URL (por ejemplo, tras escanear en cargar-producto.html) */
+  /* Limpia el campo de búsqueda si hay un código inicial para priorizar el filtro por código */
 
-  // Función para cargar los productos del usuario
+  /* Cargar productos del usuario */
   async function cargarProductos() {
     try {
       const usuarioId = localStorage.getItem('usuarioId');
@@ -83,35 +92,29 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarToast('Por favor, inicia sesión nuevamente.', 'error');
         return;
       }
-
       console.log('Solicitando productos para usuarioId:', usuarioId);
       const response = await fetch(`${BASE_URL}/api/productos?usuarioId=${usuarioId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       productos = await response.json();
       console.log('Productos obtenidos:', productos);
-
-      // Filtrar y renderizar productos
       filtrarYRenderizarProductos();
     } catch (error) {
       console.error('Error al cargar los productos:', error);
       mostrarToast('Error al cargar los productos: ' + error.message, 'error');
     }
   }
+  /* Propósito: Obtiene la lista de productos del usuario desde el backend */
+  /* Verifica que exista usuarioId, hace una solicitud GET, y renderiza los productos filtrados */
 
-  // Función para filtrar y renderizar productos
+  /* Filtrar y renderizar productos */
   function filtrarYRenderizarProductos() {
     let productosFiltrados = [...productos];
-
-    // Filtrar por código inicial (si existe)
     if (codigoInicial) {
       productosFiltrados = productosFiltrados.filter(producto => producto.codigo === codigoInicial);
       console.log('Productos filtrados por código:', productosFiltrados);
     }
-
-    // Filtrar por término de búsqueda
     const terminoBusqueda = buscador.value.toLowerCase();
     if (terminoBusqueda) {
       productosFiltrados = productosFiltrados.filter(producto =>
@@ -120,25 +123,17 @@ document.addEventListener('DOMContentLoaded', () => {
         (producto.codigo && producto.codigo.toLowerCase().includes(terminoBusqueda))
       );
     }
-
-    // Filtrar por categoría
     const categoria = filtroCategoria.value;
     if (categoria) {
       productosFiltrados = productosFiltrados.filter(producto => producto.categoria === categoria);
     }
-
-    // Filtrar por subcategoría
     const subcategoria = filtroSubcategoria.value;
     if (subcategoria) {
       productosFiltrados = productosFiltrados.filter(producto => producto.subcategoria === subcategoria);
     }
-
-    // Filtrar por productos sin stock
     if (filtroSinStock.checked) {
       productosFiltrados = productosFiltrados.filter(producto => producto.cantidadUnidades === 0);
     }
-
-    // Filtrar por productos por vencer (dentro de los próximos 7 días)
     if (filtroPorVencer.checked) {
       const hoy = new Date();
       const sieteDiasDesdeHoy = new Date(hoy);
@@ -148,21 +143,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return fechaVencimiento >= hoy && fechaVencimiento <= sieteDiasDesdeHoy;
       });
     }
-
     console.log('Productos filtrados:', productosFiltrados);
     renderizarProductos(productosFiltrados);
   }
+  /* Propósito: Filtra productos según código inicial, búsqueda, categoría, subcategoría, stock, y vencimiento */
+  /* Llama a renderizarProductos con los productos filtrados */
 
-  // Función para renderizar los productos en el DOM
+  /* Renderizar productos */
   function renderizarProductos(productosFiltrados) {
     listaStock.innerHTML = '';
     console.log('Renderizando productos:', productosFiltrados);
-
     if (productosFiltrados.length === 0) {
       listaStock.innerHTML = '<p>No se encontraron productos.</p>';
       return;
     }
-
     productosFiltrados.forEach(producto => {
       const tarjeta = document.createElement('div');
       tarjeta.className = `tarjeta-producto ${producto.cantidadUnidades === 0 ? 'sin-stock' : ''}`;
@@ -182,8 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       listaStock.appendChild(tarjeta);
     });
-
-    // Asignar eventos a las tarjetas
     document.querySelectorAll('.tarjeta-producto').forEach(tarjeta => {
       tarjeta.addEventListener('click', () => {
         const id = tarjeta.dataset.id;
@@ -191,11 +183,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+  /* Propósito: Muestra los productos como tarjetas en el DOM */
+  /* Crea tarjetas con nombre, marca, cantidad, y precio, aplicando clases para stock bajo o sin stock */
+  /* Asigna eventos de clic para abrir el modal de detalles */
 
-  // Cargar productos al iniciar
+  /* Cargar productos al iniciar */
   cargarProductos();
+  /* Propósito: Carga los productos al cargar la página */
 
-  // Actualizar subcategorías según la categoría seleccionada
+  /* Actualizar subcategorías */
   filtroCategoria.addEventListener('change', () => {
     const categoria = filtroCategoria.value;
     filtroSubcategoria.innerHTML = '<option value="">Todas</option>';
@@ -209,21 +205,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     filtrarYRenderizarProductos();
   });
+  /* Propósito: Pobla el selector de subcategorías según la categoría seleccionada */
+  /* Actualiza la lista de productos al cambiar la categoría */
 
-  // Filtrar al buscar
+  /* Eventos de filtrado */
   buscador.addEventListener('input', filtrarYRenderizarProductos);
-
-  // Filtrar al cambiar filtros
   filtroSubcategoria.addEventListener('change', filtrarYRenderizarProductos);
   filtroSinStock.addEventListener('change', filtrarYRenderizarProductos);
   filtroPorVencer.addEventListener('change', filtrarYRenderizarProductos);
+  /* Propósito: Actualiza la lista de productos al cambiar el término de búsqueda o filtros */
 
-  // Mostrar/Ocultar menú de filtros
+  /* Mostrar/Ocultar menú de filtros */
   btnFiltros.addEventListener('click', () => {
     menuFiltros.style.display = menuFiltros.style.display === 'block' ? 'none' : 'block';
   });
+  /* Propósito: Alterna la visibilidad del menú de filtros */
 
-  // Mostrar todo (resetear filtros)
+  /* Resetear filtros */
   btnFiltroTodo.addEventListener('click', () => {
     filtroCategoria.value = '';
     filtroSubcategoria.innerHTML = '<option value="">Todas</option>';
@@ -231,8 +229,9 @@ document.addEventListener('DOMContentLoaded', () => {
     filtroPorVencer.checked = false;
     filtrarYRenderizarProductos();
   });
+  /* Propósito: Resetea todos los filtros y muestra todos los productos */
 
-  // Manejar el escaneo continuo de códigos de barras
+  /* Manejo del escaneo continuo */
   btnEscanear.addEventListener('click', () => {
     const completarCallback = (producto) => {
       if (producto) {
@@ -240,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
       }
     };
-
     iniciarEscaneoContinuo(
       camaraStock,
       btnEscanear,
@@ -250,15 +248,17 @@ document.addEventListener('DOMContentLoaded', () => {
       null
     );
   });
+  /* Propósito: Configura el escaneo continuo de códigos de barras */
+  /* Usa iniciarEscaneoContinuo de utils.js para escanear códigos */
+  /* Redirige a stock.html con el código del producto escaneado */
 
-  // Función para abrir el modal de detalles del producto
+  /* Abrir modal de detalles */
   function abrirModalProducto(id) {
     productoSeleccionado = productos.find(p => p._id === id);
     if (!productoSeleccionado) {
       mostrarToast('Producto no encontrado.', 'error');
       return;
     }
-
     console.log('Abriendo modal para producto:', productoSeleccionado);
     modalTitulo.textContent = productoSeleccionado.nombre;
     modalDetalles.innerHTML = `
@@ -271,29 +271,30 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="detalle-item"><span>Fecha de Vencimiento:</span> ${new Date(productoSeleccionado.fechaVencimiento).toLocaleDateString()}</div>
       ${productoSeleccionado.codigo ? `<div class="detalle-item"><span>Código:</span> ${productoSeleccionado.codigo}</div>` : ''}
     `;
-
     modalProducto.style.display = 'flex';
   }
+  /* Propósito: Muestra un modal con los detalles del producto seleccionado */
+  /* Llena el modal con información como nombre, marca, cantidad, precios, y fecha de vencimiento */
 
-  // Cerrar el modal de detalles
+  /* Cerrar modal de detalles */
   btnModalCerrar.addEventListener('click', () => {
     modalProducto.style.display = 'none';
     productoSeleccionado = null;
   });
+  /* Propósito: Oculta el modal de detalles y limpia el producto seleccionado */
 
-  // Abrir modal para editar precios
+  /* Abrir modal para editar precios */
   btnModalEditarPrecios.addEventListener('click', () => {
     if (!productoSeleccionado) return;
-
     inputEditPrecioLista.value = productoSeleccionado.precioLista;
     inputEditPorcentajeGanancia.value = productoSeleccionado.porcentajeGanancia;
     inputEditPrecioFinal.value = productoSeleccionado.precioFinal;
-
     modalProducto.style.display = 'none';
     modalEditarPrecios.style.display = 'flex';
   });
+  /* Propósito: Abre el modal para editar precios, precargando los valores actuales */
 
-  // Calcular precio final al cambiar porcentaje de ganancia
+  /* Calcular precio final al editar */
   inputEditPorcentajeGanancia.addEventListener('input', () => {
     const precioLista = parseFloat(inputEditPrecioLista.value);
     const porcentajeGanancia = parseFloat(inputEditPorcentajeGanancia.value);
@@ -302,31 +303,23 @@ document.addEventListener('DOMContentLoaded', () => {
       inputEditPrecioFinal.value = precioFinal.toFixed(2);
     }
   });
+  /* Propósito: Actualiza el precio final en el modal según el precio de lista y porcentaje de ganancia */
 
-  // Guardar cambios en los precios
+  /* Guardar cambios en precios */
   btnEditGuardarPrecios.addEventListener('click', async () => {
     if (!productoSeleccionado) return;
-
     const precioLista = parseFloat(inputEditPrecioLista.value);
     const porcentajeGanancia = parseFloat(inputEditPorcentajeGanancia.value);
     const precioFinal = parseFloat(inputEditPrecioFinal.value);
-
     try {
       const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/precios`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ precioLista, porcentajeGanancia, precioFinal })
       });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar los precios');
-      }
-
+      if (!response.ok) throw new Error('Error al actualizar los precios');
       const result = await response.json();
       mostrarToast(result.mensaje, 'success');
-
       modalEditarPrecios.style.display = 'none';
       await cargarProductos();
     } catch (error) {
@@ -334,47 +327,40 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarToast('Error al actualizar los precios: ' + error.message, 'error');
     }
   });
+  /* Propósito: Envía los nuevos precios al backend y recarga los productos */
+  /* Oculta el modal tras guardar */
 
-  // Cancelar edición de precios
+  /* Cancelar edición de precios */
   btnEditCancelarPrecios.addEventListener('click', () => {
     modalEditarPrecios.style.display = 'none';
     modalProducto.style.display = 'flex';
   });
+  /* Propósito: Cancela la edición de precios y vuelve al modal de detalles */
 
-  // Abrir modal para agregar stock
+  /* Abrir modal para agregar stock */
   btnModalAgregarStock.addEventListener('click', () => {
     if (!productoSeleccionado) return;
-
     inputAgregarCantidad.value = '';
     inputAgregarFechaVencimiento.value = productoSeleccionado.fechaVencimiento ? new Date(productoSeleccionado.fechaVencimiento).toISOString().split('T')[0] : '';
-
     modalProducto.style.display = 'none';
     modalAgregarStock.style.display = 'flex';
   });
+  /* Propósito: Abre el modal para agregar stock, precargando la fecha de vencimiento */
 
-  // Guardar nuevo stock
+  /* Guardar nuevo stock */
   btnAgregarGuardarStock.addEventListener('click', async () => {
     if (!productoSeleccionado) return;
-
     const cantidad = parseInt(inputAgregarCantidad.value);
     const fechaVencimiento = inputAgregarFechaVencimiento.value;
-
     try {
       const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/agregar-stock`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cantidad, fechaVencimiento })
       });
-
-      if (!response.ok) {
-        throw new Error('Error al agregar stock');
-      }
-
+      if (!response.ok) throw new Error('Error al agregar stock');
       const result = await response.json();
       mostrarToast(result.mensaje, 'success');
-
       modalAgregarStock.style.display = 'none';
       await cargarProductos();
     } catch (error) {
@@ -382,50 +368,43 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarToast('Error al agregar stock: ' + error.message, 'error');
     }
   });
+  /* Propósito: Envía la nueva cantidad y fecha de vencimiento al backend y recarga los productos */
+  /* Oculta el modal tras guardar */
 
-  // Cancelar agregar stock
+  /* Cancelar agregar stock */
   btnAgregarCancelarStock.addEventListener('click', () => {
     modalAgregarStock.style.display = 'none';
     modalProducto.style.display = 'flex';
   });
+  /* Propósito: Cancela la adición de stock y vuelve al modal de detalles */
 
-  // Abrir modal para dar de baja
+  /* Abrir modal para dar de baja */
   btnModalDarBaja.addEventListener('click', () => {
     if (!productoSeleccionado) return;
-
     inputBajaCantidad.value = '';
     selectBajaMotivo.value = 'vencimiento';
     textareaBajaNota.value = '';
-
     modalProducto.style.display = 'none';
     modalDarBaja.style.display = 'flex';
   });
+  /* Propósito: Abre el modal para dar de baja, precargando el motivo como 'vencimiento' */
 
-  // Confirmar baja de producto
+  /* Confirmar baja de producto */
   btnBajaConfirmar.addEventListener('click', async () => {
     if (!productoSeleccionado) return;
-
     const cantidad = parseInt(inputBajaCantidad.value);
     const motivo = selectBajaMotivo.value;
     const nota = textareaBajaNota.value;
     const usuarioId = localStorage.getItem('usuarioId');
-
     try {
       const response = await fetch(`${BASE_URL}/api/productos/${productoSeleccionado._id}/dar-baja`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuarioId, cantidad, motivo, nota })
       });
-
-      if (!response.ok) {
-        throw new Error('Error al dar de baja el producto');
-      }
-
+      if (!response.ok) throw new Error('Error al dar de baja el producto');
       const result = await response.json();
       mostrarToast(result.mensaje, 'success');
-
       modalDarBaja.style.display = 'none';
       await cargarProductos();
     } catch (error) {
@@ -433,10 +412,13 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarToast('Error al dar de baja el producto: ' + error.message, 'error');
     }
   });
+  /* Propósito: Envía la solicitud para dar de baja un producto con cantidad, motivo, y nota */
+  /* Recarga los productos y oculta el modal tras guardar */
 
-  // Cancelar baja de producto
+  /* Cancelar baja de producto */
   btnBajaCancelar.addEventListener('click', () => {
     modalDarBaja.style.display = 'none';
     modalProducto.style.display = 'flex';
   });
+  /* Propósito: Cancela la baja y vuelve al modal de detalles */
 });

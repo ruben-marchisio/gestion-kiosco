@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+/* Propósito: Importa las dependencias necesarias */
+/* mongoose: Para interactuar con MongoDB */
+/* Schema: Clase para definir esquemas de documentos en MongoDB */
 
-// Esquema para productos (stock local de cada usuario)
 const productoSchema = new Schema({
   nombre: { type: String, required: true },
   cantidadUnidades: { type: Number, required: true },
@@ -21,8 +23,12 @@ const productoSchema = new Schema({
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
   codigo: { type: String, default: '' }
 });
+/* Propósito: Define el esquema para el modelo Producto (stock local de cada usuario) */
+/* Campos: Incluye datos esenciales como nombre, cantidades (unidades, packs, docenas), marca, precios, categoría, unidad, fecha de vencimiento, y código */
+/* usuarioId: Vincula el producto a un usuario mediante referencia al modelo Usuario */
+/* Restricciones: Campos requeridos y valores por defecto para campos opcionales */
+/* Nota: imagen no está implementada en el frontend actual, pero está preparada para futuras expansiones */
 
-// Esquema para productos comunes (base de datos común)
 const productoComunSchema = new Schema({
   codigo: { type: String, required: true, unique: true },
   nombre: { type: String, required: true },
@@ -30,16 +36,22 @@ const productoComunSchema = new Schema({
   categoria: { type: String, required: true },
   subcategoria: { type: String, default: '' }
 });
+/* Propósito: Define el esquema para el modelo ProductoComun (base de datos común de productos) */
+/* Campos: Código único, nombre, marca, categoría, y subcategoría opcional */
+/* Restricciones: Código único para evitar duplicados */
+/* Usado para autocompletar datos en el escáner cuando un producto no está en el stock local */
 
-// Esquema para usuarios
 const usuarioSchema = new Schema({
   nombre: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   contrasena: { type: String, required: true },
   nombreKiosco: { type: String, required: true }
 });
+/* Propósito: Define el esquema para el modelo Usuario */
+/* Campos: Nombre (coincide con nombreKiosco), email único, contraseña, y nombre del kiosco */
+/* Restricciones: Email único para evitar usuarios duplicados */
+/* Usado para registro y autenticación en rutas/usuarios.js */
 
-// Esquema para clientes
 const clienteSchema = new Schema({
   nombre: { type: String, required: true },
   dni: { type: String, required: true, unique: true },
@@ -47,8 +59,11 @@ const clienteSchema = new Schema({
   direccion: { type: String },
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true }
 });
+/* Propósito: Define el esquema para el modelo Cliente */
+/* Campos: Nombre, DNI único, teléfono y dirección opcionales, y usuarioId para vincular al usuario */
+/* Restricciones: DNI único para evitar clientes duplicados */
+/* Usado para gestionar clientes en rutas/clientes.js */
 
-// Esquema para bajas (registro de acciones de dar de baja)
 const bajaSchema = new Schema({
   productoId: { type: Schema.Types.ObjectId, ref: 'Producto', required: true },
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
@@ -57,8 +72,11 @@ const bajaSchema = new Schema({
   nota: { type: String, default: '' },
   fecha: { type: Date, default: Date.now }
 });
+/* Propósito: Define el esquema para el modelo Baja (registro de bajas de productos) */
+/* Campos: Referencias a producto y usuario, cantidad, motivo (con valores específicos), nota opcional, y fecha automática */
+/* Restricciones: productoId, usuarioId, cantidad, y motivo son requeridos */
+/* Usado para registrar bajas en rutas/productos.js */
 
-// Exportar los modelos
 module.exports = {
   Usuario: mongoose.model('Usuario', usuarioSchema),
   Producto: mongoose.model('Producto', productoSchema),
@@ -66,3 +84,6 @@ module.exports = {
   ProductoComun: mongoose.model('ProductoComun', productoComunSchema),
   Baja: mongoose.model('Baja', bajaSchema)
 };
+/* Propósito: Exporta los modelos para usarlos en otros archivos */
+/* Cada modelo se crea a partir de su esquema correspondiente */
+/* Usado por rutas/usuarios.js, rutas/productos.js, y rutas/clientes.js */

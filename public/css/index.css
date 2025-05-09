@@ -1,17 +1,23 @@
-/* Estilos para presentacion.html */
+/* Estilos generales para el cuerpo de la página */
 body {
   font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Gradiente suave */
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
+  /* Propósito: Define la apariencia base de la página */
+  /* Usa la fuente Poppins (de Google Fonts) con fallback a Arial */
+  /* Elimina márgenes y padding por defecto */
+  /* Aplica un fondo con gradiente suave (azul-gris) */
+  /* Asegura que la página ocupe toda la altura de la ventana */
+  /* Usa flexbox para organizar el contenido en columna (header, main, footer) */
 
 /* Encabezado */
 header {
-  background-color: #2c3e50; /* Color oscuro elegante */
+  background-color: #2c3e50;
   color: white;
   text-align: center;
   padding: 1.5em 0;
@@ -21,35 +27,36 @@ header {
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .logo {
   position: absolute;
   top: 10px;
   left: 15px;
 }
-
 .logo-img {
   width: 60px;
   height: auto;
   border-radius: 50%;
   border: 2px solid white;
 }
-
 h1 {
   margin: 0;
   font-size: 28px;
   font-weight: 600;
 }
+  /* Propósito: Estiliza el encabezado de index.html */
+  /* Fondo oscuro (#2c3e50) con texto blanco para contraste */
+  /* Fija el encabezado en la parte superior con sombra para profundidad */
+  /* El logo se posiciona en la esquina superior izquierda, con borde blanco y forma circular */
+  /* El título (h1) es grande, centrado, y sin márgenes */
 
 /* Sección Hero (Bienvenida) */
 .hero {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px 20px 20px; /* Espacio para el header */
+  padding: 100px 20px 20px;
   text-align: center;
 }
-
 .hero-content {
   max-width: 700px;
   background: rgba(255, 255, 255, 0.9);
@@ -58,27 +65,30 @@ h1 {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   animation: fadeIn 1s ease-in-out;
 }
-
 .hero-content h2 {
   font-size: 36px;
   color: #2c3e50;
   margin-bottom: 20px;
   font-weight: 700;
 }
-
 .hero-content p {
   font-size: 18px;
   color: #666;
   margin-bottom: 30px;
   line-height: 1.6;
 }
-
 .hero-buttons {
   display: flex;
   justify-content: center;
   gap: 20px;
 }
+  /* Propósito: Da formato a la sección de bienvenida */
+  /* Centra el contenido con flexbox, con espacio para el encabezado fijo */
+  /* El contenedor hero-content tiene fondo blanco semitransparente, bordes redondeados, sombra, y una animación de entrada (fadeIn) */
+  /* El título (h2) es grande y oscuro, el párrafo (p) es legible con espaciado */
+  /* Los botones se organizan horizontalmente con espacio entre ellos */
 
+/* Botones de acción */
 .boton-accion {
   display: inline-flex;
   align-items: center;
@@ -89,32 +99,30 @@ h1 {
   font-weight: 500;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
-
 .boton-accion i {
   margin-right: 8px;
 }
-
 .boton-primario {
   background-color: #3498db;
   color: white;
   box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
 }
-
 .boton-primario:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
 }
-
 .boton-secundario {
   background-color: #e74c3c;
   color: white;
   box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
 }
-
 .boton-secundario:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
 }
+  /* Propósito: Estiliza los botones de acción (Iniciar Sesión, Registrarse) */
+  /* Usa flexbox para alinear ícono y texto, con bordes redondeados y transiciones */
+  /* Botones primarios (azul) y secundarios (rojo) tienen colores distintos, sombras, y efectos al pasar el mouse (elevación y sombra más grande) */
 
 /* Sección de Funcionalidades */
 .features {
@@ -122,14 +130,12 @@ h1 {
   text-align: center;
   background-color: #ffffff;
 }
-
 .features h3 {
   font-size: 28px;
   color: #2c3e50;
   margin-bottom: 30px;
   font-weight: 600;
 }
-
 .feature-list {
   display: flex;
   flex-wrap: wrap;
@@ -138,7 +144,6 @@ h1 {
   max-width: 1200px;
   margin: 0 auto;
 }
-
 .feature-item {
   background: rgba(255, 255, 255, 0.95);
   padding: 20px;
@@ -147,29 +152,29 @@ h1 {
   width: 250px;
   transition: transform 0.3s ease;
 }
-
 .feature-item:hover {
   transform: translateY(-5px);
 }
-
 .feature-item i {
   font-size: 40px;
   color: #3498db;
   margin-bottom: 15px;
 }
-
 .feature-item h4 {
   font-size: 20px;
   color: #2c3e50;
   margin-bottom: 10px;
   font-weight: 500;
 }
-
 .feature-item p {
   font-size: 16px;
   color: #666;
   line-height: 1.5;
 }
+  /* Propósito: Estiliza la sección que muestra las funcionalidades del sistema */
+  /* Fondo blanco con padding, título grande y centrado */
+  /* Los elementos de funcionalidades se organizan en una cuadrícula flexible, con tarjetas blancas semitransparentes, sombras, y efecto de elevación al pasar el mouse */
+  /* Íconos grandes en azul, títulos y descripciones legibles */
 
 /* Pie de Página */
 footer {
@@ -182,88 +187,48 @@ footer {
   width: 100%;
   z-index: 1000;
 }
-
 footer a {
   color: white;
   text-decoration: none;
   font-size: 16px;
   transition: color 0.3s ease;
 }
-
 footer a:hover {
   color: #3498db;
 }
-
 footer a i {
   margin-right: 5px;
 }
+  /* Propósito: Da formato al pie de página */
+  /* Fondo oscuro, fijo en la parte inferior, con un enlace de ayuda que cambia a azul al pasar el mouse */
+  /* Ícono alineado con el texto para el enlace */
 
 /* Animación para la entrada del contenido */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+  /* Propósito: Define una animación suave para la sección hero */
+  /* Hace que el contenido aparezca con un desvanecimiento y desplazamiento hacia arriba */
 
 /* Estilos responsivos */
 @media (max-width: 600px) {
-  header {
-    padding: 1em 0;
-  }
-
-  .logo-img {
-    width: 50px;
-  }
-
-  h1 {
-    font-size: 22px;
-  }
-
-  .hero {
-    padding: 90px 15px 20px; /* Aumentado para evitar superposición */
-  }
-
-  .hero-content {
-    padding: 20px;
-  }
-
-  .hero-content h2 {
-    font-size: 28px;
-  }
-
-  .hero-content p {
-    font-size: 16px;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .boton-accion {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-
-  .features {
-    padding: 20px 15px;
-  }
-
-  .features h3 {
-    font-size: 24px;
-  }
-
-  .feature-list {
-    gap: 20px;
-  }
-
-  .feature-item {
-    width: 100%;
-    max-width: 300px;
-  }
+  header { padding: 1em 0; }
+  .logo-img { width: 50px; }
+  h1 { font-size: 22px; }
+  .hero { padding: 90px 15px 20px; }
+  .hero-content { padding: 20px; }
+  .hero-content h2 { font-size: 28px; }
+  .hero-content p { font-size: 16px; }
+  .hero-buttons { flex-direction: column; gap: 15px; }
+  .boton-accion { padding: 10px 20px; font-size: 14px; }
+  .features { padding: 20px 15px; }
+  .features h3 { font-size: 24px; }
+  .feature-list { gap: 20px; }
+  .feature-item { width: 100%; max-width: 300px; }
 }
+  /* Propósito: Ajusta los estilos para pantallas pequeñas (móviles) */
+  /* Reduce el padding del encabezado, el tamaño del logo y títulos */
+  /* Ajusta la sección hero para evitar superposición con el encabezado */
+  /* Apila los botones verticalmente y reduce tamaños de fuente y padding */
+  /* Asegura que las tarjetas de funcionalidades ocupen todo el ancho disponible */

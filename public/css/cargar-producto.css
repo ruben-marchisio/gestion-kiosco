@@ -1,4 +1,4 @@
-/* Estilos para cargar-producto.html */
+/* Estilos generales para el cuerpo de la página */
 body {
   font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
@@ -7,8 +7,11 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* Evitar desplazamiento horizontal */
+  overflow-x: hidden;
 }
+  /* Propósito: Configura la base visual de cargar-producto.html */
+  /* Usa la fuente Poppins (coherente con otras páginas), fondo gradiente azul-gris */
+  /* Organiza el contenido en columna, evita desplazamiento horizontal no deseado */
 
 /* Encabezado */
 header {
@@ -22,26 +25,22 @@ header {
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .logo {
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
 }
-
 .logo-img {
   width: 50px;
   height: auto;
   border-radius: 50%;
   border: 2px solid white;
 }
-
 h1 {
   margin: 0;
   font-size: 22px;
   font-weight: 600;
 }
-
 .nav-principal {
   display: flex;
   justify-content: center;
@@ -49,7 +48,6 @@ h1 {
   gap: 10px;
   margin-top: 10px;
 }
-
 .nav-principal a {
   display: flex;
   align-items: center;
@@ -60,20 +58,21 @@ h1 {
   border-radius: 20px;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .nav-principal a:hover {
   background-color: #3498db;
   transform: scale(1.05);
 }
-
 .nav-principal a.activo {
   background-color: #3498db;
 }
-
 .nav-principal a i {
   margin-right: 5px;
   font-size: 16px;
 }
+  /* Propósito: Estiliza el encabezado con logo, título, y navegación */
+  /* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra */
+  /* Logo centrado, más pequeño (50px), con borde blanco circular */
+  /* Título compacto (22px), navegación centrada con enlaces que resaltan en azul (#3498db) al pasar el mouse o estar activos */
 
 /* Contenido Principal */
 main {
@@ -84,37 +83,37 @@ main {
   justify-content: center;
   align-items: center;
   width: 100%;
-  overflow-x: hidden; /* Evitar desplazamiento horizontal */
+  overflow-x: hidden;
 }
-
 #cargar-producto {
   width: 95%;
   max-width: 1000px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  overflow-x: hidden; /* Evitar desplazamiento horizontal */
+  overflow-x: hidden;
 }
+  /* Propósito: Organiza el contenido principal (formulario y tabla) */
+  /* Main centra el contenido con flexbox, con padding para evitar superposición con el encabezado y pie de página */
+  /* #cargar-producto es un contenedor ancho (95%), organizado en columna con espacio entre secciones, evita desplazamiento horizontal */
 
+/* Formulario de carga */
 .formulario-carga {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   padding: 20px;
 }
-
 .formulario-carga h2 {
   font-size: 24px;
   color: #2c3e50;
   margin-bottom: 20px;
   text-align: center;
 }
-
 .form-campo {
   margin-bottom: 15px;
   position: relative;
 }
-
 .form-campo label {
   display: block;
   margin-bottom: 8px;
@@ -122,7 +121,6 @@ main {
   color: #2c3e50;
   font-size: 14px;
 }
-
 .form-campo input,
 .form-campo select {
   width: 100%;
@@ -133,17 +131,12 @@ main {
   font-size: 14px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   appearance: auto;
-  -webkit-appearance: auto;
-  -moz-appearance: auto;
-  cursor: pointer;
 }
-
 .form-campo select:focus {
   border-color: #3498db;
   box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
   outline: none;
 }
-
 [id^="subcategoria-"] select {
   width: 100%;
   padding: 10px;
@@ -152,18 +145,13 @@ main {
   box-sizing: border-box;
   font-size: 14px;
   appearance: auto;
-  -webkit-appearance: auto;
-  -moz-appearance: auto;
-  cursor: pointer;
 }
-
 .form-acciones {
   display: flex;
   gap: 10px;
   justify-content: center;
   margin-top: 20px;
 }
-
 .boton-accion {
   display: flex;
   align-items: center;
@@ -174,32 +162,31 @@ main {
   font-weight: 500;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
-
 .boton-accion i {
   margin-right: 8px;
 }
-
 .boton-primario {
   background-color: #3498db;
   color: white;
   box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
 }
-
 .boton-primario:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
 }
-
 .boton-cancelar {
   background-color: #666;
   color: white;
   box-shadow: 0 4px 10px rgba(102, 102, 102, 0.3);
 }
-
 .boton-cancelar:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(102, 102, 102, 0.5);
 }
+  /* Propósito: Estiliza el formulario para ingresar datos del producto */
+  /* Contenedor blanco semitransparente con bordes redondeados y sombra */
+  /* Campos de entrada y selectores con etiquetas, bordes suaves, y efecto de foco (borde azul, sombra) */
+  /* Botones de acción (Agregar, Cancelar) centrados, con primario en azul y cancelar en gris, con efectos de hover */
 
 /* Controles de Escaneo */
 .botones-escaneo {
@@ -207,7 +194,6 @@ main {
   gap: 10px;
   justify-content: center;
 }
-
 .boton-escaneo {
   display: flex;
   align-items: center;
@@ -219,35 +205,26 @@ main {
   font-size: 14px;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
-
 .boton-escaneo i {
   margin-right: 8px;
 }
-
 .boton-activar {
   background-color: #2ecc71;
   box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
 }
-
 .boton-activar:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(46, 204, 113, 0.5);
 }
-
 .boton-detener {
   background-color: #e74c3c;
   box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
 }
-
 .boton-detener:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
 }
-
 .camara {
   width: 100%;
   max-width: 600px;
@@ -257,11 +234,10 @@ main {
   border: 2px solid #2c3e50;
   border-radius: 8px;
   background-color: #000;
-  overflow: hidden; /* Cambiar a hidden para evitar desbordamiento */
+  overflow: hidden;
   display: block;
   box-sizing: border-box;
 }
-
 #camara-carga video {
   width: 100%;
   height: 100%;
@@ -272,8 +248,6 @@ main {
   top: 0;
   left: 0;
 }
-
-/* Rectángulo guía para el código de barras */
 .guia-codigo {
   position: absolute;
   top: 50%;
@@ -285,6 +259,10 @@ main {
   pointer-events: none;
   z-index: 10;
 }
+  /* Propósito: Estiliza los controles del escáner y el área de la cámara */
+  /* Botones de escanear (verde) y detener (rojo) centrados, con efectos de hover */
+  /* Cámara con borde oscuro, fondo negro, y video que cubre todo el espacio */
+  /* Guía de código (rectángulo rojo punteado) centrada para alinear el código de barras */
 
 /* Lista de Productos en Proceso */
 .lista-productos-proceso {
@@ -293,20 +271,17 @@ main {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   padding: 20px;
 }
-
 .lista-productos-proceso h3 {
   font-size: 20px;
   color: #2c3e50;
   margin-bottom: 20px;
   text-align: center;
 }
-
 #tabla-productos-proceso {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
-
 #tabla-productos-proceso th,
 #tabla-productos-proceso td {
   padding: 8px;
@@ -314,31 +289,25 @@ main {
   font-size: 12px;
   text-align: center;
 }
-
 #tabla-productos-proceso th {
   background-color: #f5f5f5;
   color: #2c3e50;
   font-weight: 600;
 }
-
 #tabla-productos-proceso tr.pendiente {
   background-color: #fff3cd;
 }
-
 #tabla-productos-proceso tr.pendiente td.estado {
   color: #e67e22;
 }
-
 #tabla-productos-proceso tr.completo td.estado {
   color: #2ecc71;
 }
-
 #tabla-productos-proceso .acciones {
   display: flex;
   gap: 5px;
   justify-content: center;
 }
-
 #tabla-productos-proceso .acciones button {
   padding: 5px 10px;
   border-radius: 20px;
@@ -347,26 +316,27 @@ main {
   font-size: 12px;
   transition: transform 0.2s ease;
 }
-
 #tabla-productos-proceso .acciones button:hover {
   transform: scale(1.05);
 }
-
 #tabla-productos-proceso .acciones button.editar {
   background-color: #3498db;
   color: white;
 }
-
 #tabla-productos-proceso .acciones button.eliminar {
   background-color: #e74c3c;
   color: white;
 }
-
 .acciones-globales {
   display: flex;
   gap: 10px;
   justify-content: center;
 }
+  /* Propósito: Estiliza la tabla de productos en proceso */
+  /* Contenedor blanco semitransparente con bordes redondeados y sombra */
+  /* Tabla con celdas centradas, cabecera gris claro, y filas coloreadas según estado (amarillo para pendiente, verde para completo) */
+  /* Botones de acción (editar en azul, eliminar en rojo) pequeños, con efecto de escalado al hover */
+  /* Botones globales (Confirmar Todos, Cancelar Todo) centrados */
 
 /* Toasts */
 .toast-container {
@@ -376,7 +346,6 @@ main {
   z-index: 3000;
   width: 350px;
 }
-
 .toast {
   padding: 15px 25px;
   border-radius: 10px;
@@ -389,31 +358,29 @@ main {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   border-left: 5px solid;
 }
-
 .toast.exito {
   background-color: #28a745;
   border-left-color: #218838;
 }
-
 .toast.error {
   background-color: #dc3545;
   border-left-color: #c82333;
 }
-
 .toast.info {
   background-color: #17a2b8;
   border-left-color: #138496;
 }
-
 @keyframes fadeInToast {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeOutToast {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-20px); }
 }
+  /* Propósito: Estiliza las notificaciones (toasts) usadas por utils.js */
+  /* Contenedor fijo en la esquina superior derecha */
+  /* Toasts con colores según tipo (verde para éxito, rojo para error, azul para info), animaciones de entrada/salida, y borde izquierdo destacado */
 
 /* Pie de Página */
 footer {
@@ -426,141 +393,57 @@ footer {
   width: 100%;
   z-index: 1000;
 }
-
 footer a {
   color: white;
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s ease;
 }
-
 footer a:hover {
   color: #3498db;
 }
-
 footer a i {
   margin-right: 5px;
 }
+  /* Propósito: Estiliza el pie de página con el enlace de volver */
+  /* Fondo oscuro, fijo en la parte inferior, enlace blanco que cambia a azul al pasar el mouse */
 
 /* Animación para la entrada del contenido */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+  /* Propósito: Añade animación suave al formulario y tabla */
+  /* Desvanece y desplaza hacia arriba el contenido al cargar */
 
 /* Estilos responsivos */
 @media (max-width: 600px) {
-  header {
-    padding: 0.5em 0;
-  }
-
-  .logo-img {
-    width: 40px;
-  }
-
-  h1 {
-    font-size: 18px;
-  }
-
-  .nav-principal {
-    gap: 5px;
-    margin-top: 5px;
-    flex-wrap: wrap;
-  }
-
-  .nav-principal a {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-
-  main {
-    padding-top: 120px;
-    padding-bottom: 50px;
-  }
-
-  #cargar-producto {
-    width: 90%;
-  }
-
-  .formulario-carga {
-    padding: 15px;
-  }
-
-  .formulario-carga h2 {
-    font-size: 20px;
-  }
-
-  .form-campo label {
-    font-size: 12px;
-  }
-
-  .form-campo input,
-  .form-campo select {
-    padding: 8px;
-    font-size: 12px;
-  }
-
-  .boton-escaneo {
-    padding: 8px 15px;
-    font-size: 12px;
-  }
-
-  .camara {
-    max-width: 90%;
-    height: 180px;
-  }
-
-  #camara-carga video {
-    transform: none;
-  }
-
-  .guia-codigo {
-    height: 40px;
-  }
-
-  #tabla-productos-proceso th,
-  #tabla-productos-proceso td {
-    font-size: 11px;
-    padding: 6px;
-  }
-
-  #tabla-productos-proceso th:nth-child(2),
-  #tabla-productos-proceso td:nth-child(2),
-  #tabla-productos-proceso th:nth-child(3),
-  #tabla-productos-proceso td:nth-child(3) {
-    display: none;
-  }
-
-  .toast-container {
-    top: 20px;
-    right: 10px;
-    width: 90%;
-    max-width: 350px;
-  }
-
-  .toast {
-    font-size: 14px;
-    padding: 10px 15px;
-  }
+  header { padding: 0.5em 0; }
+  .logo-img { width: 40px; }
+  h1 { font-size: 18px; }
+  .nav-principal { gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+  .nav-principal a { font-size: 12px; padding: 6px 10px; }
+  main { padding-top: 120px; padding-bottom: 50px; }
+  #cargar-producto { width: 90%; }
+  .formulario-carga { padding: 15px; }
+  .formulario-carga h2 { font-size: 20px; }
+  .form-campo label { font-size: 12px; }
+  .form-campo input, .form-campo select { padding: 8px; font-size: 12px; }
+  .boton-escaneo { padding: 8px 15px; font-size: 12px; }
+  .camara { max-width: 90%; height: 180px; }
+  #camara-carga video { transform: none; }
+  .guia-codigo { height: 40px; }
+  #tabla-productos-proceso th, #tabla-productos-proceso td { font-size: 11px; padding: 6px; }
+  #tabla-productos-proceso th:nth-child(2), #tabla-productos-proceso td:nth-child(2),
+  #tabla-productos-proceso th:nth-child(3), #tabla-productos-proceso td:nth-child(3) { display: none; }
+  .toast-container { top: 20px; right: 10px; width: 90%; max-width: 350px; }
+  .toast { font-size: 14px; padding: 10px 15px; }
 }
-
 @media (min-width: 601px) {
-  .acciones-principales {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-
-  .boton-accion {
-    padding: 12px 20px;
-  }
-
-  .camara {
-    max-width: 600px;
-    height: 240px;
-  }
+  .acciones-principales { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .boton-accion { padding: 12px 20px; }
+  .camara { max-width: 600px; height: 240px; }
 }
+  /* Propósito: Ajusta los estilos para diferentes dispositivos */
+  /* En móviles (≤600px): Reduce tamaños, oculta columnas de la tabla (marca, categoría), ajusta la cámara (180px de alto) */
+  /* En pantallas grandes (≥601px): Mantiene la cámara más grande (240px) y botones más espaciosos */

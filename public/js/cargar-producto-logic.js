@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('cargar-producto-logic.js cargado');
+  /* Propósito: Inicializa el script cuando cargar-producto.html está cargado */
+  /* Imprime un mensaje en la consola para confirmar la carga del script */
 
-  // Elementos del DOM
+  /* Selección de elementos del DOM */
   const formCargarProducto = document.querySelector('#form-cargar-producto');
   const inputCategoria = document.querySelector('#categoria');
   const inputUnidad = document.querySelector('#unidad');
@@ -31,59 +33,70 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnDetenerEscaneo = document.querySelector('#detener-escaneo');
   const camaraCarga = document.querySelector('#camara-carga');
   const inputCodigo = document.querySelector('#codigo');
+  /* Propósito: Obtiene referencias a elementos clave del formulario, tabla, y escáner */
+  /* Incluye inputs, selectores, botones, y el contenedor de la cámara para gestionar productos y escaneo */
 
-  // Estado para manejar los productos en proceso
+  /* Estado para manejar productos en proceso */
   let productosEnProceso = [];
+  /* Propósito: Almacena temporalmente los productos antes de confirmarlos en el backend */
 
-  // Construcción de la URL base
+  /* Construcción de la URL base */
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
+  /* Propósito: Crea una URL base dinámica (por ejemplo, http://localhost o https://gestion-kiosco.vercel.app) */
+  /* Evita hardcodear el puerto para mayor portabilidad */
 
-  // Ocultar inicialmente todos los elementos que deben estar ocultos
+  /* Inicialización de visibilidad */
   document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
   document.querySelector('#cantidad-packs').style.display = 'none';
   document.querySelector('#unidades-por-pack').style.display = 'none';
   document.querySelector('#cantidad-docenas').style.display = 'none';
+  /* Propósito: Oculta inicialmente los campos de subcategorías y cantidades específicas (packs, docenas) */
+  /* Asegura que solo se muestren según la selección del usuario */
 
-  // Función para mostrar la subcategoría según la categoría seleccionada
+  /* Función para mostrar subcategorías */
   function mostrarSubcategoria(categoria) {
     document.querySelectorAll('[id^="subcategoria-"]').forEach(el => {
-      console.log('Ocultando elemento:', el.id); // Depuración
+      console.log('Ocultando elemento:', el.id);
       el.style.display = 'none';
     });
     if (categoria) {
       const subcategoriaElement = document.querySelector(`#subcategoria-${categoria}`);
       if (subcategoriaElement) {
-        console.log('Mostrando subcategoría:', subcategoriaElement.id); // Depuración
+        console.log('Mostrando subcategoría:', subcategoriaElement.id);
         subcategoriaElement.style.display = 'block';
-        console.log('Estilo display después de cambiar:', subcategoriaElement.style.display); // Depuración
+        console.log('Estilo display después de cambiar:', subcategoriaElement.style.display);
       } else {
-        console.log(`No se encontró subcategoría para la categoría: ${categoria}`); // Depuración
+        console.log(`No se encontró subcategoría para la categoría: ${categoria}`);
       }
     }
   }
+  /* Propósito: Muestra el campo de subcategoría correspondiente a la categoría seleccionada */
+  /* Oculta todos los campos de subcategorías y muestra solo el relevante, con depuración para rastrear cambios */
 
-  // Mostrar u ocultar subcategorías según la categoría seleccionada
+  /* Evento para mostrar subcategorías */
   inputCategoria.addEventListener('change', () => {
     const categoria = inputCategoria.value;
-    console.log('Categoría seleccionada:', categoria); // Depuración
+    console.log('Categoría seleccionada:', categoria);
     mostrarSubcategoria(categoria);
   });
+  /* Propósito: Actualiza la visibilidad de subcategorías al cambiar la categoría seleccionada */
 
-  // Mostrar u ocultar campos de cantidad según la unidad seleccionada
+  /* Evento para mostrar campos de cantidad */
   inputUnidad.addEventListener('change', () => {
     const unidad = inputUnidad.value;
-    console.log('Unidad seleccionada:', unidad); // Depuración
+    console.log('Unidad seleccionada:', unidad);
     document.querySelector('#cantidad-packs').style.display = unidad === 'pack' ? 'block' : 'none';
     document.querySelector('#unidades-por-pack').style.display = unidad === 'pack' ? 'block' : 'none';
     document.querySelector('#cantidad-docenas').style.display = unidad === 'docena' ? 'block' : 'none';
     actualizarCantidadTotal();
   });
+  /* Propósito: Muestra u oculta campos de cantidad (packs, unidades por pack, docenas) según la unidad seleccionada */
+  /* Actualiza la cantidad total al cambiar la unidad */
 
-  // Actualizar cantidad total al cambiar los valores
+  /* Actualización de cantidad total */
   [inputPacks, inputUnidadesPorPack, inputDocenas, inputUnidadesSueltas].forEach(input => {
     input.addEventListener('input', actualizarCantidadTotal);
   });
-
   function actualizarCantidadTotal() {
     const packs = parseInt(inputPacks.value) || 0;
     const unidadesPorPack = parseInt(inputUnidadesPorPack.value) || 0;
@@ -92,8 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const total = (packs * unidadesPorPack) + (docenas * 12) + unidadesSueltas;
     inputCantidadTotal.value = total;
   }
+  /* Propósito: Calcula y actualiza la cantidad total de unidades */
+  /* Suma packs (multiplicados por unidades por pack), docenas (x12), y unidades sueltas */
 
-  // Calcular precio final al cambiar precio de lista o porcentaje de ganancia
+  /* Cálculo de precio final */
   [inputPrecioLista, inputPorcentajeGanancia].forEach(input => {
     input.addEventListener('input', () => {
       const precioLista = parseFloat(inputPrecioLista.value) || 0;
@@ -102,25 +117,26 @@ document.addEventListener('DOMContentLoaded', () => {
       inputPrecioFinal.value = precioFinal.toFixed(2);
     });
   });
+  /* Propósito: Calcula el precio final basado en el precio de lista y el porcentaje de ganancia */
+  /* Actualiza el campo precio-final con dos decimales */
 
-  // Manejar el envío del formulario
+  /* Agregar producto a la lista en proceso */
   btnAgregarProducto.addEventListener('click', () => {
     const formData = new FormData(formCargarProducto);
     const data = Object.fromEntries(formData);
+    /* Recoge los datos del formulario */
 
-    // Validar datos
     if (!data.nombre || !data.marca || !data.categoria || !data.unidad || !data.fechaVencimiento) {
       mostrarToast('Por favor, completa todos los campos requeridos.', 'error');
       return;
     }
-
     const cantidadTotal = parseInt(inputCantidadTotal.value) || 0;
     if (cantidadTotal <= 0) {
       mostrarToast('La cantidad total debe ser mayor que 0.', 'error');
       return;
     }
+    /* Valida que los campos requeridos estén completos y la cantidad sea válida */
 
-    // Agregar producto a la lista de productos en proceso
     const producto = {
       nombre: data.nombre,
       marca: data.marca,
@@ -140,20 +156,18 @@ document.addEventListener('DOMContentLoaded', () => {
       icono: data.icono || 'default',
       estado: 'Pendiente'
     };
+    /* Crea un objeto con los datos del producto, incluyendo valores predeterminados */
 
-    // Verificar si el producto ya existe
     if (producto.codigo) {
       fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
         .then(res => res.json())
         .then(result => {
           if (result.producto) {
-            // Producto existente
             mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
             setTimeout(() => {
               window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
-            }, 3000); // Redirigir después de 3 segundos
+            }, 3000);
           } else {
-            // Producto no existe, añadir a la lista
             productosEnProceso.push(producto);
             actualizarTablaProductos();
             formCargarProducto.reset();
@@ -170,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
           mostrarToast('Error al verificar el producto.', 'error');
         });
     } else {
-      // Si no hay código, asumimos que es un producto nuevo
       productosEnProceso.push(producto);
       actualizarTablaProductos();
       formCargarProducto.reset();
@@ -181,9 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#cantidad-docenas').style.display = 'none';
       mostrarToast('Producto agregado a la lista en proceso.', 'success');
     }
+    /* Propósito: Agrega un producto a la lista temporal */
+    /* Verifica si el producto ya existe en el stock (si tiene código) */
+    /* Si existe, redirige a stock.html; si no, lo añade a productosEnProceso, actualiza la tabla, y limpia el formulario */
   });
 
-  // Cancelar producto
+  /* Cancelar producto */
   btnCancelarProducto.addEventListener('click', () => {
     formCargarProducto.reset();
     inputPrecioFinal.value = '';
@@ -192,8 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#unidades-por-pack').style.display = 'none';
     document.querySelector('#cantidad-docenas').style.display = 'none';
   });
+  /* Propósito: Limpia el formulario y restablece la visibilidad de campos */
 
-  // Actualizar la tabla de productos en proceso
+  /* Actualizar la tabla de productos en proceso */
   function actualizarTablaProductos() {
     tablaProductosProceso.innerHTML = '';
     productosEnProceso.forEach((producto, index) => {
@@ -217,15 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       tablaProductosProceso.appendChild(fila);
     });
-
-    // Asignar eventos a los botones de confirmar y eliminar
     document.querySelectorAll('.confirmar-producto').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const index = parseInt(e.currentTarget.getAttribute('data-index'));
         confirmarProducto(index);
       });
     });
-
     document.querySelectorAll('.eliminar-producto').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const index = parseInt(e.currentTarget.getAttribute('data-index'));
@@ -233,25 +247,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+  /* Propósito: Actualiza la tabla de productos en proceso */
+  /* Genera filas con datos de productos, aplicando clases según el estado (pendiente, confirmado) */
+  /* Añade eventos a botones de confirmar y eliminar */
 
-  // Confirmar un producto individual
+  /* Confirmar un producto individual */
   async function confirmarProducto(index) {
     const producto = productosEnProceso[index];
     producto.estado = 'Confirmado';
-
     try {
       const usuarioId = localStorage.getItem('usuarioId');
       const response = await fetch(`${BASE_URL}/api/productos`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...producto, usuarioId })
       });
-
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Error al confirmar el producto');
-
       mostrarToast(result.mensaje || 'Producto confirmado con éxito.', 'success');
       productosEnProceso.splice(index, 1);
       actualizarTablaProductos();
@@ -262,45 +274,42 @@ document.addEventListener('DOMContentLoaded', () => {
       actualizarTablaProductos();
     }
   }
+  /* Propósito: Envía un producto al backend para guardarlo */
+  /* Marca el producto como confirmado, hace una solicitud POST, y actualiza la tabla */
+  /* Maneja errores restaurando el estado pendiente si falla */
 
-  // Eliminar un producto de la lista
+  /* Eliminar un producto */
   function eliminarProducto(index) {
     productosEnProceso.splice(index, 1);
     actualizarTablaProductos();
     mostrarToast('Producto eliminado de la lista.', 'info');
   }
+  /* Propósito: Elimina un producto de la lista temporal y actualiza la tabla */
 
-  // Confirmar todos los productos
+  /* Confirmar todos los productos */
   btnConfirmarTodos.addEventListener('click', async () => {
     if (productosEnProceso.length === 0) {
       mostrarToast('No hay productos para confirmar.', 'info');
       return;
     }
-
     const usuarioId = localStorage.getItem('usuarioId');
     const productosPendientes = productosEnProceso.filter(p => p.estado === 'Pendiente');
-
     if (productosPendientes.length === 0) {
       mostrarToast('No hay productos pendientes para confirmar.', 'info');
       return;
     }
-
     try {
       for (let i = 0; i < productosPendientes.length; i++) {
         const producto = productosPendientes[i];
         producto.estado = 'Confirmado';
         const response = await fetch(`${BASE_URL}/api/productos`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...producto, usuarioId })
         });
-
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Error al confirmar el producto');
       }
-
       productosEnProceso = productosEnProceso.filter(p => p.estado !== 'Confirmado');
       actualizarTablaProductos();
       mostrarToast('Todos los productos fueron confirmados con éxito.', 'success');
@@ -311,36 +320,35 @@ document.addEventListener('DOMContentLoaded', () => {
       actualizarTablaProductos();
     }
   });
+  /* Propósito: Envía todos los productos pendientes al backend */
+  /* Marca cada producto como confirmado, hace solicitudes POST, y actualiza la tabla */
+  /* Maneja errores restaurando el estado pendiente si falla */
 
-  // Cancelar todos los productos
+  /* Cancelar todos los productos */
   btnCancelarTodo.addEventListener('click', () => {
     productosEnProceso = [];
     actualizarTablaProductos();
     mostrarToast('Lista de productos en proceso limpiada.', 'info');
   });
+  /* Propósito: Limpia la lista de productos en proceso y actualiza la tabla */
 
-  // Manejar el escaneo continuo de códigos de barras
+  /* Manejo del escaneo continuo */
   btnEscanear.addEventListener('click', () => {
     const completarCallback = (producto) => {
       if (producto) {
-        // Verificar si el producto ya existe antes de autocompletar
         fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
           .then(res => res.json())
           .then(result => {
             if (result.producto) {
-              // Producto existente
               mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
               setTimeout(() => {
                 window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
-              }, 3000); // Redirigir después de 3 segundos
+              }, 3000);
             } else {
-              // Autocompletar los campos
               document.querySelector('#nombre-producto').value = producto.nombre;
               document.querySelector('#marca').value = producto.marca;
               document.querySelector('#categoria').value = producto.categoria;
-              // Mostrar el campo de subcategoría correspondiente
               mostrarSubcategoria(producto.categoria);
-              // Establecer el valor de la subcategoría
               const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
               if (subcategoriaSelect) {
                 subcategoriaSelect.value = producto.subcategoria || '';
@@ -364,14 +372,16 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
     };
-
     iniciarEscaneoContinuo(
       camaraCarga,
       btnEscanear,
       btnDetenerEscaneo,
       inputCodigo,
       completarCallback,
-      null // No necesitamos un callback adicional por ahora
+      null
     );
   });
+  /* Propósito: Configura el escaneo continuo de códigos de barras */
+  /* Usa iniciarEscaneoContinuo de utils.js para escanear códigos */
+  /* Verifica si el código ya existe en el stock; si sí, redirige a stock.html; si no, autocompleta el formulario */
 });

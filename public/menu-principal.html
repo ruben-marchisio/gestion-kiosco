@@ -1,36 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- Declara un documento HTML5 en español -->
 <head>
+  <!-- Metadatos y recursos externos -->
+  <!-- Define la codificación UTF-8 y hace la página responsive -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Título de la página, mostrado en la pestaña del navegador -->
   <title>Gestión Kiosco</title>
+  <!-- Enlaza el CSS específico para esta página -->
   <link rel="stylesheet" href="/public/css/menu-principal.css">
-  <!-- Font Awesome para íconos -->
+  <!-- Incluye Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
+  <!-- Contenido visible de la página -->
+
   <!-- Encabezado -->
   <header>
+    <!-- Muestra el logo, título, y navegación -->
+    <!-- Propósito: Identifica el sistema y ofrece opciones de navegación -->
+    <!-- Contiene el logo y el título "Gestión Kiosco" -->
     <div class="logo">
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
     </div>
     <h1>Gestión Kiosco</h1>
+    <!-- Barra de navegación con un botón para cerrar sesión -->
     <nav class="nav-principal">
       <button class="cerrar-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+      <!-- Botón que probablemente dispara una acción en menu-principal-logic.js para cerrar la sesión del usuario -->
     </nav>
   </header>
 
   <!-- Contenido Principal -->
   <main>
+    <!-- Sección principal con alertas y acciones -->
+    <!-- Propósito: Proporciona un resumen y acceso rápido a las funciones del sistema -->
     <section id="inicio">
+      <!-- Alerta que notifica sobre productos próximos a vencer -->
       <div class="alert">
         <i class="fas fa-exclamation-circle"></i> Tienes 3 productos por vencer en 10 días.
+        <!-- Muestra una notificación estática; probablemente dinámicas en menu-principal-logic.js -->
       </div>
+      <!-- Botones para acceder a las principales funcionalidades -->
       <div class="acciones-principales">
+        <!-- Enlace a la página para cargar productos, relacionado con el escáner -->
         <a href="/public/cargar-producto.html" class="boton-accion"><i class="fas fa-box-open"></i> Cargar Producto</a>
+        <!-- Enlace a la página de gestión de inventario -->
         <a href="/public/stock.html" class="boton-accion"><i class="fas fa-warehouse"></i> Ver Stock</a>
+        <!-- Enlace a la página para registrar ventas -->
         <a href="/public/vender-producto.html" class="boton-accion"><i class="fas fa-shopping-cart"></i> Vender Producto</a>
+        <!-- Enlace a la página de gestión de clientes -->
         <a href="/public/clientes.html" class="boton-accion"><i class="fas fa-users"></i> Clientes</a>
+        <!-- Enlace a reportes (no implementado, href="#" es un placeholder) -->
         <a href="#" class="boton-accion"><i class="fas fa-chart-line"></i> Reportes</a>
       </div>
     </section>
@@ -38,13 +60,18 @@
 
   <!-- Pie de Página -->
   <footer>
+    <!-- Sección con enlace de ayuda -->
+    <!-- Propósito: Ofrece soporte al usuario -->
     <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+    <!-- Enlace a una sección de ayuda (ancla #ayuda, no implementada) -->
   </footer>
 
   <!-- Scripts -->
+  <!-- Imprime un mensaje en la consola para confirmar que la página se cargó -->
   <script>
     console.log('menu-principal.html cargado');
   </script>
+  <!-- Enlaza el JavaScript que maneja la lógica (como cerrar sesión o actualizar alertas) -->
   <script src="/public/js/menu-principal-logic.js"></script>
 </body>
 </html>

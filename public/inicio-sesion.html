@@ -1,46 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- Declara un documento HTML5 en español -->
 <head>
+  <!-- Metadatos y recursos externos -->
   <meta charset="UTF-8">
+  <!-- Usa codificación UTF-8 para soportar caracteres especiales -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Hace la página responsive, ajustándose al ancho del dispositivo -->
   <title>Gestión Kiosco - Iniciar Sesión</title>
+  <!-- Título de la página, mostrado en la pestaña del navegador -->
   <link rel="stylesheet" href="/public/css/inicio-sesion.css">
-  <!-- Font Awesome para íconos -->
+  <!-- Enlaza el CSS específico para esta página, define los estilos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Incluye Font Awesome desde un CDN para usar íconos -->
 </head>
 <body>
+  <!-- Contenido visible de la página -->
+  
   <!-- Encabezado -->
   <header>
+    <!-- Sección superior con el logo y título -->
+    <!-- Propósito: Muestra la identidad visual del sistema -->
     <div class="logo">
+      <!-- Contenedor para el logo -->
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+      <!-- Imagen del logo, con texto alternativo para accesibilidad -->
     </div>
     <h1>Gestión Kiosco</h1>
+    <!-- Título principal, probablemente estilizado para destacar -->
   </header>
 
   <!-- Sección de Inicio de Sesión -->
   <section class="login-section">
+    <!-- Sección principal con el formulario de inicio de sesión -->
+    <!-- Propósito: Permite a los usuarios autenticarse con email y contraseña -->
     <div class="login-content">
+      <!-- Contenedor para centrar y organizar el formulario -->
       <h2>Iniciar Sesión</h2>
+      <!-- Subtítulo que indica el propósito de la sección -->
       <form id="form-iniciar-sesion">
+        <!-- Formulario para recoger email y contraseña; el ID es usado por inicio-sesion-logic.js -->
+        <!-- Propósito: Captura y envía datos de autenticación al backend -->
         <div class="form-campo">
+          <!-- Contenedor para el campo de email, agrupa etiqueta e input -->
           <label for="email">Email:</label>
+          <!-- Etiqueta que describe el campo de email -->
           <input type="email" id="email" name="email" placeholder="Ingresa tu email" required>
+          <!-- Campo para el email; type="email" valida el formato; required asegura que no esté vacío -->
         </div>
         <div class="form-campo">
+          <!-- Contenedor para el campo de contraseña -->
           <label for="contrasena">Contraseña:</label>
+          <!-- Etiqueta que describe el campo de contraseña -->
           <div class="password-container">
+            <!-- Agrupa el input y el ícono para mostrar/ocultar la contraseña -->
             <input type="password" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
+            <!-- Campo para la contraseña; type="password" oculta los caracteres; required asegura que no esté vacío -->
             <i class="fas fa-eye toggle-password" onclick="togglePassword('contrasena')"></i>
+            <!-- Ícono de Font Awesome que alterna la visibilidad de la contraseña; llama a togglePassword en inicio-sesion-logic.js -->
           </div>
         </div>
         <div class="form-acciones">
+          <!-- Contenedor para los botones de acción -->
           <button type="submit" id="iniciar-sesion" class="boton-accion boton-primario">
+            <!-- Botón para enviar el formulario; dispara el evento submit -->
             <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            <!-- Ícono y texto del botón -->
           </button>
-          <a href="/public/registrarse.html" id="ir-a-registro" class="boton-accion boton-secundario"><i class="fas fa-user-plus"></i> Registrarse</a>
+          <a href="/public/registrarse.html" id="ir-a-registro" class="boton-accion boton-secundario">
+            <!-- Enlace a la página de registro, estilizado como botón -->
+            <i class="fas fa-user-plus"></i> Registrarse
+          </a>
         </div>
         <div class="loading-message" style="display: none;">
+          <!-- Mensaje de carga, oculto por defecto -->
+          <!-- Propósito: Muestra un indicador durante operaciones asíncronas (como enviar el formulario al backend) -->
           <i class="fas fa-spinner fa-spin"></i> Cargando...
+          <!-- Ícono animado de Font Awesome y texto -->
         </div>
       </form>
     </div>
@@ -48,10 +84,14 @@
 
   <!-- Pie de Página -->
   <footer>
+    <!-- Sección inferior con un enlace de ayuda -->
+    <!-- Propósito: Proporciona acceso a soporte -->
     <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+    <!-- Enlace a una sección de ayuda (ancla #ayuda, no implementada aquí) -->
   </footer>
 
   <!-- Scripts -->
   <script src="/public/js/inicio-sesion-logic.js"></script>
+  <!-- Enlaza el JavaScript que maneja la lógica del formulario (envío al backend, toggle de contraseña) -->
 </body>
 </html>

@@ -1,75 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- Declara un documento HTML5 en español -->
 <head>
+  <!-- Metadatos y recursos externos -->
+  <!-- Configura codificación UTF-8 y hace la página responsive -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Título de la página, mostrado en la pestaña del navegador -->
   <title>Gestión Kiosco - Stock</title>
+  <!-- Enlaza la fuente Poppins desde Google Fonts para estilos -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Incluye Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Enlaza el CSS específico para esta página -->
   <link rel="stylesheet" href="/public/css/stock.css">
+  <!-- Incluye QuaggaJS desde un CDN para el escáner de códigos de barras -->
   <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 </head>
 <body>
+  <!-- Contenido visible de la página -->
+
   <!-- Encabezado -->
   <header>
+    <!-- Muestra el logo, título, y navegación -->
+    <!-- Propósito: Identifica la página y ofrece acceso a otras secciones -->
+    <!-- Incluye el logo y el título "Stock" -->
     <div class="logo">
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
     </div>
     <h1>Stock</h1>
+    <!-- Barra de navegación con enlaces a otras páginas -->
     <nav class="nav-principal">
       <a href="/public/menu-principal.html"><i class="fas fa-home"></i> Inicio</a>
       <a href="/public/cargar-producto.html"><i class="fas fa-plus"></i> Agregar Producto</a>
       <a href="/public/stock.html" class="activo"><i class="fas fa-boxes"></i> Stock</a>
+      <!-- Enlaces para navegar; "activo" resalta la página actual -->
     </nav>
   </header>
 
   <!-- Contenido Principal -->
   <main>
+    <!-- Sección principal para gestionar el inventario -->
+    <!-- Propósito: Permite buscar, filtrar, y administrar productos en el stock -->
     <section id="stock">
       <!-- Barra de Filtros y Buscador -->
       <div class="barra-filtros">
+        <!-- Contenedor para búsqueda y filtros -->
+        <!-- Propósito: Facilita encontrar productos por nombre, código, o categoría -->
         <div class="buscador">
           <input type="text" id="buscador" placeholder="Buscar por nombre, marca o código..." autocomplete="off">
+          <!-- Campo para buscar productos manualmente -->
           <button id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i></button>
+          <!-- Activa el escáner de códigos de barras, conectado a utils.js -->
           <button id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i></button>
+          <!-- Detiene el escáner, oculto hasta que el escaneo comienza -->
         </div>
         <button id="boton-filtros" class="boton-filtros"><i class="fas fa-filter"></i> Filtros</button>
-        <!-- Menú de Filtros -->
+        <!-- Abre el menú de filtros, manejado por stock-logic.js -->
+        <!-- Menú de Filtros, oculto por defecto -->
         <div id="menu-filtros" class="menu-filtros" style="display: none;">
+          <!-- Opciones para filtrar productos -->
+          <!-- Propósito: Permite refinar la lista de productos -->
           <div class="filtro-opcion">
             <button id="filtro-todo">Mostrar Todo</button>
+            <!-- Muestra todos los productos, resetea filtros -->
           </div>
           <div class="filtro-opcion">
             <label for="filtro-categoria">Categoría:</label>
             <select id="filtro-categoria">
               <option value="">Todas</option>
-              <option value="bebidas">Bebidas</option>
-              <option value="golosinas">Golosinas</option>
-              <option value="lacteos">Lácteos</option>
-              <option value="cigarrillos">Cigarrillos</option>
-              <option value="fiambre">Fiambre</option>
-              <option value="congelados">Congelados</option>
-              <option value="panaderia">Panadería</option>
-              <option value="almacen">Almacén</option>
-              <option value="verduleria">Verdulería</option>
-              <option value="limpieza">Limpieza</option>
-              <option value="higiene-personal">Higiene personal</option>
-              <option value="sin-tacc">Sin TACC</option>
-              <option value="productos-varios">Productos varios</option>
+              <!-- Opciones de categorías (bebidas, golosinas, etc.) -->
             </select>
           </div>
           <div class="filtro-opcion">
             <label for="filtro-subcategoria">Subcategoría:</label>
             <select id="filtro-subcategoria">
               <option value="">Todas</option>
-              <!-- Las opciones se llenarán dinámicamente según la categoría -->
+              <!-- Subcategorías se llenan dinámicamente según la categoría -->
             </select>
           </div>
           <div class="filtro-opcion">
             <label><input type="checkbox" id="filtro-sin-stock"> Sin Stock</label>
+            <!-- Filtra productos sin inventario -->
           </div>
           <div class="filtro-opcion">
             <label><input type="checkbox" id="filtro-por-vencer"> Productos por Vencer</label>
+            <!-- Filtra productos próximos a vencer -->
           </div>
         </div>
       </div>
@@ -77,24 +93,29 @@
       <!-- Área de la Cámara (para el Escáner) -->
       <div id="camara-stock" class="camara" style="display: none;">
         <div class="guia-codigo"></div>
+        <!-- Contenedor para el video del escáner, oculto por defecto; la guía ayuda a alinear el código -->
       </div>
 
       <!-- Lista de Productos -->
       <div id="lista-stock" class="lista-stock">
-        <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
+        <!-- Contenedor para las tarjetas de productos, generadas dinámicamente -->
+        <!-- Propósito: Muestra el inventario con detalles de cada producto -->
       </div>
 
       <!-- Modal para Detalles y Acciones -->
       <div id="modal-producto" class="modal" style="display: none;">
+        <!-- Ventana modal para ver y gestionar un producto -->
+        <!-- Propósito: Muestra detalles y permite editar o dar de baja -->
         <div class="modal-contenido">
           <h2 id="modal-titulo">Detalles del Producto</h2>
           <div id="modal-detalles" class="modal-detalles">
-            <!-- Los detalles se llenarán dinámicamente -->
+            <!-- Detalles del producto, llenados por stock-logic.js -->
           </div>
           <div class="modal-acciones">
             <button id="modal-editar-precios" class="boton-accion boton-primario"><i class="fas fa-edit"></i> Editar Precios</button>
             <button id="modal-agregar-stock" class="boton-accion boton-primario"><i class="fas fa-plus"></i> Agregar Stock</button>
             <button id="modal-dar-baja" class="boton-accion boton-cancelar"><i class="fas fa-minus-circle"></i> Dar de Baja</button>
+            <!-- Abren otros modales para acciones específicas -->
           </div>
           <button id="modal-cerrar" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cerrar</button>
         </div>
@@ -102,6 +123,8 @@
 
       <!-- Modal para Editar Precios -->
       <div id="modal-editar-precios" class="modal" style="display: none;">
+        <!-- Modal para actualizar precios de un producto -->
+        <!-- Propósito: Modifica precio de lista y ganancia -->
         <div class="modal-contenido">
           <h2>Editar Precios</h2>
           <div class="form-campo">
@@ -115,6 +138,7 @@
           <div class="form-campo">
             <label for="edit-precio-final">Precio Final</label>
             <input type="number" id="edit-precio-final" readonly>
+            <!-- Calculado automáticamente por stock-logic.js -->
           </div>
           <div class="modal-acciones">
             <button id="edit-guardar-precios" class="boton-accion boton-primario"><i class="fas fa-save"></i> Guardar</button>
@@ -125,6 +149,8 @@
 
       <!-- Modal para Agregar Stock -->
       <div id="modal-agregar-stock" class="modal" style="display: none;">
+        <!-- Modal para añadir más unidades al inventario -->
+        <!-- Propósito: Actualiza la cantidad y fecha de vencimiento -->
         <div class="modal-contenido">
           <h2>Agregar Stock</h2>
           <div class="form-campo">
@@ -144,6 +170,8 @@
 
       <!-- Modal para Dar de Baja -->
       <div id="modal-dar-baja" class="modal" style="display: none;">
+        <!-- Modal para reducir o eliminar productos del inventario -->
+        <!-- Propósito: Registra la baja con motivo y nota -->
         <div class="modal-contenido">
           <h2>Dar de Baja Producto</h2>
           <div class="form-campo">
@@ -172,16 +200,20 @@
 
       <!-- Área para Toasts -->
       <div id="toast-container" class="toast-container"></div>
+      <!-- Contenedor para notificaciones, usado por mostrarToast en utils.js -->
     </section>
   </main>
 
   <!-- Pie de Página -->
   <footer>
+    <!-- Enlace para volver al menú principal -->
     <a href="/public/menu-principal.html"><i class="fas fa-arrow-left"></i> Volver al Menú Principal</a>
   </footer>
 
   <!-- Scripts -->
   <script src="/public/js/utils.js"></script>
+  <!-- Enlaza utils.js, que contiene la lógica del escáner -->
   <script src="/public/js/stock-logic.js"></script>
+  <!-- Enlaza el JS que maneja la lista, filtros, modales, y escáner -->
 </body>
 </html>

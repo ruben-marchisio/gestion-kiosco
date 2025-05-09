@@ -1,4 +1,4 @@
-/* Estilos generales */
+/* Estilos generales para el cuerpo de la página */
 body {
   font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
@@ -8,6 +8,9 @@ body {
   display: flex;
   flex-direction: column;
 }
+  /* Propósito: Define la apariencia base de menu-principal.html */
+  /* Usa la fuente Poppins (consistente con otras páginas) con fallback a Arial */
+  /* Aplica un fondo gradiente azul-gris, organiza el contenido en columna para ocupar toda la altura */
 
 /* Encabezado */
 header {
@@ -21,32 +24,27 @@ header {
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .logo {
   display: flex;
   justify-content: center;
   margin-bottom: 8px;
 }
-
 .logo-img {
   width: 45px;
   height: auto;
   border-radius: 50%;
   border: 2px solid white;
 }
-
 h1 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
 }
-
 .nav-principal {
   position: absolute;
   top: 10px;
   right: 10px;
 }
-
 .nav-principal button {
   display: flex;
   align-items: center;
@@ -60,30 +58,32 @@ h1 {
   background: none;
   cursor: pointer;
 }
-
 .nav-principal button:hover {
   background-color: #3498db;
   transform: scale(1.05);
 }
-
 .nav-principal button i {
   margin-right: 4px;
   font-size: 15px;
 }
+  /* Propósito: Estiliza el encabezado con logo, título, y botón de cerrar sesión */
+  /* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra para profundidad */
+  /* Logo más pequeño (45px) que en otras páginas, centrado */
+  /* Título (h1) más compacto (20px), sin márgenes */
+  /* Botón de cerrar sesión en la esquina superior derecha, con efecto de hover (fondo azul, escalado) */
 
 /* Contenido Principal */
 main {
   flex: 1;
-  padding-top: 100px; /* Espacio para el header fijo */
-  padding-bottom: 50px; /* Espacio para el footer fijo */
+  padding-top: 100px;
+  padding-bottom: 50px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
-
 #inicio {
-  width: 96%; /* Más cerca de los bordes de la pantalla */
-  max-width: 1000px; /* Máximo para PC */
+  width: 96%;
+  max-width: 1000px;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -91,7 +91,6 @@ main {
   text-align: center;
   animation: fadeIn 1s ease-in-out;
 }
-
 .alert {
   font-size: 16px;
   color: #e74c3c;
@@ -103,45 +102,50 @@ main {
   background-color: rgba(231, 76, 60, 0.1);
   border-radius: 8px;
 }
-
 .alert i {
   margin-right: 8px;
 }
+  /* Propósito: Formatea la sección principal con alertas y botones */
+  /* Main usa flexbox para centrar el contenido, con padding para evitar superposición con el encabezado y pie de página */
+  /* La sección #inicio es un contenedor blanco semitransparente, ancho (96%), con bordes redondeados, sombra, y animación de entrada */
+  /* La alerta destaca con fondo rojo claro, ícono, y texto centrado */
 
+/* Botones de acción */
 .acciones-principales {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 15px;
   justify-items: center;
 }
-
 .boton-accion {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px 20px; /* Aumentado el padding vertical para alargar */
+  padding: 18px 20px;
   background-color: #3498db;
   color: white;
   border: none;
   border-radius: 20px;
   text-decoration: none;
-  font-size: 15px; /* Texto un poco más grande */
+  font-size: 15px;
   font-weight: 500;
   transition: background-color 0.3s ease, transform 0.2s ease;
   width: 100%;
-  max-width: 320px; /* Mantengo el ancho */
+  max-width: 320px;
 }
-
 .boton-accion:hover {
   background-color: #2980b9;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
-
 .boton-accion i {
   margin-right: 8px;
-  font-size: 18px; /* Ícono un poco más grande */
+  font-size: 18px;
 }
+  /* Propósito: Estiliza los botones de acciones principales (Cargar Producto, Ver Stock, etc.) */
+  /* Organiza los botones en una cuadrícula adaptable (mínimo 140px por botón) */
+  /* Botones azules (#3498db) con texto blanco, bordes redondeados, y efectos de hover (color más oscuro, elevación, sombra) */
+  /* Íconos grandes para destacar las acciones */
 
 /* Pie de Página */
 footer {
@@ -154,115 +158,53 @@ footer {
   width: 100%;
   z-index: 1000;
 }
-
 footer a {
   color: white;
   text-decoration: none;
   font-size: 13px;
   transition: color 0.3s ease;
 }
-
 footer a:hover {
   color: #3498db;
 }
-
 footer a i {
   margin-right: 4px;
 }
+  /* Propósito: Estiliza el pie de página con el enlace de volver */
+  /* Fondo oscuro, fijo en la parte inferior, con enlace blanco que cambia a azul al pasar el mouse, más compacto que en otras páginas */
 
 /* Animación para la entrada del contenido */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+  /* Propósito: Añade una animación suave a la sección principal */
+  /* Desvanece y desplaza hacia arriba el contenido al cargar, igual que en otras páginas */
 
 /* Estilos responsivos */
 @media (max-width: 600px) {
-  header {
-    padding: 0.5em 0;
-  }
-
-  .logo-img {
-    width: 40px;
-  }
-
-  h1 {
-    font-size: 16px;
-  }
-
-  .nav-principal button {
-    font-size: 11px;
-    padding: 5px 8px;
-  }
-
-  main {
-    padding-top: 110px; /* Aumentado para evitar superposición */
-    padding-bottom: 40px;
-  }
-
-  #inicio {
-    width: 98%; /* Ocupa casi todo el ancho disponible */
-    padding: 15px;
-  }
-
-  .alert {
-    font-size: 14px;
-    padding: 12px;
-    margin-bottom: 25px;
-  }
-
-  .acciones-principales {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .boton-accion {
-    padding: 20px 25px; /* Aumentado aún más en móviles para alargar */
-    font-size: 14px;
-    max-width: 90%; /* Mantengo el ancho */
-  }
-
-  footer {
-    padding: 0.6em 0;
-  }
+  header { padding: 0.5em 0; }
+  .logo-img { width: 40px; }
+  h1 { font-size: 16px; }
+  .nav-principal button { font-size: 11px; padding: 5px 8px; }
+  main { padding-top: 110px; padding-bottom: 40px; }
+  #inicio { width: 98%; padding: 15px; }
+  .alert { font-size: 14px; padding: 12px; margin-bottom: 25px; }
+  .acciones-principales { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .boton-accion { padding: 20px 25px; font-size: 14px; max-width: 90%; }
+  footer { padding: 0.6em 0; }
 }
-
 @media (min-width: 601px) and (max-width: 900px) {
-  .acciones-principales {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
-
-  .boton-accion {
-    padding: 18px 20px;
-    font-size: 14px;
-    max-width: 340px;
-  }
-
-  h1 {
-    font-size: 18px;
-  }
-
-  .nav-principal button {
-    font-size: 12px;
-  }
+  .acciones-principales { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .boton-accion { padding: 18px 20px; font-size: 14px; max-width: 340px; }
+  h1 { font-size: 18px; }
+  .nav-principal button { font-size: 12px; }
 }
-
 @media (min-width: 901px) {
-  .acciones-principales {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  }
-
-  .boton-accion {
-    padding: 18px 20px;
-    font-size: 14px;
-    max-width: 360px;
-  }
+  .acciones-principales { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  .boton-accion { padding: 18px 20px; font-size: 14px; max-width: 360px; }
 }
+  /* Propósito: Ajusta los estilos para diferentes tamaños de pantalla */
+  /* En móviles (≤600px): Reduce tamaños, apila botones en columna, ajusta padding para evitar superposición */
+  /* En tabletas (601-900px): Aumenta el tamaño mínimo de los botones en la cuadrícula */
+  /* En pantallas grandes (≥901px): Botones más anchos en la cuadrícula */

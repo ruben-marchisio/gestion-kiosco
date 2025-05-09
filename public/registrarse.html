@@ -1,50 +1,84 @@
 <!DOCTYPE html>
+<!-- Declara que el documento es un archivo HTML5 -->
 <html lang="es">
+<!-- Define el elemento raíz del documento y establece el idioma como español -->
 <head>
+  <!-- Contiene metadatos y enlaces a recursos externos -->
   <meta charset="UTF-8">
+  <!-- Establece la codificación de caracteres en UTF-8 para soportar caracteres especiales (como acentos) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Configura el viewport para que la página sea responsive, ajustándose al ancho del dispositivo con una escala inicial de 1.0 -->
   <title>Gestión Kiosco - Registrarse</title>
+  <!-- Define el título de la página que aparece en la pestaña del navegador, indicando que es la página de registro -->
   <link rel="stylesheet" href="/public/css/registrarse.css">
+  <!-- Enlaza el archivo de estilos CSS ubicado en /public/css/registrarse.css para dar formato a la página -->
   <!-- Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Enlaza la biblioteca Font Awesome (versión 6.5.1) desde un CDN para usar íconos (como fa-eye, fa-user-plus) -->
 </head>
 <body>
+  <!-- Contiene el contenido visible de la página -->
   <!-- Encabezado -->
   <header>
+    <!-- Define la sección del encabezado de la página -->
     <div class="logo">
+      <!-- Contenedor para el logo -->
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+      <!-- Muestra la imagen del logo ubicada en /public/imagenes/logo.jpg; el atributo alt describe la imagen para accesibilidad -->
     </div>
     <h1>Gestión Kiosco</h1>
+    <!-- Título principal de la página, probablemente estilizado en registrarse.css -->
   </header>
 
   <!-- Sección de Registro -->
   <section class="register-section">
+    <!-- Sección principal que contiene el formulario de registro -->
     <div class="register-content">
+      <!-- Contenedor para el contenido del formulario, probablemente centrado o estilizado -->
       <h2>Registrarse</h2>
+      <!-- Subtítulo que indica el propósito de la sección -->
       <form id="form-registro">
+        <!-- Formulario para recoger los datos de registro; el ID permite identificarlo en registrarse-logic.js -->
         <div class="form-campo">
+          <!-- Contenedor para un campo del formulario, probablemente estilizado para alinear etiqueta e input -->
           <label for="nombreKiosco">Nombre del Kiosco:</label>
+          <!-- Etiqueta asociada al input con ID 'nombreKiosco', describe el campo -->
           <input type="text" id="nombreKiosco" name="nombreKiosco" placeholder="Ingresa el nombre de tu kiosco" required>
+          <!-- Campo de texto para el nombre del kiosco; el atributo required obliga a llenarlo -->
         </div>
         <div class="form-campo">
+          <!-- Contenedor para el campo de email -->
           <label for="email">Email:</label>
+          <!-- Etiqueta asociada al input con ID 'email' -->
           <input type="email" id="email" name="email" placeholder="Ingresa tu email" required>
+          <!-- Campo de email; type="email" valida el formato (por ejemplo, debe incluir @); required obliga a llenarlo -->
         </div>
         <div class="form-campo">
+          <!-- Contenedor para el campo de contraseña -->
           <label for="contrasena">Contraseña:</label>
+          <!-- Etiqueta asociada al input con ID 'contrasena' -->
           <div class="password-container">
+            <!-- Contenedor para el input de contraseña y el ícono de visibilidad -->
             <input type="password" id="contrasena" name="contrasena" placeholder="Ingresa tu contraseña" required>
+            <!-- Campo de contraseña; type="password" oculta los caracteres; required obliga a llenarlo -->
             <i class="fas fa-eye toggle-password" onclick="togglePassword('contrasena')"></i>
+            <!-- Ícono de Font Awesome (ojo) que permite mostrar/ocultar la contraseña; llama a la función togglePassword definida en registrarse-logic.js -->
           </div>
         </div>
         <div class="form-acciones">
+          <!-- Contenedor para los botones de acción del formulario -->
           <button type="submit" id="registrarse" class="boton-accion boton-primario">
+            <!-- Botón para enviar el formulario; type="submit" dispara el evento de envío -->
             <i class="fas fa-user-plus"></i> Registrarse
+            <!-- Ícono de Font Awesome y texto del botón -->
           </button>
           <a href="/public/inicio-sesion.html" id="ir-a-inicio-sesion" class="boton-accion boton-secundario"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+          <!-- Enlace a la página de inicio de sesión; estilizado como botón con clases y un ícono -->
         </div>
         <div class="loading-message" style="display: none;">
+          <!-- Contenedor para un mensaje de carga, oculto por defecto -->
           <i class="fas fa-spinner fa-spin"></i> Cargando...
+          <!-- Ícono de Font Awesome (spinner animado) y texto que se muestra durante operaciones asíncronas (como el envío del formulario) -->
         </div>
       </form>
     </div>
@@ -52,10 +86,13 @@
 
   <!-- Pie de Página -->
   <footer>
+    <!-- Define la sección del pie de página -->
     <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+    <!-- Enlace a una sección de ayuda (ancla #ayuda, no implementada en este HTML); usa un ícono de Font Awesome -->
   </footer>
 
   <!-- Scripts -->
   <script src="/public/js/registrarse-logic.js"></script>
+  <!-- Enlaza el archivo JavaScript registrarse-logic.js, que contiene la lógica para el formulario (como enviar datos al backend y togglear la contraseña) -->
 </body>
 </html>

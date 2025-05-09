@@ -1,17 +1,20 @@
-/* Estilos para inicio-sesion.html */
+/* Estilos generales para el cuerpo de la página */
 body {
   font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Gradiente suave */
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
+  /* Propósito: Configura la base visual de inicio-sesion.html */
+  /* Usa la fuente Poppins (coherente con otras páginas) con fallback a Arial */
+  /* Aplica un fondo gradiente azul-gris, elimina márgenes/padding, y organiza el contenido en columna para ocupar toda la altura */
 
 /* Encabezado */
 header {
-  background-color: #2c3e50; /* Color oscuro elegante */
+  background-color: #2c3e50;
   color: white;
   text-align: center;
   padding: 1.5em 0;
@@ -21,25 +24,26 @@ header {
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .logo {
   position: absolute;
   top: 10px;
   left: 15px;
 }
-
 .logo-img {
   width: 60px;
   height: auto;
   border-radius: 50%;
   border: 2px solid white;
 }
-
 h1 {
   margin: 0;
   font-size: 28px;
   font-weight: 600;
 }
+  /* Propósito: Estiliza el encabezado con logo y título */
+  /* Fondo oscuro (#2c3e50), texto blanco, fijo en la parte superior con sombra */
+  /* Logo circular con borde blanco en la esquina izquierda */
+  /* Título centrado, grande, sin márgenes, igual que en index.css y registrarse.css */
 
 /* Sección de Inicio de Sesión */
 .login-section {
@@ -47,10 +51,9 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px 20px 60px; /* Espacio para el header y footer */
+  padding: 100px 20px 60px;
   text-align: center;
 }
-
 .login-content {
   max-width: 500px;
   background: rgba(255, 255, 255, 0.9);
@@ -59,19 +62,22 @@ h1 {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   animation: fadeIn 1s ease-in-out;
 }
-
 .login-content h2 {
   font-size: 32px;
   color: #2c3e50;
   margin-bottom: 20px;
   font-weight: 700;
 }
+  /* Propósito: Formatea el formulario de inicio de sesión */
+  /* Centra el formulario con flexbox, dejando espacio para el encabezado y pie de página */
+  /* Contenedor con fondo blanco semitransparente, bordes redondeados, sombra, y animación de entrada (fadeIn) */
+  /* Título (h2) grande, oscuro, y destacado, igual que en registrarse.css */
 
+/* Campos del formulario */
 .form-campo {
   margin-bottom: 20px;
   position: relative;
 }
-
 .form-campo label {
   display: block;
   margin-bottom: 8px;
@@ -79,7 +85,6 @@ h1 {
   color: #2c3e50;
   font-size: 16px;
 }
-
 .form-campo input {
   width: 100%;
   padding: 12px;
@@ -89,17 +94,19 @@ h1 {
   font-size: 16px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
 .form-campo input:focus {
   border-color: #3498db;
   box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
   outline: none;
 }
+  /* Propósito: Estiliza los campos de entrada (email, contrasena) */
+  /* Etiquetas arriba de los inputs, que ocupan todo el ancho con bordes suaves */
+  /* Efecto de foco con borde azul y sombra sutil, igual que en registrarse.css */
 
+/* Contenedor de contraseña */
 .password-container {
   position: relative;
 }
-
 .toggle-password {
   position: absolute;
   right: 15px;
@@ -110,18 +117,19 @@ h1 {
   color: #666;
   transition: color 0.3s ease;
 }
-
 .toggle-password:hover {
   color: #3498db;
 }
+  /* Propósito: Formatea el campo de contraseña con el ícono de mostrar/ocultar */
+  /* Ícono (ojo) dentro del input, a la derecha, cambia a azul al pasar el mouse, igual que en registrarse.css */
 
+/* Botones de acción */
 .form-acciones {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-bottom: 10px;
 }
-
 .boton-accion {
   display: inline-flex;
   align-items: center;
@@ -133,40 +141,38 @@ h1 {
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   margin-right: 10px;
 }
-
 .boton-accion i {
   margin-right: 8px;
 }
-
 .boton-primario {
   background-color: #3498db;
   color: white;
   box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
 }
-
 .boton-primario:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
 }
-
 .boton-primario:disabled {
   background-color: #a0c4e8;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
-
 .boton-secundario {
   background-color: #e74c3c;
   color: white;
   box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
 }
-
 .boton-secundario:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
 }
+  /* Propósito: Estiliza los botones de "Iniciar Sesión" (primario, azul) y "Registrarse" (secundario, rojo) */
+  /* Botones con flexbox, bordes redondeados, y efectos de elevación/sombra al pasar el mouse */
+  /* Estado deshabilitado para el botón primario usa un azul claro, igual que en registrarse.css pero con colores invertidos (azul para primario, rojo para secundario) */
 
+/* Mensaje de carga */
 .loading-message {
   display: flex;
   justify-content: center;
@@ -175,10 +181,11 @@ h1 {
   font-size: 16px;
   color: #2c3e50;
 }
-
 .loading-message i {
   margin-right: 5px;
 }
+  /* Propósito: Formatea el mensaje de carga con spinner */
+  /* Centra el ícono y texto, con color oscuro, igual que en registrarse.css */
 
 /* Pie de Página */
 footer {
@@ -191,75 +198,42 @@ footer {
   width: 100%;
   z-index: 1000;
 }
-
 footer a {
   color: white;
   text-decoration: none;
   font-size: 16px;
   transition: color 0.3s ease;
 }
-
 footer a:hover {
   color: #3498db;
 }
-
 footer a i {
   margin-right: 5px;
 }
+  /* Propósito: Estiliza el pie de página con el enlace de ayuda */
+  /* Fondo oscuro, fijo en la parte inferior, enlace blanco que cambia a azul al pasar el mouse, igual que en registrarse.css */
 
 /* Animación para la entrada del contenido */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+  /* Propósito: Añade una animación suave al formulario */
+  /* Desvanece y desplaza hacia arriba el contenido al cargar, igual que en registrarse.css */
 
 /* Estilos responsivos */
 @media (max-width: 600px) {
-  header {
-    padding: 1em 0;
-  }
-
-  .logo-img {
-    width: 50px;
-  }
-
-  h1 {
-    font-size: 22px;
-  }
-
-  .login-section {
-    padding: 90px 15px 60px; /* Aumentado para evitar superposición */
-  }
-
-  .login-content {
-    padding: 20px;
-  }
-
-  .login-content h2 {
-    font-size: 28px;
-  }
-
-  .form-campo label {
-    font-size: 14px;
-  }
-
-  .form-campo input {
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  .boton-accion {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-
-  .loading-message {
-    font-size: 14px;
-  }
+  header { padding: 1em 0; }
+  .logo-img { width: 50px; }
+  h1 { font-size: 22px; }
+  .login-section { padding: 90px 15px 60px; }
+  .login-content { padding: 20px; }
+  .login-content h2 { font-size: 28px; }
+  .form-campo label { font-size: 14px; }
+  .form-campo input { padding: 10px; font-size: 14px; }
+  .boton-accion { padding: 10px 20px; font-size: 14px; }
+  .loading-message { font-size: 14px; }
 }
+  /* Propósito: Ajusta los estilos para pantallas pequeñas (móviles) */
+  /* Reduce padding, tamaños de fuente, y dimensiones para mejor legibilidad */
+  /* Ajusta el formulario para evitar superposición con el encabezado, igual que en registrarse.css */

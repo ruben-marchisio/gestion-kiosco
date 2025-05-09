@@ -1,58 +1,98 @@
 <!DOCTYPE html>
+<!-- Declara que el documento es un archivo HTML5 -->
 <html lang="es">
+<!-- Define el elemento raíz del documento y establece el idioma como español -->
 <head>
+  <!-- Contiene metadatos y enlaces a recursos externos -->
   <meta charset="UTF-8">
+  <!-- Establece la codificación de caracteres en UTF-8 para soportar caracteres especiales (como acentos) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Configura el viewport para que la página sea responsive, ajustándose al ancho del dispositivo con una escala inicial de 1.0 -->
   <title>Gestión Kiosco - Bienvenida</title>
+  <!-- Define el título de la página que aparece en la pestaña del navegador -->
   <link rel="stylesheet" href="/public/css/index.css">
+  <!-- Enlaza el archivo de estilos CSS ubicado en /public/css/index.css para dar formato a la página -->
   <!-- Font Awesome para íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Enlaza la biblioteca Font Awesome (versión 6.5.1) desde un CDN para usar íconos (como fa-sign-in-alt, fa-user-plus) -->
 </head>
 <body>
+  <!-- Contiene el contenido visible de la página -->
   <!-- Encabezado -->
   <header>
+    <!-- Define la sección del encabezado de la página -->
     <div class="logo">
+      <!-- Contenedor para el logo -->
       <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="logo-img">
+      <!-- Muestra la imagen del logo ubicada en /public/imagenes/logo.jpg; el atributo alt describe la imagen para accesibilidad -->
     </div>
     <h1>Gestión Kiosco</h1>
+    <!-- Título principal de la página, probablemente estilizado en index.css -->
   </header>
 
   <!-- Contenido Principal -->
   <main>
+    <!-- Define la sección principal del contenido -->
     <section class="hero">
+      <!-- Sección destacada (hero) para la bienvenida -->
       <div class="hero-content">
+        <!-- Contenedor para el contenido de la sección hero -->
         <h2>¡Bienvenido a Gestión Kiosco!</h2>
+        <!-- Subtítulo que da la bienvenida al usuario -->
         <p>Administra tu kiosco de forma eficiente y sencilla con nuestra herramienta diseñada para ti.</p>
+        <!-- Párrafo que describe brevemente el propósito del sistema -->
         <div class="hero-buttons">
+          <!-- Contenedor para los botones de acción -->
           <a href="/public/inicio-sesion.html" class="boton-accion boton-primario"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+          <!-- Enlace a la página de inicio de sesión (/public/inicio-sesion.html); usa un ícono de Font Awesome y clases para estilos -->
           <a href="/public/registrarse.html" class="boton-accion boton-secundario"><i class="fas fa-user-plus"></i> Registrarse</a>
+          <!-- Enlace a la página de registro (/public/registrarse.html); usa un ícono de Font Awesome y clases para estilos -->
         </div>
       </div>
     </section>
 
     <!-- Sección de Funcionalidades -->
     <section class="features">
+      <!-- Sección que describe las funcionalidades del sistema -->
       <h3>¿Qué puedes hacer con Gestión Kiosco?</h3>
+      <!-- Subtítulo que introduce las funcionalidades -->
       <div class="feature-list">
+        <!-- Contenedor para la lista de funcionalidades -->
         <div class="feature-item">
+          <!-- Elemento individual para una funcionalidad -->
           <i class="fas fa-box-open"></i>
+          <!-- Ícono de Font Awesome que representa productos -->
           <h4>Cargar Productos</h4>
+          <!-- Título de la funcionalidad -->
           <p>Registra fácilmente los productos de tu kiosco con un escáner o manualmente.</p>
+          <!-- Descripción de la funcionalidad, menciona el escáner (relacionado con utils.js) -->
         </div>
         <div class="feature-item">
+          <!-- Elemento individual para otra funcionalidad -->
           <i class="fas fa-shopping-cart"></i>
+          <!-- Ícono de Font Awesome que representa ventas -->
           <h4>Gestionar Ventas</h4>
+          <!-- Título de la funcionalidad -->
           <p>Realiza ventas rápidamente y mantén un control preciso de tu inventario.</p>
+          <!-- Descripción de la funcionalidad -->
         </div>
         <div class="feature-item">
+          <!-- Elemento individual para otra funcionalidad -->
           <i class="fas fa-users"></i>
+          <!-- Ícono de Font Awesome que representa clientes -->
           <h4>Administrar Clientes</h4>
+          <!-- Título de la funcionalidad -->
           <p>Guarda la información de tus clientes para un mejor seguimiento.</p>
+          <!-- Descripción de la funcionalidad -->
         </div>
         <div class="feature-item">
+          <!-- Elemento individual para otra funcionalidad -->
           <i class="fas fa-chart-line"></i>
+          <!-- Ícono de Font Awesome que representa reportes -->
           <h4>Generar Reportes</h4>
+          <!-- Título de la funcionalidad -->
           <p>Obtén estadísticas y reportes para tomar decisiones informadas.</p>
+          <!-- Descripción de la funcionalidad -->
         </div>
       </div>
     </section>
@@ -60,10 +100,13 @@
 
   <!-- Pie de Página -->
   <footer>
+    <!-- Define la sección del pie de página -->
     <a href="#ayuda"><i class="fas fa-question-circle"></i> Ayuda</a>
+    <!-- Enlace a una sección de ayuda (ancla #ayuda, no implementada en este HTML); usa un ícono de Font Awesome -->
   </footer>
 
   <!-- Scripts -->
   <script src="/public/js/index-logic.js"></script>
+  <!-- Enlaza el archivo JavaScript index-logic.js, que probablemente contiene lógica para esta página (como eventos o animaciones) -->
 </body>
 </html>

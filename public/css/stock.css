@@ -1,4 +1,4 @@
-/* Estilos para stock.html */
+/* Estilos generales para el cuerpo de la página */
 body {
   font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
@@ -9,6 +9,9 @@ body {
   flex-direction: column;
   overflow-x: hidden;
 }
+  /* Propósito: Configura la base visual de stock.html */
+  /* Usa la fuente Poppins (coherente con otras páginas), fondo gradiente azul-gris */
+  /* Organiza el contenido en columna, evita desplazamiento horizontal no deseado */
 
 /* Encabezado */
 header {
@@ -22,26 +25,22 @@ header {
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .logo {
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
 }
-
 .logo-img {
   width: 50px;
   height: auto;
   border-radius: 50%;
   border: 2px solid white;
 }
-
 h1 {
   margin: 0;
   font-size: 22px;
   font-weight: 600;
 }
-
 .nav-principal {
   display: flex;
   justify-content: center;
@@ -49,7 +48,6 @@ h1 {
   gap: 10px;
   margin-top: 10px;
 }
-
 .nav-principal a {
   display: flex;
   align-items: center;
@@ -60,20 +58,21 @@ h1 {
   border-radius: 20px;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .nav-principal a:hover {
   background-color: #3498db;
   transform: scale(1.05);
 }
-
 .nav-principal a.activo {
   background-color: #3498db;
 }
-
 .nav-principal a i {
   margin-right: 5px;
   font-size: 16px;
 }
+  /* Propósito: Estiliza el encabezado con logo, título, y navegación */
+  /* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra */
+  /* Logo centrado (50px), con borde blanco circular */
+  /* Título compacto (22px), navegación centrada con enlaces que resaltan en azul (#3498db) al pasar el mouse o estar activos, igual que en cargar-producto.css */
 
 /* Contenido Principal */
 main {
@@ -86,7 +85,6 @@ main {
   width: 100%;
   overflow-x: hidden;
 }
-
 #stock {
   width: 95%;
   max-width: 1000px;
@@ -95,6 +93,9 @@ main {
   gap: 20px;
   overflow-x: hidden;
 }
+  /* Propósito: Organiza la sección principal (filtros, escáner, lista, modales) */
+  /* Main centra el contenido con flexbox, con padding para evitar superposición */
+  /* #stock es un contenedor ancho (95%), en columna, con espacio entre secciones */
 
 /* Barra de Filtros */
 .barra-filtros {
@@ -111,14 +112,12 @@ main {
   width: 100%;
   box-sizing: border-box;
 }
-
 .buscador {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 5px;
 }
-
 #buscador {
   width: 100%;
   padding: 8px;
@@ -126,47 +125,6 @@ main {
   border-radius: 8px;
   font-size: 14px;
 }
-
-.boton-escaneo {
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-}
-
-.boton-escaneo i {
-  font-size: 16px;
-}
-
-.boton-activar {
-  background-color: #2ecc71;
-  color: white;
-  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
-}
-
-.boton-activar:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.5);
-}
-
-.boton-activar.boton-presionado {
-  background-color: #27ae60; /* Verde más oscuro para indicar presión */
-  transform: translateY(2px); /* Simular hundimiento */
-  box-shadow: 0 2px 5px rgba(46, 204, 113, 0.2); /* Reducir sombra */
-}
-
-.boton-detener {
-  background-color: #e74c3c;
-  color: white;
-  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-}
-
-.boton-detener:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
-}
-
 .boton-filtros {
   padding: 8px 12px;
   border-radius: 8px;
@@ -177,12 +135,10 @@ main {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
-
 .boton-filtros:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
 }
-
 .menu-filtros {
   position: absolute;
   top: 50px;
@@ -194,18 +150,15 @@ main {
   width: 200px;
   z-index: 600;
 }
-
 .filtro-opcion {
   margin-bottom: 10px;
 }
-
 .filtro-opcion label {
   display: block;
   font-size: 14px;
   color: #2c3e50;
   margin-bottom: 5px;
 }
-
 .filtro-opcion select,
 .filtro-opcion input[type="checkbox"] {
   width: 100%;
@@ -214,7 +167,6 @@ main {
   border-radius: 8px;
   font-size: 14px;
 }
-
 #filtro-todo {
   width: 100%;
   padding: 8px;
@@ -225,12 +177,48 @@ main {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
 #filtro-todo:hover {
   background-color: #2980b9;
 }
+  /* Propósito: Estiliza la barra de búsqueda y filtros */
+  /* Barra fija (sticky) con fondo blanco semitransparente, sombra, y disposición flexible */
+  /* Campo de búsqueda (#buscador) con bordes suaves, acompañado de botones de escaneo */
+  /* Menú de filtros (oculto por defecto) con selectores y checkboxes para categorías, subcategorías, y estados */
 
-/* Área de la Cámara */
+/* Controles de Escaneo */
+.boton-escaneo {
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+.boton-escaneo i {
+  font-size: 16px;
+}
+.boton-activar {
+  background-color: #2ecc71;
+  color: white;
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+}
+.boton-activar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.5);
+}
+.boton-activar.boton-presionado {
+  background-color: #27ae60;
+  transform: translateY(2px);
+  box-shadow: 0 2px 5px rgba(46, 204, 113, 0.2);
+}
+.boton-detener {
+  background-color: #e74c3c;
+  color: white;
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+}
+.boton-detener:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
+}
 .camara {
   width: 100%;
   max-width: 600px;
@@ -244,7 +232,6 @@ main {
   display: block;
   box-sizing: border-box;
 }
-
 #camara-stock video {
   width: 100%;
   height: 100%;
@@ -255,8 +242,6 @@ main {
   top: 0;
   left: 0;
 }
-
-/* Rectángulo guía para el código de barras */
 .guia-codigo {
   position: absolute;
   top: 50%;
@@ -268,6 +253,10 @@ main {
   pointer-events: none;
   z-index: 10;
 }
+  /* Propósito: Estiliza los controles del escáner y el área de la cámara */
+  /* Botones de escanear (verde) y detener (rojo) con efectos de hover y presión (boton-presionado oscurece y hunde el botón) */
+  /* Cámara con borde oscuro, fondo negro, y video que cubre el espacio */
+  /* Guía de código (rectángulo rojo punteado) para alinear el código de barras */
 
 /* Lista de Productos (Tarjetas) */
 .lista-stock {
@@ -276,7 +265,6 @@ main {
   gap: 10px;
   padding-bottom: 20px;
 }
-
 .tarjeta-producto {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 10px;
@@ -288,53 +276,47 @@ main {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
-
 .tarjeta-producto.sin-stock {
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid #dc3545;
 }
-
 .tarjeta-producto:hover {
   transform: translateY(-3px);
 }
-
 .tarjeta-icono {
   font-size: 24px;
   color: #2c3e50;
 }
-
 .tarjeta-info {
   flex: 1;
 }
-
 .tarjeta-nombre {
   font-size: 16px;
   font-weight: 600;
   color: #2c3e50;
 }
-
 .tarjeta-marca {
   font-size: 14px;
   color: #666;
 }
-
 .tarjeta-cantidad {
   font-size: 14px;
   font-weight: 500;
 }
-
 .tarjeta-cantidad.stock-bajo {
   color: #e67e22;
 }
-
 .tarjeta-cantidad.sin-stock {
   color: #dc3545;
 }
-
 .tarjeta-precio {
   font-size: 14px;
   color: #2c3e50;
 }
+  /* Propósito: Estiliza la lista de productos como tarjetas */
+  /* Tarjetas blancas semitransparentes, con sombra y efecto de elevación al hover */
+  /* Productos sin stock tienen fondo más claro y borde rojo */
+  /* Información organizada con ícono, nombre, marca, cantidad (coloreada según estado: naranja para bajo, rojo para sin stock), y precio */
 
 /* Modales */
 .modal {
@@ -349,7 +331,6 @@ main {
   align-items: center;
   z-index: 2000;
 }
-
 .modal-contenido {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
@@ -360,28 +341,23 @@ main {
   overflow-y: auto;
   position: relative;
 }
-
 .modal-contenido h2 {
   font-size: 20px;
   color: #2c3e50;
   margin-bottom: 15px;
   text-align: center;
 }
-
 .modal-detalles {
   margin-bottom: 20px;
 }
-
 .detalle-item {
   margin-bottom: 10px;
   font-size: 14px;
   color: #2c3e50;
 }
-
 .detalle-item span {
   font-weight: 500;
 }
-
 .modal-acciones {
   display: flex;
   flex-wrap: wrap;
@@ -389,18 +365,15 @@ main {
   justify-content: center;
   margin-top: 15px;
 }
-
 .form-campo {
   margin-bottom: 15px;
 }
-
 .form-campo label {
   display: block;
   font-size: 14px;
   color: #2c3e50;
   margin-bottom: 5px;
 }
-
 .form-campo input,
 .form-campo select,
 .form-campo textarea {
@@ -411,11 +384,14 @@ main {
   font-size: 14px;
   box-sizing: border-box;
 }
-
 .form-campo textarea {
   height: 80px;
   resize: none;
 }
+  /* Propósito: Estiliza los modales para detalles, edición de precios, agregar stock, y dar de baja */
+  /* Fondo oscuro semitransparente, contenido blanco centrado con bordes redondeados */
+  /* Campos de formulario (inputs, selectores, textarea) con bordes suaves y etiquetas */
+  /* Botones de acción centrados, con disposición flexible para pantallas pequeñas */
 
 /* Toasts */
 .toast-container {
@@ -425,7 +401,6 @@ main {
   z-index: 3000;
   width: 350px;
 }
-
 .toast {
   padding: 15px 25px;
   border-radius: 10px;
@@ -438,31 +413,29 @@ main {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   border-left: 5px solid;
 }
-
 .toast.exito {
   background-color: #28a745;
   border-left-color: #218838;
 }
-
 .toast.error {
   background-color: #dc3545;
   border-left-color: #c82333;
 }
-
 .toast.info {
   background-color: #17a2b8;
   border-left-color: #138496;
 }
-
 @keyframes fadeInToast {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeOutToast {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-20px); }
 }
+  /* Propósito: Estiliza las notificaciones (toasts) usadas por utils.js */
+  /* Contenedor fijo en la esquina superior derecha */
+  /* Toasts con colores según tipo (verde, rojo, azul), animaciones de entrada/salida, y borde izquierdo destacado, igual que en cargar-producto.css */
 
 /* Pie de Página */
 footer {
@@ -475,114 +448,43 @@ footer {
   width: 100%;
   z-index: 1000;
 }
-
 footer a {
   color: white;
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s ease;
 }
-
 footer a:hover {
   color: #3498db;
 }
-
 footer a i {
   margin-right: 5px;
 }
+  /* Propósito: Estiliza el pie de página con el enlace de volver */
+  /* Fondo oscuro, fijo en la parte inferior, enlace blanco que cambia a azul al pasar el mouse */
 
 /* Estilos Responsivos */
 @media (max-width: 600px) {
-  header {
-    padding: 0.5em 0;
-  }
-
-  .logo-img {
-    width: 40px;
-  }
-
-  h1 {
-    font-size: 18px;
-  }
-
-  .nav-principal {
-    gap: 5px;
-    margin-top: 5px;
-    flex-wrap: wrap;
-  }
-
-  .nav-principal a {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-
-  main {
-    padding-top: 120px;
-    padding-bottom: 50px;
-  }
-
-  #stock {
-    width: 90%;
-  }
-
-  .barra-filtros {
-    top: 110px;
-    padding: 5px;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .buscador {
-    width: 100%;
-  }
-
-  .boton-filtros {
-    width: 100%;
-    padding: 8px;
-  }
-
-  .menu-filtros {
-    top: 90px;
-    width: 90%;
-    right: 5%;
-  }
-
-  .tarjeta-producto {
-    padding: 10px;
-  }
-
-  .tarjeta-nombre {
-    font-size: 14px;
-  }
-
-  .tarjeta-marca,
-  .tarjeta-cantidad,
-  .tarjeta-precio {
-    font-size: 12px;
-  }
-
-  .modal-contenido {
-    width: 90%;
-    padding: 15px;
-  }
-
-  .toast-container {
-    top: 20px;
-    right: 10px;
-    width: 90%;
-    max-width: 350px;
-  }
-
-  .toast {
-    font-size: 14px;
-    padding: 10px 15px;
-  }
-
-  .camara {
-    height: 180px;
-  }
-
-  .guia-codigo {
-    height: 40px;
-  }
+  header { padding: 0.5em 0; }
+  .logo-img { width: 40px; }
+  h1 { font-size: 18px; }
+  .nav-principal { gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+  .nav-principal a { font-size: 12px; padding: 6px 10px; }
+  main { padding-top: 120px; padding-bottom: 50px; }
+  #stock { width: 90%; }
+  .barra-filtros { top: 110px; padding: 5px; flex-direction: column; gap: 5px; }
+  .buscador { width: 100%; }
+  .boton-filtros { width: 100%; padding: 8px; }
+  .menu-filtros { top: 90px; width: 90%; right: 5%; }
+  .tarjeta-producto { padding: 10px; }
+  .tarjeta-nombre { font-size: 14px; }
+  .tarjeta-marca, .tarjeta-cantidad, .tarjeta-precio { font-size: 12px; }
+  .modal-contenido { width: 90%; padding: 15px; }
+  .toast-container { top: 20px; right: 10px; width: 90%; max-width: 350px; }
+  .toast { font-size: 14px; padding: 10px 15px; }
+  .camara { height: 180px; }
+  .guia-codigo { height: 40px; }
 }
+  /* Propósito: Ajusta los estilos para móviles (≤600px) */
+  /* Reduce tamaños de logo, títulos, y padding; apila filtros en columna */
+  /* Ajusta la cámara (180px de alto), toasts, y modales para pantallas pequeñas */
