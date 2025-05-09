@@ -52,6 +52,18 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración del navegador.', 'error');
       return;
     }
+    // Solicitar acceso a la cámara inmediatamente
+    if (permissionStatus.state === 'prompt') {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then((mediaStream) => {
+          console.log('Permiso de cámara concedido');
+          mediaStream.getTracks().forEach(track => track.stop()); // Cerrar stream temporal
+        })
+        .catch(err => {
+          console.error('Error al solicitar acceso a la cámara:', err);
+          mostrarToast('Error al solicitar acceso a la cámara: ' + err.message, 'error');
+        });
+    }
   }).catch(err => {
     console.error('Error al verificar permisos de la cámara:', err);
     mostrarToast('Error al verificar permisos de la cámara: ' + err.message, 'error');
@@ -112,16 +124,16 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
             facingMode: "environment",
             frameRate: { ideal: 30, min: 15 }
           },
-          area: { top: "3%", right: "0.5%", left: "0.5%", bottom: "3%" }
+          area: { top: "10%", right: "10%", left: "10%", bottom: "10%" } // Ampliar área de escaneo
         },
         locator: {
-          patchSize: "large",
-          halfSample: false
+          patchSize: "medium", // Cambiar a medium para mejor detección
+          halfSample: true
         },
         numOfWorkers: numWorkers,
         frequency: 18,
         decoder: {
-          readers: ["ean_reader", "upc_reader"],
+          readers: ["ean_reader", "upc_reader", "code_128_reader"], // Añadir code_128_reader
           multiple: false,
           debug: {
             drawBoundingBox: true,
@@ -186,16 +198,39 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   // Configurar eventos para el botón Escanear
   const isMobile = isMobileDevice();
 
-  // Evitar múltiples inicializaciones
-  let inicializacionPendiente = false;
+  btnEscanear.addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log('Click en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
+    btnEscanear.classList.add('boton-presionado');
+    if (!escaneoActivo && !inicializando) {
+      inicializando = true;
+      inicializarQuagga();
+    } else if (escaneoActivo) {
+      estaEscaneando = true;
+      ultimoCodigoEscaneado = null;
+    }
+  });
+
+  btnEscanear.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    console.log('Mouseup en btnEscanear');
+    btnEscanear.classList.remove('boton-presionado');
+    estaEscaneando = false;
+  });
+
+  btnEscanear.addEventListener('mouseleave', (e) => {
+    console.log('Mouseleave en btnEscanear');
+    btnEscanear.classList.remove('boton-presionado');
+    estaEscaneando = false;
+  });
 
   if (isMobile) {
     btnEscanear.addEventListener('touchstart', (e) => {
       e.preventDefault();
       console.log('Touchstart en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
       btnEscanear.classList.add('boton-presionado');
-      if (!escaneoActivo && !inicializacionPendiente) {
-        inicializacionPendiente = true;
+      if (!escaneoActivo && !inicializando) {
+        inicializando = true;
         inicializarQuagga();
       } else if (escaneoActivo) {
         estaEscaneando = true;
@@ -208,35 +243,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       console.log('Touchend en btnEscanear');
       btnEscanear.classList.remove('boton-presionado');
       estaEscaneando = false;
-      inicializacionPendiente = false;
-    });
-  } else {
-    btnEscanear.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      console.log('Mousedown en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
-      btnEscanear.classList.add('boton-presionado');
-      if (!escaneoActivo && !inicializacionPendiente) {
-        inicializacionPendiente = true;
-        inicializarQuagga();
-      } else if (escaneoActivo) {
-        estaEscaneando = true;
-        ultimoCodigoEscaneado = null;
-      }
-    });
-
-    btnEscanear.addEventListener('mouseup', (e) => {
-      e.preventDefault();
-      console.log('Mouseup en btnEscanear');
-      btnEscanear.classList.remove('boton-presionado');
-      estaEscaneando = false;
-      inicializacionPendiente = false;
-    });
-
-    btnEscanear.addEventListener('mouseleave', (e) => {
-      console.log('Mouseleave en btnEscanear');
-      btnEscanear.classList.remove('boton-presionado');
-      estaEscaneando = false;
-      inicializacionPendiente = false;
     });
   }
 
@@ -272,7 +278,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     }
 
     const code = result.codeResult.code;
-    console.log('Código detectado por Quagga:', code);
+    console.log('Código detectado por Quagga:', code, 'Formato:', result.codeResult.format);
 
     if (code === ultimoCodigoEscaneado) {
       console.log('Código repetido, ignorando:', code);
@@ -353,6 +359,15 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
     if (onCodeDetected) {
       onCodeDetected(code);
+    }
+  });
+
+  // Depuración adicional para fallos en la detección
+  Quagga.onProcessed((result) => {
+    if (result && result.boxes) {
+      console.log('Procesando frame, cajas detectadas:', result.boxes.length);
+    } else {
+      console.log('Procesando frame, sin cajas detectadas');
     }
   });
 }
