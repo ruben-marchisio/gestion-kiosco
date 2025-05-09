@@ -46,21 +46,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     console.error('getUserMedia no está soportado en este navegador o entorno.');
     mostrarToast('El escaneo no está disponible. Usa un navegador compatible con HTTPS.', 'error');
-    return;
+    return { inicializar: () => Promise.resolve(false), detener: () => {} };
   }
 
   // Verificar que el contenedor exista
   if (!contenedorCamara) {
     console.error('Contenedor de cámara no encontrado');
     mostrarToast('Error: Contenedor de cámara no encontrado.', 'error');
-    return;
+    return { inicializar: () => Promise.resolve(false), detener: () => {} };
   }
 
   // Verificar carga de QuaggaJS
   if (typeof Quagga === 'undefined') {
     console.error('QuaggaJS no está cargado');
     mostrarToast('Error: No se pudo cargar la librería de escaneo.', 'error');
-    return;
+    return { inicializar: () => Promise.resolve(false), detener: () => {} };
   }
 
   // Función para solicitar permisos de cámara
@@ -75,7 +75,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         return false;
       }
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
       });
       console.log('Permiso de cámara concedido');
       mediaStream.getTracks().forEach(track => track.stop());
@@ -146,16 +146,18 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           type: "LiveStream",
           target: videoContainer,
           constraints: {
-            facingMode: "environment"
+            facingMode: "environment",
+            width: { ideal: 1280, min: 640 },
+            height: { ideal: 720, min: 480 }
           },
-          area: { top: "10%", right: "10%", left: "10%", bottom: "10%" }
+          area: { top: "5%", right: "5%", left: "5%", bottom: "5%" } // Ampliar área para códigos pequeños
         },
         locator: {
-          patchSize: "medium",
+          patchSize: "small", // Mejorar detección de códigos pequeños
           halfSample: true
         },
         numOfWorkers: numWorkers,
-        frequency: 18,
+        frequency: 30, // Aumentar frecuencia para mejor respuesta
         decoder: {
           readers: ["ean_reader", "upc_reader", "code_128_reader"],
           multiple: false,
@@ -391,19 +393,25 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     }
   });
 
-  // Exponer inicializarQuagga para uso externo
+  // Exponer inicializarQuagga y detener para uso externo
   return {
     inicializar: inicializarQuagga,
     detener: () => {
       if (escaneoActivo) {
-        Quagga.stop();
-        stopVideoStream();
-        Quagga.offDetected();
-        escaneoActivo = false;
-        estaEscaneando = false;
-        btnEscanear.style.display = 'block';
-        btnDetener.style.display = 'none';
-        mostrarToast('Escaneo detenido.', 'info');
+        try {
+          Quagga.stop();
+          stopVideoStream();
+          Quagga.offDetected();
+          escaneoActivo = false;
+          estaEscaneando = false;
+          btnEscanear.style.display = 'block';
+          btnDetener.style.display = 'none';
+          console.log('Quagga detenido y eventos limpiados');
+          mostrarToast('Escaneo detenido.', 'info');
+        } catch (error) {
+          console.error('Error al detener Quagga:', error);
+          mostrarToast('Error al detener el escáner: ' + error.message, 'error');
+        }
       }
     }
   };

@@ -372,8 +372,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let escaner = null;
   btnEscanear.addEventListener('click', () => {
     console.log('Evento click en btnEscanear disparado');
+    mostrarToast('Iniciando escaneo...', 'info');
     if (!escaner) {
-      mostrarToast('Iniciando escaneo...', 'info');
       try {
         escaner = iniciarEscaneoContinuo(
           camaraCarga,
@@ -394,6 +394,15 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
         escaner = null;
       }
+    }
+  });
+
+  // Manejar detención del escáner
+  btnDetenerEscaneo.addEventListener('click', () => {
+    console.log('Evento click en btnDetenerEscaneo disparado');
+    if (escaner) {
+      escaner.detener();
+      escaner = null; // Reiniciar escaner para permitir nueva inicialización
     }
   });
 });
