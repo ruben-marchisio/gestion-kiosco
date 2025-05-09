@@ -163,7 +163,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.addEventListener('touchstart', (e) => {
       e.preventDefault();
       console.log('Touchstart en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
-      btnEscanear.classList.add('boton-presionado'); // Añadir efecto visual
+      btnEscanear.classList.add('boton-presionado');
       if (escaneoActivo) {
         estaEscaneando = true;
         ultimoCodigoEscaneado = null;
@@ -175,14 +175,14 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.addEventListener('touchend', (e) => {
       e.preventDefault();
       console.log('Touchend en btnEscanear');
-      btnEscanear.classList.remove('boton-presionado'); // Remover efecto visual
+      btnEscanear.classList.remove('boton-presionado');
       estaEscaneando = false;
     });
   } else {
     btnEscanear.addEventListener('mousedown', (e) => {
       e.preventDefault();
       console.log('Mousedown en btnEscanear, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
-      btnEscanear.classList.add('boton-presionado'); // Añadir efecto visual
+      btnEscanear.classList.add('boton-presionado');
       if (escaneoActivo) {
         estaEscaneando = true;
         ultimoCodigoEscaneado = null;
@@ -194,13 +194,13 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.addEventListener('mouseup', (e) => {
       e.preventDefault();
       console.log('Mouseup en btnEscanear');
-      btnEscanear.classList.remove('boton-presionado'); // Remover efecto visual
+      btnEscanear.classList.remove('boton-presionado');
       estaEscaneando = false;
     });
 
     btnEscanear.addEventListener('mouseleave', (e) => {
       console.log('Mouseleave en btnEscanear');
-      btnEscanear.classList.remove('boton-presionado'); // Remover efecto visual si el mouse sale del botón
+      btnEscanear.classList.remove('boton-presionado');
       estaEscaneando = false;
     });
   }
