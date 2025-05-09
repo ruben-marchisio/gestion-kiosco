@@ -369,21 +369,31 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Iniciar escaneo al hacer clic en el botón
+  let escaner = null;
   btnEscanear.addEventListener('click', () => {
     console.log('Evento click en btnEscanear disparado');
-    mostrarToast('Iniciando escaneo...', 'info');
-    try {
-      iniciarEscaneoContinuo(
-        camaraCarga,
-        btnEscanear,
-        btnDetenerEscaneo,
-        inputCodigo,
-        completarCallback,
-        null
-      );
-    } catch (error) {
-      console.error('Error al iniciar el escaneo:', error);
-      mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
+    if (!escaner) {
+      mostrarToast('Iniciando escaneo...', 'info');
+      try {
+        escaner = iniciarEscaneoContinuo(
+          camaraCarga,
+          btnEscanear,
+          btnDetenerEscaneo,
+          inputCodigo,
+          completarCallback,
+          null
+        );
+        escaner.inicializar().then(success => {
+          if (!success) {
+            console.error('Fallo al inicializar el escáner');
+            escaner = null;
+          }
+        });
+      } catch (error) {
+        console.error('Error al iniciar el escaneo:', error);
+        mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
+        escaner = null;
+      }
     }
   });
 });
