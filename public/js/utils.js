@@ -40,6 +40,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
 
   console.log('Iniciando escaneo continuo...');
+  console.log('Protocolo actual:', window.location.protocol);
 
   // Verificar soporte para getUserMedia
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -59,13 +60,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   if (typeof Quagga === 'undefined') {
     console.error('QuaggaJS no está cargado');
     mostrarToast('Error: No se pudo cargar la librería de escaneo.', 'error');
-    return;
-  }
-
-  // Verificar HTTPS
-  if (window.location.protocol !== 'https:') {
-    console.error('El escaneo requiere HTTPS');
-    mostrarToast('Error: El escaneo solo funciona en HTTPS.', 'error');
     return;
   }
 
