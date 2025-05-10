@@ -188,7 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verificar si el producto ya existe
     if (producto.codigo) {
       fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then(result => {
           if (result.producto) {
             mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
@@ -209,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => {
           console.error('Error al verificar el producto:', err);
-          mostrarToast('Error al verificar el producto.', 'error');
+          mostrarToast('Error al verificar el producto: ' + err.message, 'error');
         });
     } else {
       productosEnProceso.push(producto);
@@ -289,8 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ ...producto, usuarioId })
       });
 
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Error al confirmar el producto');
 
       mostrarToast(result.mensaje || 'Producto confirmado con éxito.', 'success');
       productosEnProceso.splice(index, 1);
@@ -337,8 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ ...producto, usuarioId })
         });
 
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Error al confirmar el producto');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        await response.json();
       }
 
       productosEnProceso = productosEnProceso.filter(p => p.estado !== 'Confirmado');
@@ -364,7 +367,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (producto) {
       console.log('Producto detectado:', producto);
       fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then(result => {
           if (result.producto) {
             mostrarToast(`Este producto ya existe en tu stock. Serás redirigido a la sección de <a href="/public/stock.html?codigo=${producto.codigo}" style="color: #3498db; text-decoration: underline;">Stock</a> para modificarlo.`, 'info');
@@ -396,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => {
           console.error('Error al verificar el producto:', err);
-          mostrarToast('Error al verificar el producto.', 'error');
+          mostrarToast('Error al verificar el producto: ' + err.message, 'error');
         });
     } else {
       console.log('No se encontró producto para el código escaneado');
@@ -406,10 +412,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Iniciar escaneo al hacer clic en el botón
   let escaner = null;
+
+  // Función de debounce para evitar clics rápidos
+  function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func.apply(this, args);
+        console.log('Debounce ejecutado, inicialización permitida');
+      }, wait);
+      console.log('Debounce activo, espera:', wait);
+    };
+  }
+
   async function intentarInicializarEscanner(reintentosRestantes = 2) {
     if (reintentosRestantes <= 0) {
       console.error('Máximo de reintentos alcanzado para inicializar el escáner');
-      mostrarToast('Error: No se pudo inicializar el escáner. Verifica los permisos de la cámara o recarga la página.', 'error');
+      mostrarToast('Error: No se pudo inicializar el escáner. Verifica los permisos de la cámara, asegúrate de usar HTTPS, o recarga la página.', 'error');
       escaner = null;
       return;
     }
@@ -437,51 +457,79 @@ document.addEventListener('DOMContentLoaded', () => {
       // Limpiar eventos residuales
       limpiarEventosContenedor();
 
-      // Retrasar inicialización para asegurar liberación de recursos
-      setTimeout(() => {
-        escaner = iniciarEscaneoContinuo(
-          camaraCarga,
-          btnEscanear,
-          btnDetenerEscaneo,
-          inputCodigo,
-          completarCallback,
-          null
-        );
-        escaner.inicializar().then(success => {
-          if (!success) {
-            console.error('Fallo al inicializar el escáner, reintentando...');
-            intentarInicializarEscanner(reintentosRestantes - 1);
-          }
-        }).catch(err => {
-          console.error('Error al inicializar el escáner:', err);
-          intentarInicializarEscanner(reintentosRestantes - 1);
-        });
-      }, 2000);
+      // Reiniciar escaner si existe
+      if (escaner) {
+        console.log('Reiniciando escáner existente antes de nueva inicialización');
+        escaner.detener();
+        // Esperar a que el stream se libere completamente
+        await new Promise(resolve => setTimeout(resolve, 4000));
+        escaner.reset();
+        escaner = null;
+      }
+
+      escaner = iniciarEscaneoContinuo(
+        camaraCarga,
+        btnEscanear,
+        btnDetenerEscaneo,
+        inputCodigo,
+        completarCallback,
+        null
+      );
+      const success = await escaner.inicializar();
+      if (!success) {
+        console.error('Fallo al inicializar el escáner, reintentando...');
+        intentarInicializarEscanner(reintentosRestantes - 1);
+      } else {
+        console.log('Escáner inicializado con éxito');
+      }
     } catch (error) {
-      console.error('Error al iniciar el escaneo:', error);
+      console.error('Error al iniciar el escaneo:', error.name, error.message);
       mostrarToast('Error al iniciar el escaneo: ' + error.message, 'error');
       intentarInicializarEscanner(reintentosRestantes - 1);
     }
   }
 
-  btnEscanear.addEventListener('click', () => {
-    console.log('Evento click en btnEscanear disparado, escaner:', escaner ? 'activo' : 'inactivo');
-    mostrarToast('Iniciando escaneo...', 'info');
-    if (!escaner) {
-      intentarInicializarEscanner();
-    } else {
-      console.log('Escáner ya activo, ignorando solicitud');
+  // Callback nombrado para btnEscanear con debounce
+  const manejarClickEscanear = debounce(() => {
+    console.log('Evento click en btnEscanear disparado, escaner:', escaner ? 'activo' : 'inactivo', 'camaraCarga.display:', camaraCarga.style.display);
+    // Prevenir reinicialización si el escáner ya está activo
+    if (escaner && escaner.inicializar && camaraCarga.style.display === 'block') {
+      console.log('Escáner ya activo, ignorando clic');
+      return;
     }
-  });
+    mostrarToast('Iniciando escaneo...', 'info');
+    intentarInicializarEscanner();
+  }, 500);
+
+  btnEscanear.removeEventListener('click', manejarClickEscanear);
+  btnEscanear.addEventListener('click', manejarClickEscanear);
 
   // Manejar detención del escáner
-  btnDetenerEscaneo.addEventListener('click', () => {
-    console.log('Evento click en btnDetenerEscaneo disparado');
+  function manejarClickDetenerEscaneo() {
+    console.log('Evento click en btnDetenerEscaneo disparado, escaner:', escaner ? 'activo' : 'inactivo', 'camaraCarga.display:', camaraCarga.style.display);
     if (escaner) {
-      escaner.detener();
-      escaner = null; // Reiniciar escaner para permitir nueva inicialización
-      recrearContenedorCamara(); // Recrear contenedor tras detener
-      limpiarEventosContenedor(); // Limpiar eventos residuales
+      try {
+        escaner.detener();
+        camaraCarga.style.display = 'none';
+        // Esperar a que el stream se libere
+        setTimeout(() => {
+          escaner.reset();
+          console.log('Escáner reiniciado tras detención manual');
+          escaner = null;
+          // Verificar eventos residuales
+          setTimeout(() => {
+            console.log('Verificando eventos residuales tras detención, escaner:', escaner ? 'activo' : 'inactivo');
+          }, 1000);
+        }, 4000); // Espera de 4000ms
+      } catch (error) {
+        console.error('Error al detener el escáner:', error.name, error.message);
+        mostrarToast('Error al detener el escáner: ' + error.message, 'error');
+      }
+    } else {
+      console.log('Escáner no activo, no hay nada que detener');
     }
-  });
+  }
+
+  btnDetenerEscaneo.removeEventListener('click', manejarClickDetenerEscaneo);
+  btnDetenerEscaneo.addEventListener('click', manejarClickDetenerEscaneo);
 });

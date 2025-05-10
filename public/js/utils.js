@@ -24,10 +24,21 @@ function isMobileDevice() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
-// Función para iniciar el escaneo continuo de códigos de barras
+// Función de debounce para evitar clics rápidos
+function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+    console.log('Debounce activo, espera:', wait);
+  };
+}
+
+// Función para iniciar el escaneo continuo de códigos de barras con QuaggaJS
 function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, inputCodigo, completarCallback, onCodeDetected) {
   let escaneoActivo = false;
   let estaEscaneando = false;
+  let estaPausado = false;
   let ultimoCodigoEscaneado = null;
   let videoElement = null;
   let inicializando = false;
@@ -37,33 +48,34 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
   let codigoCandidato = null;
   let contadorConfirmaciones = 0;
   const confirmacionesRequeridas = 3; // Número de detecciones consecutivas para confirmar un código
+  let frameCount = 0; // Contador para limitar logs
+  let lastFrameTime = 0; // Tiempo del último frame procesado
 
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
-
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
 
-  console.log('Iniciando configuración de escaneo...');
+  console.log('Iniciando configuración de escaneo con QuaggaJS...');
   console.log('Protocolo actual:', window.location.protocol, 'URL:', window.location.href);
 
   // Verificar soporte para getUserMedia
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     console.error('getUserMedia no está soportado en este navegador o entorno.');
     mostrarToast('El escaneo no está disponible. Usa un navegador compatible con HTTPS.', 'error');
-    return { inicializar: () => Promise.resolve(false), detener: () => {} };
+    return { inicializar: () => Promise.resolve(false), detener: () => {}, reset: () => {} };
   }
 
   // Verificar que el contenedor exista
   if (!contenedorCamara) {
     console.error('Contenedor de cámara no encontrado');
     mostrarToast('Error: Contenedor de cámara no encontrado.', 'error');
-    return { inicializar: () => Promise.resolve(false), detener: () => {} };
+    return { inicializar: () => Promise.resolve(false), detener: () => {}, reset: () => {} };
   }
 
   // Verificar carga de QuaggaJS
   if (typeof Quagga === 'undefined') {
     console.error('QuaggaJS no está cargado');
     mostrarToast('Error: No se pudo cargar la librería de escaneo.', 'error');
-    return { inicializar: () => Promise.resolve(false), detener: () => {} };
+    return { inicializar: () => Promise.resolve(false), detener: () => {}, reset: () => {} };
   }
 
   // Función para verificar el estado de la cámara
@@ -91,7 +103,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         return false;
       }
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+        video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 }, aspectRatio: { min: 1, max: 2 } }
       });
       console.log('Permiso de cámara concedido');
       mediaStream.getTracks().forEach(track => track.stop());
@@ -105,22 +117,43 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
 
   function stopVideoStream() {
     try {
-      if (stream) {
+      if (stream && stream.getTracks) {
         const tracks = stream.getTracks();
         tracks.forEach(track => {
           console.log('Deteniendo pista de video:', track);
           track.stop();
+          track.enabled = false;
+          if (track.readyState !== 'ended') {
+            console.warn('Pista de video no terminó:', track.readyState);
+            track.stop(); // Intentar detener nuevamente
+          }
         });
-        stream = null;
+        // Verificar estado del stream
+        let attempts = 0;
+        const maxAttempts = 5;
+        const checkStream = setInterval(() => {
+          console.log('Verificando estado del stream, intento:', attempts + 1);
+          if (!stream || !stream.active || attempts >= maxAttempts) {
+            clearInterval(checkStream);
+            console.log('Estado final del stream:', { active: stream ? stream.active : 'null' });
+            stream = null;
+          }
+          attempts++;
+        }, 500);
+      } else {
+        console.log('No hay stream para detener');
       }
       if (videoElement) {
         videoElement.srcObject = null;
+        videoElement.removeEventListener('loadedmetadata', null);
+        videoElement.removeEventListener('error', null);
+        videoElement.remove();
         videoElement = null;
       }
       contenedorCamara.innerHTML = '';
       contenedorCamara.style.display = 'none';
       console.log('Stream de video detenido y contenedor limpiado');
-      // Forzar liberación de recursos en móvil con retraso
+      // Forzar liberación de recursos en móvil
       if (isMobileDevice()) {
         console.log('Forzando liberación de recursos de cámara en móvil');
         setTimeout(() => {
@@ -129,44 +162,59 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               tempStream.getTracks().forEach(track => track.stop());
               console.log('Recursos de cámara liberados en móvil');
             })
-            .catch(err => console.error('Error al liberar recursos en móvil:', err));
-        }, 2000);
+            .catch(err => console.error('Error al liberar recursos en móvil:', err.message));
+        }, 4000); // Aumentar retraso a 4000ms
       }
     } catch (error) {
-      console.error('Error al detener el stream de video:', error);
+      console.error('Error al detener el stream de video:', error.name, error.message);
       mostrarToast('Error al liberar recursos de la cámara: ' + error.message, 'error');
     }
   }
 
-  function resetQuagga() {
-    console.log('Reiniciando estado de Quagga');
-    if (Quagga) {
-      Quagga.stop();
-      Quagga.offDetected();
-      Quagga.offProcessed();
-      // Finalizar workers y requestAnimationFrame
-      if (Quagga.Worker) {
-        Quagga.Worker.terminate();
+  function resetScanner() {
+    console.log('Reiniciando escáner');
+    try {
+      if (Quagga) {
+        Quagga.stop();
+        Quagga.offDetected();
+        Quagga.offProcessed();
       }
+      if (videoElement) {
+        videoElement.srcObject = null;
+        videoElement.removeEventListener('loadedmetadata', null);
+        videoElement.removeEventListener('error', null);
+        videoElement.remove();
+      }
+      if (contenedorCamara) {
+        contenedorCamara.innerHTML = '';
+        contenedorCamara.style.display = 'none';
+      }
+      escaneoActivo = false;
+      estaEscaneando = false;
+      estaPausado = false;
+      ultimoCodigoEscaneado = null;
+      codigoCandidato = null;
+      contadorConfirmaciones = 0;
+      videoElement = null;
+      stream = null;
+      intentos = 0;
+      inicializando = false;
+      frameCount = 0;
+      lastFrameTime = 0;
+      console.log('Escáner reiniciado correctamente');
+    } catch (error) {
+      console.error('Error al reiniciar el escáner:', error.name, error.message);
+      mostrarToast('Error al reiniciar el escáner: ' + error.message, 'error');
     }
-    escaneoActivo = false;
-    estaEscaneando = false;
-    ultimoCodigoEscaneado = null;
-    codigoCandidato = null;
-    contadorConfirmaciones = 0;
-    videoElement = null;
-    stream = null;
-    intentos = 0;
-    inicializando = false;
   }
 
   async function inicializarQuagga() {
     if (inicializando) {
-      console.log('Ya se está inicializando Quagga, ignorando nueva solicitud');
+      console.log('Ya se está inicializando QuaggaJS, ignorando nueva solicitud');
       return false;
     }
     if (intentos >= maxIntentos) {
-      console.error('Máximo de intentos alcanzado para inicializar Quagga');
+      console.error('Máximo de intentos alcanzado para inicializar QuaggaJS');
       mostrarToast('Error: No se pudo inicializar el escáner tras varios intentos.', 'error');
       inicializando = false;
       return false;
@@ -174,7 +222,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     inicializando = true;
     intentos++;
 
-    console.log('Inicializando Quagga, intento:', intentos);
+    console.log('Inicializando QuaggaJS, intento:', intentos);
 
     // Verificar estado de la cámara
     const camaraDisponible = await verificarEstadoCamara();
@@ -197,19 +245,14 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     contenedorCamara.innerHTML = '';
 
     const isMobile = isMobileDevice();
-    const numWorkers = isMobile ? 1 : 4; // Reducir workers en móvil
-    const frequency = isMobile ? 20 : 22; // Reducir frecuencia en móvil
+    const numWorkers = isMobile ? 4 : navigator.hardwareConcurrency || 4;
+    const frequency = 22;
 
     try {
       const videoContainer = document.createElement('div');
       videoContainer.style.width = '100%';
       videoContainer.style.height = '100%';
       contenedorCamara.appendChild(videoContainer);
-
-      // Crear canvas con willReadFrequently: true
-      const canvas = document.createElement('canvas');
-      canvas.setAttribute('willReadFrequently', 'true');
-      videoContainer.appendChild(canvas);
 
       Quagga.init({
         inputStream: {
@@ -218,13 +261,14 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           target: videoContainer,
           constraints: {
             facingMode: "environment",
-            width: { ideal: 1280, min: 640 },
-            height: { ideal: 720, min: 480 }
+            width: { min: 640, ideal: 640 },
+            height: { min: 480, ideal: 480 },
+            aspectRatio: { min: 1, max: 2 }
           },
           area: { top: "5%", right: "5%", left: "5%", bottom: "5%" }
         },
         locator: {
-          patchSize: "small",
+          patchSize: "medium",
           halfSample: true
         },
         numOfWorkers: numWorkers,
@@ -242,10 +286,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         locate: true
       }, (err) => {
         if (err) {
-          console.error('Error al inicializar Quagga:', err.name, err.message);
+          console.error('Error al inicializar QuaggaJS:', err.name, err.message);
           mostrarToast('Error al inicializar la cámara: ' + err.message, 'error');
           escaneoActivo = false;
           estaEscaneando = false;
+          estaPausado = false;
           contenedorCamara.style.display = 'none';
           btnEscanear.style.display = 'block';
           btnDetener.style.display = 'none';
@@ -254,12 +299,13 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           return;
         }
 
-        console.log('Quagga inicializado correctamente');
+        console.log('QuaggaJS inicializado correctamente');
         inicializando = false;
         intentos = 0;
         Quagga.start();
         escaneoActivo = true;
         estaEscaneando = false;
+        estaPausado = false;
         contenedorCamara.style.display = 'block';
         btnEscanear.style.display = 'block';
         btnDetener.style.display = 'block';
@@ -275,20 +321,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               width: videoElement.videoWidth,
               height: videoElement.videoHeight
             });
-            console.log('Estado de Quagga:', {
+            console.log('Estado de QuaggaJS:', {
               isRunning: escaneoActivo,
               hasCamera: navigator.mediaDevices && navigator.mediaDevices.getUserMedia
             });
           }, 1000);
         } else {
-          console.error('Elemento de video no encontrado después de inicializar Quagga');
+          console.error('Elemento de video no encontrado después de inicializar QuaggaJS');
           mostrarToast('Error: No se encontró el elemento de video.', 'error');
           stopVideoStream();
           escaneoActivo = false;
+          estaPausado = false;
         }
       });
     } catch (error) {
-      console.error('Excepción al inicializar Quagga:', error.name, error.message);
+      console.error('Excepción al inicializar QuaggaJS:', error.name, error.message);
       mostrarToast('Excepción al inicializar el escáner: ' + error.message, 'error');
       inicializando = false;
       stopVideoStream();
@@ -318,7 +365,33 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     } else {
       btnEscanear.addEventListener('mousedown', manejarInicioEscaneo);
       btnEscanear.addEventListener('mouseup', manejarFinEscaneo);
-      btnEscanear.addEventListener('mouseleave', manejarFinEscaneo);
+      btnEscanear.addEventListener('mouseleave', manejarFinEscaneo); // Para pausar si el mouse sale
+    }
+  }
+
+  // Callback nombrado para btnDetener
+  function manejarClickDetener(e) {
+    e.preventDefault();
+    console.log('Click en btnDetener, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando, 'estaPausado:', estaPausado);
+    if (escaneoActivo) {
+      try {
+        Quagga.stop();
+        stopVideoStream();
+        Quagga.offDetected();
+        escaneoActivo = false;
+        estaEscaneando = false;
+        estaPausado = false;
+        btnEscanear.style.display = 'block';
+        btnDetener.style.display = 'none';
+        console.log('QuaggaJS detenido y eventos limpiados');
+        mostrarToast('Escaneo detenido.', 'info');
+        asignarEventosEscaneo();
+      } catch (error) {
+        console.error('Error al detener QuaggaJS:', error.name, error.message);
+        mostrarToast('Error al detener el escáner: ' + error.message, 'error');
+      }
+    } else {
+      console.log('Escaneo no activo, no hay nada que detener');
     }
   }
 
@@ -332,8 +405,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       ultimoCodigoEscaneado = null;
       codigoCandidato = null;
       contadorConfirmaciones = 0;
-      if (Quagga && !Quagga.isPaused()) {
-        Quagga.start();
+      if (Quagga && estaPausado) {
+        Quagga.start(); // Reiniciar si estaba pausado
+        estaPausado = false;
+        console.log('QuaggaJS reiniciado desde pausa');
       }
     }
   }
@@ -342,39 +417,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     e.preventDefault();
     console.log('Evento de fin de escaneo, tipo:', e.type);
     btnEscanear.classList.remove('boton-presionado');
-    estaEscaneando = false;
-    if (Quagga) {
-      Quagga.pause();
+    if (estaEscaneando) {
+      estaEscaneando = false;
+      if (Quagga && escaneoActivo) {
+        Quagga.stop(); // Usar stop en lugar de pause para compatibilidad con 0.12.1
+        estaPausado = true;
+        console.log('QuaggaJS pausado');
+      }
     }
   }
 
   asignarEventosEscaneo();
 
   // Configurar evento para el botón Detener
-  btnDetener.removeEventListener('click', null);
-  btnDetener.addEventListener('click', (e) => {
-    e.preventDefault();
-    console.log('Click en btnDetener, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
-    if (escaneoActivo) {
-      try {
-        Quagga.stop();
-        stopVideoStream();
-        Quagga.offDetected();
-        escaneoActivo = false;
-        estaEscaneando = false;
-        btnEscanear.style.display = 'block';
-        btnDetener.style.display = 'none';
-        console.log('Quagga detenido y eventos limpiados');
-        mostrarToast('Escaneo detenido.', 'info');
-        asignarEventosEscaneo();
-      } catch (error) {
-        console.error('Error al detener Quagga:', error);
-        mostrarToast('Error al detener el escáner: ' + error.message, 'error');
-      }
-    } else {
-      console.log('Escaneo no activo, no hay nada que detener');
-    }
-  });
+  btnDetener.removeEventListener('click', manejarClickDetener);
+  btnDetener.addEventListener('click', manejarClickDetener);
 
   // Manejar detección de códigos
   Quagga.offDetected();
@@ -385,7 +442,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     }
 
     const code = result.codeResult.code;
-    console.log('Código detectado por Quagga:', code, 'Formato:', result.codeResult.format);
+    console.log('Código detectado por QuaggaJS:', code, 'Formato:', result.codeResult.format);
 
     // Confirmación de código
     if (code === codigoCandidato) {
@@ -408,7 +465,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     }
 
     ultimoCodigoEscaneado = code;
-    estaEscaneando = false; // Pausar lectura tras detectar código
+    estaEscaneando = false;
     btnEscanear.classList.remove('boton-presionado');
 
     beepSound.play().catch(err => {
@@ -419,31 +476,19 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     if (inputCodigo) {
       inputCodigo.value = code;
     }
-    mostrarToast('Código escaneado: ' + code, 'success');
-
-    // Cerrar la cámara tras detectar un código
-    try {
-      Quagga.stop();
-      stopVideoStream();
-      Quagga.offDetected();
-      escaneoActivo = false;
-      estaEscaneando = false;
-      btnEscanear.style.display = 'block';
-      btnDetener.style.display = 'none';
-      console.log('Quagga detenido tras detectar código');
-      mostrarToast('Cámara cerrada. Escanea otro producto o completa los datos.', 'info');
-      asignarEventosEscaneo();
-    } catch (error) {
-      console.error('Error al detener Quagga tras detección:', error);
-      mostrarToast('Error al cerrar la cámara: ' + error.message, 'error');
-    }
+    mostrarToast(`Código escaneado: ${code}`, 'success');
 
     const usuarioId = localStorage.getItem('usuarioId');
     console.log('Buscando código:', code, 'para usuario:', usuarioId);
+    
+    // Verificar en el stock local
     fetch(`${BASE_URL}/api/productos/codigo/${code}?usuarioId=${usuarioId}`, {
-      signal: AbortSignal.timeout(15000)
+      signal: AbortSignal.timeout(3000) // Reducir timeout a 3000ms
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         if (data.producto) {
           console.log('Producto encontrado en el stock local:', data.producto);
@@ -453,68 +498,95 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
             window.location.href = `/public/stock.html?codigo=${code}`;
           }, 3000);
         } else {
+          // Verificar en la base de datos común
           fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`, {
-            signal: AbortSignal.timeout(15000)
+            signal: AbortSignal.timeout(3000) // Reducir timeout a 3000ms
           })
-            .then(res => res.json())
+            .then(res => {
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              return res.json();
+            })
             .then(dataComun => {
               if (dataComun.producto) {
                 console.log('Producto encontrado en la base de datos común:', dataComun.producto);
                 completarCallback(dataComun.producto);
-                mostrarToast('Producto encontrado en la base de datos común. Por favor, completa los datos adicionales.', 'info');
+                mostrarToast(`Código escaneado: ${code}. Producto encontrado en la base de datos común. Completa los datos adicionales.`, 'info');
               } else {
                 console.log('Producto no encontrado en ninguna base de datos para el código:', code);
                 completarCallback(null);
-                mostrarToast('Producto no encontrado con ese código de barras. Ingresa los datos manualmente.', 'info');
+                mostrarToast(`Código escaneado: ${code}. Producto no encontrado, ingresa los datos manualmente.`, 'info');
               }
             })
             .catch(err => {
               console.error('Error al buscar en la base de datos común:', err);
-              mostrarToast('Error de conexión al buscar en la base de datos común. Intenta de nuevo en unos segundos.', 'error');
               completarCallback(null);
+              mostrarToast(`Código escaneado: ${code}. Error de conexión, ingresa los datos manualmente.`, 'error');
             });
         }
       })
       .catch(err => {
         console.error('Error al buscar en el stock local:', err);
-        mostrarToast('Error de conexión al buscar en el stock local. Intenta de nuevo en unos segundos.', 'error');
+        // Verificar en la base de datos común como respaldo
         fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`, {
-          signal: AbortSignal.timeout(15000)
+          signal: AbortSignal.timeout(3000) // Reducir timeout a 3000ms
         })
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+          })
           .then(dataComun => {
             if (dataComun.producto) {
               console.log('Producto encontrado en la base de datos común (respaldo):', dataComun.producto);
               completarCallback(dataComun.producto);
-              mostrarToast('Producto encontrado en la base de datos común (respaldo). Por favor, completa los datos adicionales.', 'info');
+              mostrarToast(`Código escaneado: ${code}. Producto encontrado en la base de datos común. Completa los datos adicionales.`, 'info');
             } else {
               console.log('Producto no encontrado en ninguna base de datos (respaldo) para el código:', code);
               completarCallback(null);
-              mostrarToast('Error de conexión al servidor. Intenta de nuevo en unos segundos.', 'error');
+              mostrarToast(`Código escaneado: ${code}. Producto no encontrado, ingresa los datos manualmente.`, 'info');
             }
           })
           .catch(err => {
             console.error('Error al buscar en la base de datos común (respaldo):', err);
-            mostrarToast('Error de conexión al servidor. Intenta de nuevo en unos segundos.', 'error');
             completarCallback(null);
+            mostrarToast(`Código escaneado: ${code}. Error de conexión, ingresa los datos manualmente.`, 'error');
           });
+      })
+      .finally(() => {
+        // Cerrar la cámara tras completar los fetch
+        try {
+          Quagga.stop();
+          stopVideoStream();
+          Quagga.offDetected();
+          escaneoActivo = false;
+          estaEscaneando = false;
+          estaPausado = false;
+          btnEscanear.style.display = 'block';
+          btnDetener.style.display = 'none';
+          console.log('QuaggaJS detenido tras detectar código');
+          mostrarToast('Cámara cerrada. Escanea otro producto o completa los datos.', 'info');
+          asignarEventosEscaneo();
+        } catch (error) {
+          console.error('Error al detener QuaggaJS tras detección:', error.name, error.message);
+          mostrarToast('Error al cerrar la cámara: ' + error.message, 'error');
+        }
       });
-
-    if (onCodeDetected) {
-      onCodeDetected(code);
-    }
   });
 
   // Depuración adicional para fallos en la detección
   Quagga.onProcessed((result) => {
-    if (result && result.boxes) {
-      console.log('Procesando frame, cajas detectadas:', result.boxes.length);
-    } else {
-      console.log('Procesando frame, sin cajas detectadas');
+    frameCount++;
+    const now = Date.now();
+    if (frameCount % 100 === 0 && now - lastFrameTime > 1000) {
+      lastFrameTime = now;
+      if (result && result.boxes) {
+        console.log('Procesando frame, cajas detectadas:', result.boxes.length);
+      } else {
+        console.log('Procesando frame, sin cajas detectadas');
+      }
     }
   });
 
-  // Exponer inicializarQuagga y detener para uso externo
+  // Exponer inicializarQuagga, detener y reset para uso externo
   return {
     inicializar: inicializarQuagga,
     detener: () => {
@@ -525,16 +597,19 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           Quagga.offDetected();
           escaneoActivo = false;
           estaEscaneando = false;
+          estaPausado = false;
           btnEscanear.style.display = 'block';
           btnDetener.style.display = 'none';
-          console.log('Quagga detenido y eventos limpiados');
+          console.log('QuaggaJS detenido y eventos limpiados');
           mostrarToast('Escaneo detenido.', 'info');
           asignarEventosEscaneo();
+          resetScanner();
         } catch (error) {
-          console.error('Error al detener Quagga:', error);
+          console.error('Error al detener QuaggaJS:', error);
           mostrarToast('Error al detener el escáner: ' + error.message, 'error');
         }
       }
-    }
+    },
+    reset: resetScanner
   };
 }
