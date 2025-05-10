@@ -1,6 +1,6 @@
 /* Estilos generales para el cuerpo de la página */
 body {
-  font-family: 'Poppins', Arial, sans-serif;
+  font-family: "Poppins", Arial, sans-serif;
   margin: 0;
   padding: 0;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -9,9 +9,9 @@ body {
   flex-direction: column;
   overflow-x: hidden;
 }
-  /* Propósito: Configura la base visual de stock.html */
-  /* Usa la fuente Poppins (coherente con otras páginas), fondo gradiente azul-gris */
-  /* Organiza el contenido en columna, evita desplazamiento horizontal no deseado */
+/* Propósito: Configura la base visual de stock.html */
+/* Usa la fuente Poppins (coherente con otras páginas), fondo gradiente azul-gris */
+/* Organiza el contenido en columna, evita desplazamiento horizontal no deseado */
 
 /* Encabezado */
 header {
@@ -69,10 +69,10 @@ h1 {
   margin-right: 5px;
   font-size: 16px;
 }
-  /* Propósito: Estiliza el encabezado con logo, título, y navegación */
-  /* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra */
-  /* Logo centrado (50px), con borde blanco circular */
-  /* Título compacto (22px), navegación centrada con enlaces que resaltan en azul (#3498db) al pasar el mouse o estar activos, igual que en cargar-producto.css */
+/* Propósito: Estiliza el encabezado con logo, título, y navegación */
+/* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra */
+/* Logo centrado (50px), con borde blanco circular */
+/* Título compacto (22px), navegación centrada con enlaces que resaltan en azul (#3498db) al pasar el mouse o estar activos, igual que en cargar-producto.css */
 
 /* Contenido Principal */
 main {
@@ -93,9 +93,9 @@ main {
   gap: 20px;
   overflow-x: hidden;
 }
-  /* Propósito: Organiza la sección principal (filtros, escáner, lista, modales) */
-  /* Main centra el contenido con flexbox, con padding para evitar superposición */
-  /* #stock es un contenedor ancho (95%), en columna, con espacio entre secciones */
+/* Propósito: Organiza la sección principal (filtros, escáner, lista, modales) */
+/* Main centra el contenido con flexbox, con padding para evitar superposición */
+/* #stock es un contenedor ancho (95%), en columna, con espacio entre secciones */
 
 /* Barra de Filtros */
 .barra-filtros {
@@ -180,10 +180,10 @@ main {
 #filtro-todo:hover {
   background-color: #2980b9;
 }
-  /* Propósito: Estiliza la barra de búsqueda y filtros */
-  /* Barra fija (sticky) con fondo blanco semitransparente, sombra, y disposición flexible */
-  /* Campo de búsqueda (#buscador) con bordes suaves, acompañado de botones de escaneo */
-  /* Menú de filtros (oculto por defecto) con selectores y checkboxes para categorías, subcategorías, y estados */
+/* Propósito: Estiliza la barra de búsqueda y filtros */
+/* Barra fija (sticky) con fondo blanco semitransparente, sombra, y disposición flexible */
+/* Campo de búsqueda (#buscador) con bordes suaves, acompañado de botones de escaneo */
+/* Menú de filtros (oculto por defecto) con selectores y checkboxes para categorías, subcategorías, y estados */
 
 /* Controles de Escaneo */
 .boton-escaneo {
@@ -191,7 +191,8 @@ main {
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
 }
 .boton-escaneo i {
   font-size: 16px;
@@ -253,10 +254,10 @@ main {
   pointer-events: none;
   z-index: 10;
 }
-  /* Propósito: Estiliza los controles del escáner y el área de la cámara */
-  /* Botones de escanear (verde) y detener (rojo) con efectos de hover y presión (boton-presionado oscurece y hunde el botón) */
-  /* Cámara con borde oscuro, fondo negro, y video que cubre el espacio */
-  /* Guía de código (rectángulo rojo punteado) para alinear el código de barras */
+/* Propósito: Estiliza los controles del escáner y el área de la cámara */
+/* Botones de escanear (verde) y detener (rojo) con efectos de hover y presión (boton-presionado oscurece y hunde el botón) */
+/* Cámara con borde oscuro, fondo negro, y video que cubre el espacio */
+/* Guía de código (rectángulo rojo punteado) para alinear el código de barras */
 
 /* Lista de Productos (Tarjetas) */
 .lista-stock {
@@ -313,10 +314,10 @@ main {
   font-size: 14px;
   color: #2c3e50;
 }
-  /* Propósito: Estiliza la lista de productos como tarjetas */
-  /* Tarjetas blancas semitransparentes, con sombra y efecto de elevación al hover */
-  /* Productos sin stock tienen fondo más claro y borde rojo */
-  /* Información organizada con ícono, nombre, marca, cantidad (coloreada según estado: naranja para bajo, rojo para sin stock), y precio */
+/* Propósito: Estiliza la lista de productos como tarjetas */
+/* Tarjetas blancas semitransparentes, con sombra y efecto de elevación al hover */
+/* Productos sin stock tienen fondo más claro y borde rojo */
+/* Información organizada con ícono, nombre, marca, cantidad (coloreada según estado: naranja para bajo, rojo para sin stock), y precio */
 
 /* Modales */
 .modal {
@@ -388,10 +389,10 @@ main {
   height: 80px;
   resize: none;
 }
-  /* Propósito: Estiliza los modales para detalles, edición de precios, agregar stock, y dar de baja */
-  /* Fondo oscuro semitransparente, contenido blanco centrado con bordes redondeados */
-  /* Campos de formulario (inputs, selectores, textarea) con bordes suaves y etiquetas */
-  /* Botones de acción centrados, con disposición flexible para pantallas pequeñas */
+/* Propósito: Estiliza los modales para detalles, edición de precios, agregar stock, y dar de baja */
+/* Fondo oscuro semitransparente, contenido blanco centrado con bordes redondeados */
+/* Campos de formulario (inputs, selectores, textarea) con bordes suaves y etiquetas */
+/* Botones de acción centrados, con disposición flexible para pantallas pequeñas */
 
 /* Toasts */
 .toast-container {
@@ -409,7 +410,8 @@ main {
   font-weight: 500;
   margin-bottom: 15px;
   opacity: 0;
-  animation: fadeInToast 0.5s ease forwards, fadeOutToast 0.5s ease 4.5s forwards;
+  animation: fadeInToast 0.5s ease forwards,
+    fadeOutToast 0.5s ease 4.5s forwards;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   border-left: 5px solid;
 }
@@ -426,16 +428,28 @@ main {
   border-left-color: #138496;
 }
 @keyframes fadeInToast {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes fadeOutToast {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-20px); }
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
 }
-  /* Propósito: Estiliza las notificaciones (toasts) usadas por utils.js */
-  /* Contenedor fijo en la esquina superior derecha */
-  /* Toasts con colores según tipo (verde, rojo, azul), animaciones de entrada/salida, y borde izquierdo destacado, igual que en cargar-producto.css */
+/* Propósito: Estiliza las notificaciones (toasts) usadas por utils.js */
+/* Contenedor fijo en la esquina superior derecha */
+/* Toasts con colores según tipo (verde, rojo, azul), animaciones de entrada/salida, y borde izquierdo destacado, igual que en cargar-producto.css */
 
 /* Pie de Página */
 footer {
@@ -460,31 +474,86 @@ footer a:hover {
 footer a i {
   margin-right: 5px;
 }
-  /* Propósito: Estiliza el pie de página con el enlace de volver */
-  /* Fondo oscuro, fijo en la parte inferior, enlace blanco que cambia a azul al pasar el mouse */
+/* Propósito: Estiliza el pie de página con el enlace de volver */
+/* Fondo oscuro, fijo en la parte inferior, enlace blanco que cambia a azul al pasar el mouse */
 
 /* Estilos Responsivos */
 @media (max-width: 600px) {
-  header { padding: 0.5em 0; }
-  .logo-img { width: 40px; }
-  h1 { font-size: 18px; }
-  .nav-principal { gap: 5px; margin-top: 5px; flex-wrap: wrap; }
-  .nav-principal a { font-size: 12px; padding: 6px 10px; }
-  main { padding-top: 120px; padding-bottom: 50px; }
-  #stock { width: 90%; }
-  .barra-filtros { top: 110px; padding: 5px; flex-direction: column; gap: 5px; }
-  .buscador { width: 100%; }
-  .boton-filtros { width: 100%; padding: 8px; }
-  .menu-filtros { top: 90px; width: 90%; right: 5%; }
-  .tarjeta-producto { padding: 10px; }
-  .tarjeta-nombre { font-size: 14px; }
-  .tarjeta-marca, .tarjeta-cantidad, .tarjeta-precio { font-size: 12px; }
-  .modal-contenido { width: 90%; padding: 15px; }
-  .toast-container { top: 20px; right: 10px; width: 90%; max-width: 350px; }
-  .toast { font-size: 14px; padding: 10px 15px; }
-  .camara { height: 180px; }
-  .guia-codigo { height: 40px; }
+  header {
+    padding: 0.5em 0;
+  }
+  .logo-img {
+    width: 40px;
+  }
+  h1 {
+    font-size: 18px;
+  }
+  .nav-principal {
+    gap: 5px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+  }
+  .nav-principal a {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  main {
+    padding-top: 120px;
+    padding-bottom: 50px;
+  }
+  #stock {
+    width: 90%;
+  }
+  .barra-filtros {
+    top: 110px;
+    padding: 5px;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .buscador {
+    width: 100%;
+  }
+  .boton-filtros {
+    width: 100%;
+    padding: 8px;
+  }
+  .menu-filtros {
+    top: 90px;
+    width: 90%;
+    right: 5%;
+  }
+  .tarjeta-producto {
+    padding: 10px;
+  }
+  .tarjeta-nombre {
+    font-size: 14px;
+  }
+  .tarjeta-marca,
+  .tarjeta-cantidad,
+  .tarjeta-precio {
+    font-size: 12px;
+  }
+  .modal-contenido {
+    width: 90%;
+    padding: 15px;
+  }
+  .toast-container {
+    top: 20px;
+    right: 10px;
+    width: 90%;
+    max-width: 350px;
+  }
+  .toast {
+    font-size: 14px;
+    padding: 10px 15px;
+  }
+  .camara {
+    height: 180px;
+  }
+  .guia-codigo {
+    height: 40px;
+  }
 }
-  /* Propósito: Ajusta los estilos para móviles (≤600px) */
-  /* Reduce tamaños de logo, títulos, y padding; apila filtros en columna */
-  /* Ajusta la cámara (180px de alto), toasts, y modales para pantallas pequeñas */
+/* Propósito: Ajusta los estilos para móviles (≤600px) */
+/* Reduce tamaños de logo, títulos, y padding; apila filtros en columna */
+/* Ajusta la cámara (180px de alto), toasts, y modales para pantallas pequeñas */
