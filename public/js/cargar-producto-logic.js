@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ ...producto, usuarioId })
         });
 
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP ${res.status}`);
         await response.json();
       }
 
@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Reiniciando escáner existente antes de nueva inicialización');
         escaner.detener();
         // Esperar a que el stream se libere completamente
-        await new Promise(resolve => setTimeout(resolve, 4000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
         escaner.reset();
         escaner = null;
       }
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
             console.log('Verificando eventos residuales tras detención, escaner:', escaner ? 'activo' : 'inactivo');
           }, 1000);
-        }, 4000); // Espera de 4000ms
+        }, 5000); // Aumentar espera a 5000ms
       } catch (error) {
         console.error('Error al detener el escáner:', error.name, error.message);
         mostrarToast('Error al detener el escáner: ' + error.message, 'error');

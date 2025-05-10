@@ -16,7 +16,7 @@ function mostrarToast(mensaje, tipo = 'info') {
 
   setTimeout(() => {
     toast.remove();
-  }, 7000);
+  }, 5000); // Reducir duración de toasts
 }
 
 // Función para detectar si es un dispositivo móvil
@@ -38,7 +38,6 @@ function debounce(func, wait) {
 function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, inputCodigo, completarCallback, onCodeDetected) {
   let escaneoActivo = false;
   let estaEscaneando = false;
-  let estaPausado = false;
   let ultimoCodigoEscaneado = null;
   let videoElement = null;
   let inicializando = false;
@@ -163,7 +162,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               console.log('Recursos de cámara liberados en móvil');
             })
             .catch(err => console.error('Error al liberar recursos en móvil:', err.message));
-        }, 4000); // Aumentar retraso a 4000ms
+        }, 5000); // Aumentar retraso a 5000ms
+      }
+      // Detener procesamiento de frames
+      if (Quagga) {
+        Quagga.offProcessed();
       }
     } catch (error) {
       console.error('Error al detener el stream de video:', error.name, error.message);
@@ -191,7 +194,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       }
       escaneoActivo = false;
       estaEscaneando = false;
-      estaPausado = false;
       ultimoCodigoEscaneado = null;
       codigoCandidato = null;
       contadorConfirmaciones = 0;
@@ -290,7 +292,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           mostrarToast('Error al inicializar la cámara: ' + err.message, 'error');
           escaneoActivo = false;
           estaEscaneando = false;
-          estaPausado = false;
           contenedorCamara.style.display = 'none';
           btnEscanear.style.display = 'block';
           btnDetener.style.display = 'none';
@@ -305,7 +306,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         Quagga.start();
         escaneoActivo = true;
         estaEscaneando = false;
-        estaPausado = false;
         contenedorCamara.style.display = 'block';
         btnEscanear.style.display = 'block';
         btnDetener.style.display = 'block';
@@ -331,7 +331,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           mostrarToast('Error: No se encontró el elemento de video.', 'error');
           stopVideoStream();
           escaneoActivo = false;
-          estaPausado = false;
         }
       });
     } catch (error) {
@@ -354,7 +353,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.removeEventListener('touchend', null);
     btnEscanear.removeEventListener('mousedown', null);
     btnEscanear.removeEventListener('mouseup', null);
-    btnEscanear.removeEventListener('mouseleave', null);
   }
 
   function asignarEventosEscaneo() {
@@ -365,22 +363,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     } else {
       btnEscanear.addEventListener('mousedown', manejarInicioEscaneo);
       btnEscanear.addEventListener('mouseup', manejarFinEscaneo);
-      btnEscanear.addEventListener('mouseleave', manejarFinEscaneo); // Para pausar si el mouse sale
     }
   }
 
   // Callback nombrado para btnDetener
   function manejarClickDetener(e) {
     e.preventDefault();
-    console.log('Click en btnDetener, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando, 'estaPausado:', estaPausado);
+    console.log('Click en btnDetener, escaneoActivo:', escaneoActivo, 'estaEscaneando:', estaEscaneando);
     if (escaneoActivo) {
       try {
         Quagga.stop();
         stopVideoStream();
         Quagga.offDetected();
+        Quagga.offProcessed();
         escaneoActivo = false;
         estaEscaneando = false;
-        estaPausado = false;
         btnEscanear.style.display = 'block';
         btnDetener.style.display = 'none';
         console.log('QuaggaJS detenido y eventos limpiados');
@@ -405,10 +402,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
       ultimoCodigoEscaneado = null;
       codigoCandidato = null;
       contadorConfirmaciones = 0;
-      if (Quagga && estaPausado) {
-        Quagga.start(); // Reiniciar si estaba pausado
-        estaPausado = false;
-        console.log('QuaggaJS reiniciado desde pausa');
+      if (Quagga) {
+        Quagga.start(); // Mantener start simple
       }
     }
   }
@@ -419,10 +414,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.classList.remove('boton-presionado');
     if (estaEscaneando) {
       estaEscaneando = false;
-      if (Quagga && escaneoActivo) {
-        Quagga.stop(); // Usar stop en lugar de pause para compatibilidad con 0.12.1
-        estaPausado = true;
-        console.log('QuaggaJS pausado');
+      if (Quagga) {
+        Quagga.stop(); // Usar stop para compatibilidad
       }
     }
   }
@@ -483,7 +476,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     
     // Verificar en el stock local
     fetch(`${BASE_URL}/api/productos/codigo/${code}?usuarioId=${usuarioId}`, {
-      signal: AbortSignal.timeout(3000) // Reducir timeout a 3000ms
+      signal: AbortSignal.timeout(3000)
     })
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -500,7 +493,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         } else {
           // Verificar en la base de datos común
           fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`, {
-            signal: AbortSignal.timeout(3000) // Reducir timeout a 3000ms
+            signal: AbortSignal.timeout(3000)
           })
             .then(res => {
               if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -528,7 +521,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
         console.error('Error al buscar en el stock local:', err);
         // Verificar en la base de datos común como respaldo
         fetch(`${BASE_URL}/api/productos-comunes/codigo/${code}`, {
-          signal: AbortSignal.timeout(3000) // Reducir timeout a 3000ms
+          signal: AbortSignal.timeout(3000)
         })
           .then(res => {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -557,9 +550,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           Quagga.stop();
           stopVideoStream();
           Quagga.offDetected();
+          Quagga.offProcessed();
           escaneoActivo = false;
           estaEscaneando = false;
-          estaPausado = false;
           btnEscanear.style.display = 'block';
           btnDetener.style.display = 'none';
           console.log('QuaggaJS detenido tras detectar código');
@@ -595,9 +588,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
           Quagga.stop();
           stopVideoStream();
           Quagga.offDetected();
+          Quagga.offProcessed();
           escaneoActivo = false;
           estaEscaneando = false;
-          estaPausado = false;
           btnEscanear.style.display = 'block';
           btnDetener.style.display = 'none';
           console.log('QuaggaJS detenido y eventos limpiados');
