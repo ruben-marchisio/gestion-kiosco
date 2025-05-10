@@ -162,11 +162,12 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
               console.log('Recursos de cámara liberados en móvil');
             })
             .catch(err => console.error('Error al liberar recursos en móvil:', err.message));
-        }, 5000); // Aumentar retraso a 5000ms
+        }, 6000); // Aumentar retraso a 6000ms
       }
       // Detener procesamiento de frames
       if (Quagga) {
         Quagga.offProcessed();
+        Quagga.stop();
       }
     } catch (error) {
       console.error('Error al detener el stream de video:', error.name, error.message);
@@ -353,6 +354,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.removeEventListener('touchend', null);
     btnEscanear.removeEventListener('mousedown', null);
     btnEscanear.removeEventListener('mouseup', null);
+    btnEscanear.removeEventListener('mouseleave', null);
   }
 
   function asignarEventosEscaneo() {
@@ -414,8 +416,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnDetener, input
     btnEscanear.classList.remove('boton-presionado');
     if (estaEscaneando) {
       estaEscaneando = false;
-      if (Quagga) {
-        Quagga.stop(); // Usar stop para compatibilidad
+      if (Quagga && videoElement) {
+        videoElement.srcObject = null; // Limpiar video para evitar congelamiento
+        Quagga.stop();
+        console.log('QuaggaJS detenido para evitar congelamiento');
       }
     }
   }
