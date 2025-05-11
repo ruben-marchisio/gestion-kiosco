@@ -71,7 +71,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   // Verificar carga de ZXing
   if (typeof ZXing === 'undefined') {
     console.error('ZXing no está cargado.');
-    mostrarToast('Error: No se pudo cargar la librería de escaneo.', 'error');
+    mostrarToast('Error: No se pudo cargar la librería de escaneo. Verifica tu conexión.', 'error');
     return { inicializar: () => Promise.resolve(false), detener: () => {}, reset: () => {} };
   }
 

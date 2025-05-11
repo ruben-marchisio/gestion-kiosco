@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ ...producto, usuarioId })
       });
 
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) throw new Error(`HTTP ${res.status}`);
       const result = await response.json();
 
       mostrarToast(result.mensaje || 'Producto confirmado.', 'success');
