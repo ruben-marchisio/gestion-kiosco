@@ -102,11 +102,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 640 },
-          height: { ideal: 480 }
+          width: { min: 320 },
+          height: { min: 240 }
         }
       });
-      console.log('Permiso de cámara concedido.');
+      console.log('Permiso de cámara concedido. Stream:', mediaStream);
       mediaStream.getTracks().forEach(track => track.stop());
       return true;
     } catch (err) {
@@ -229,6 +229,37 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       reader = new ZXing.BrowserMultiFormatReader(hints);
       console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
+      // Iniciar stream de video
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment',
+          width: { min: 320 },
+          height: { min: 240 }
+        }
+      });
+      console.log('Stream de video iniciado:', stream);
+
+      // Retrasar asignación del stream para asegurar inicialización
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      videoElement.srcObject = stream;
+
+      // Esperar a que el video esté listo
+      await new Promise((resolve, reject) => {
+        videoElement.addEventListener('canplay', () => {
+          console.log('Video listo para reproducir (canplay).');
+          resolve();
+        }, { once: true });
+        videoElement.addEventListener('error', (err) => {
+          console.error('Error en el video:', err);
+          reject(err);
+        }, { once: true });
+        videoElement.play().catch(err => {
+          console.error('Error al reproducir video:', err);
+          mostrarToast('Error al reproducir video: ' + err.message, 'error');
+          reject(err);
+        });
+      });
+
       camaraAbierta = true;
       contenedorCamara.style.display = 'block';
       btnEscanear.style.display = 'none';
@@ -247,7 +278,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
 
       return true;
     } catch (error) {
-      console.error('Error al inicializar ZXing:', error.name, error.message);
+      console.error('Error al inicializar ZXing o stream:', error.name, error.message);
       mostrarToast('Error al inicializar el escáner: ' + error.message, 'error');
       inicializando = false;
       stopVideoStream();
