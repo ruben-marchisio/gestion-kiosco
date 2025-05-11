@@ -66,6 +66,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   if (!contenedorCamara) {
     console.error('Contenedor de cámara no encontrado.');
     mostrarToast('Error: Contenedor de cámara no encontrado.', 'error');
+    return { inicializar: () => Promise.resolve(false), detener: () => {}, reset: () => {} };
   }
 
   // Verificar carga de ZXing
@@ -102,9 +103,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 640 }, // Aumentado para mejor nitidez
-          height: { ideal: 480 }, // Aumentado para mejor nitidez
-          focusMode: 'continuous' // Enfoque automático
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          focusMode: 'continuous'
         }
       });
       console.log('Permiso de cámara concedido. Stream:', mediaStream);
@@ -225,10 +226,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const hints = new Map();
       hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
         ZXing.BarcodeFormat.EAN_8,
-        ZXing.BarcodeFormat.EAN_13,
-        ZXing.BarcodeFormat.QR_CODE
+        ZXing.BarcodeFormat.EAN_13
       ]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+      hints.set(ZXing.DecodeHintType.PURE_BARCODE, true); // Priorizar códigos lineales
       reader = new ZXing.BrowserMultiFormatReader(hints);
       console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
@@ -236,15 +237,15 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 640 }, // Aumentado para mejor nitidez
-          height: { ideal: 480 }, // Aumentado para mejor nitidez
-          focusMode: 'continuous' // Enfoque automático
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          focusMode: 'continuous'
         }
       });
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Reducido a 2000ms
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Reducido a 1000ms
       if (videoElement.srcObject) {
         console.log('Video ya tiene stream, evitando reasignación.');
       } else {
@@ -335,10 +336,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Reducido a 2000ms
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Reducido a 1000ms
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
           frameCount++;
-          if (frameCount % 10 === 1) { // Log cada 10 frames para reducir mensajes
+          if (frameCount % 10 === 1) { // Log cada 10 frames
             console.log(`Procesando frame de video #${frameCount}...`);
           }
           if (result && escaneando) {
@@ -457,7 +458,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             document.querySelector('#botones-camara').style.display = 'none';
             asignarEventos();
           } else if (err && err instanceof ZXing.NotFoundException) {
-            if (frameCount % 10 === 1) { // Log cada 10 frames para reducir mensajes
+            if (frameCount % 10 === 1) { // Log cada 10 frames
               console.log(`No se detectó código en frame ${frameCount}, continuando escaneo...`);
             }
             setTimeout(() => {
@@ -466,7 +467,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               }
             }, 10000);
           }
-        });
+        }, { maxDecodeInterval: 100 }); // Ajustar intervalo para reducir carga
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
         mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
