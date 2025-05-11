@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Función para inicializar el escáner
-  async function intentarInicializarEscanner(reintentosRestantes = 2) {
+  async function intentarInicializarEscanner(reintentosRestantes = 10) {
     if (reintentosRestantes <= 0) {
       console.error('Máximo de reintentos alcanzado.');
       mostrarToast('Error: No se pudo inicializar el escáner.', 'error');

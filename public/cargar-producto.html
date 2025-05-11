@@ -97,7 +97,7 @@
               <option value="quesos"><i class="fas fa-cheese"></i> Quesos</option>
             </select>
           </div>
-          <div class="form-campo" id="subcategoria-cigarrillos" style="display: none;">
+          <divtoh1 class="form-campo" id="subcategoria-cigarrillos" style="display: none;">
             <label for="select-subcategoria-cigarrillos">Subcategoría Cigarrillos</label>
             <select id="select-subcategoria-cigarrillos" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
@@ -278,24 +278,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js" onerror="mostrarToast('Error al cargar @zxing/library. Error: ' + (event.message || event.type || 'Desconocido'), 'error')"></script>
-  <script src="/public/js/zxing-browser.min.js" onerror="mostrarToast('Error al cargar zxing-browser.min.js. Verifica que esté en public/js. Error: ' + (event.message || event.type || 'Desconocido'), 'error')"></script>
+  <script src="https://unpkg.com/@zxing/library@0.21.0/umd/index.min.js"></script>
   <script src="/public/js/utils.js"></script>
   <script src="/public/js/cargar-producto-logic.js"></script>
-  <script>
-    console.log('Verificando carga de ZXing...');
-    try {
-      if (typeof ZXing !== 'undefined') {
-        console.log('ZXing cargado correctamente:', ZXing);
-        mostrarToast('Librería ZXing cargada correctamente.', 'success');
-      } else {
-        console.error('ZXing no está definido tras cargar los scripts.');
-        mostrarToast('Error: ZXing no está definido. Verifica @zxing/library y zxing-browser.min.js.', 'error');
-      }
-    } catch (e) {
-      console.error('Excepción al verificar ZXing:', e);
-      mostrarToast('Error al verificar ZXing: ' + e.message, 'error');
-    }
-  </script>
 </body>
 </html>

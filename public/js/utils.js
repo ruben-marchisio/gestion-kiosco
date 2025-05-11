@@ -103,8 +103,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { min: 320 },
-          height: { min: 240 }
+          width: { ideal: 320 },
+          height: { ideal: 240 }
         }
       });
       console.log('Permiso de cámara concedido. Stream:', mediaStream);
@@ -229,7 +229,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         ZXing.BarcodeFormat.QR_CODE
       ]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-      hints.set(ZXing.DecodeHintType.ASSUME_ONE_BARCODE, true);
       reader = new ZXing.BrowserMultiFormatReader(hints);
       console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
@@ -237,14 +236,14 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { min: 320 },
-          height: { min: 240 }
+          width: { ideal: 320 },
+          height: { ideal: 240 }
         }
       });
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       videoElement.srcObject = stream;
 
       // Esperar a que el video esté listo
@@ -326,7 +325,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
           frameCount++;
           console.log(`Procesando frame de video #${frameCount}...`);
@@ -449,7 +448,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           }
           if (err && err.name === 'NotFoundException') {
             console.log(`No se detectó código en frame ${frameCount}, continuando escaneo...`);
-            // Retraso entre frames para evitar sobrecarga
+            // Mostrar toast guía tras 10 segundos
             setTimeout(() => {
               if (escaneando && lastCodes.length === 0) {
                 mostrarToast('Ajusta la luz o alinea mejor el código en el recuadro.', 'info');
