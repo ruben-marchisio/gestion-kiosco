@@ -48,6 +48,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   let lastCodes = [];
   const confirmacionesRequeridas = 3;
   let reader = null;
+  let decodeController = null; // Controlador para detener decodificación
 
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
@@ -103,8 +104,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 640 },
-          height: { ideal: 480 },
+          width: { ideal: 1280 }, // Aumentado para máxima nitidez
+          height: { ideal: 720 }, // Aumentado para máxima nitidez
           focusMode: 'continuous'
         }
       });
@@ -143,6 +144,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         reader.reset();
         reader = null;
       }
+      if (decodeController) {
+        decodeController = null;
+      }
       if (isMobileDevice()) {
         console.log('Forzando liberación de recursos en móvil.');
         setTimeout(() => {
@@ -157,6 +161,20 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     } catch (error) {
       console.error('Error al detener el stream:', error.name, error.message);
       mostrarToast('Error al liberar la cámara: ' + error.message, 'error');
+    }
+  }
+
+  // Función para detener solo la decodificación
+  function stopDecoding() {
+    if (decodeController) {
+      console.log('Deteniendo decodificación...');
+      decodeController = null;
+      if (reader) {
+        reader.reset();
+      }
+      escaneando = false;
+      contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
+      mostrarToast('Escaneo pausado.', 'info');
     }
   }
 
@@ -237,15 +255,15 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 640 },
-          height: { ideal: 480 },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
           focusMode: 'continuous'
         }
       });
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Reducido a 1000ms
+      await new Promise(resolve => setTimeout(resolve, 1000));
       if (videoElement.srcObject) {
         console.log('Video ya tiene stream, evitando reasignación.');
       } else {
@@ -278,7 +296,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       contenedorCamara.style.display = 'block';
       btnEscanear.style.display = 'none';
       document.querySelector('#botones-camara').style.display = 'flex';
-      mostrarToast('Cámara abierta. Alinea el código en el recuadro.', 'info');
+      mostrarToast('Cámara abierta. Mantén presionado el botón para escanear.', 'info');
 
       console.log('Elemento de video creado:', videoElement);
       setTimeout(() => {
@@ -303,14 +321,20 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   // Configurar eventos
   function limpiarEventos() {
     btnEscanear.removeEventListener('click', manejarClickEscanear);
-    btnEscanearAhora.removeEventListener('click', manejarClickEscanearAhora);
+    btnEscanearAhora.removeEventListener('mousedown', manejarMousedownEscanearAhora);
+    btnEscanearAhora.removeEventListener('mouseup', manejarMouseupEscanearAhora);
+    btnEscanearAhora.removeEventListener('touchstart', manejarMousedownEscanearAhora);
+    btnEscanearAhora.removeEventListener('touchend', manejarMouseupEscanearAhora);
     btnCerrarCamara.removeEventListener('click', manejarClickCerrarCamara);
   }
 
   function asignarEventos() {
     limpiarEventos();
     btnEscanear.addEventListener('click', manejarClickEscanear);
-    btnEscanearAhora.addEventListener('click', manejarClickEscanearAhora);
+    btnEscanearAhora.addEventListener('mousedown', manejarMousedownEscanearAhora);
+    btnEscanearAhora.addEventListener('mouseup', manejarMouseupEscanearAhora);
+    btnEscanearAhora.addEventListener('touchstart', manejarMousedownEscanearAhora);
+    btnEscanearAhora.addEventListener('touchend', manejarMouseupEscanearAhora);
     btnCerrarCamara.addEventListener('click', manejarClickCerrarCamara);
   }
 
@@ -327,17 +351,20 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     }
   }, 500);
 
-  const manejarClickEscanearAhora = debounce(async () => {
-    console.log('Evento click en #escanear-ahora, escaneando:', escaneando);
+  const manejarMousedownEscanearAhora = debounce(async (event) => {
+    event.preventDefault(); // Evitar comportamiento por defecto en touch
+    console.log('Evento mousedown/touchstart en #escanear-ahora, escaneando:', escaneando);
     if (camaraAbierta && !escaneando) {
       escaneando = true;
       frameCount = 0; // Reiniciar contador de frames
       contenedorCamara.querySelector('.guia-codigo').classList.add('escaneando');
-      mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
+      mostrarToast('Escaneando... Mantén presionado y alinea el código.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Reducido a 1000ms
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        decodeController = {};
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+          if (!decodeController) return; // Detener si decodeController es nulo
           frameCount++;
           if (frameCount % 10 === 1) { // Log cada 10 frames
             console.log(`Procesando frame de video #${frameCount}...`);
@@ -358,6 +385,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
                 ultimoCodigoEscaneado = confirmedCode;
                 escaneando = false;
                 contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
+                stopDecoding();
 
                 beepSound.play().catch(err => console.error('Error al reproducir beep:', err));
                 if (navigator.vibrate) navigator.vibrate(200);
@@ -450,6 +478,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           } else if (err && !(err instanceof ZXing.NotFoundException)) {
             console.error(`Error en escaneo (frame ${frameCount}):`, err);
             mostrarToast('Error al escanear: ' + err.message, 'error');
+            stopDecoding();
             stopVideoStream();
             camaraAbierta = false;
             escaneando = false;
@@ -467,10 +496,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               }
             }, 10000);
           }
-        }, { maxDecodeInterval: 100 }); // Ajustar intervalo para reducir carga
+        }, { maxDecodeInterval: 200 }); // Ajustado para equilibrar rendimiento
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
         mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
+        stopDecoding();
         stopVideoStream();
         camaraAbierta = false;
         escaneando = false;
@@ -482,10 +512,18 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     }
   }, 500);
 
+  const manejarMouseupEscanearAhora = debounce(() => {
+    console.log('Evento mouseup/touchend en #escanear-ahora, escaneando:', escaneando);
+    if (escaneando) {
+      stopDecoding();
+    }
+  }, 100);
+
   const manejarClickCerrarCamara = debounce(() => {
     console.log('Evento click en #cerrar-camara, camaraAbierta:', camaraAbierta);
     if (camaraAbierta) {
       escaneando = false;
+      stopDecoding();
       stopVideoStream();
       camaraAbierta = false;
       inicializando = false;
@@ -503,6 +541,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     detener: () => {
       if (camaraAbierta) {
         escaneando = false;
+        stopDecoding();
         stopVideoStream();
         camaraAbierta = false;
         inicializando = false;
