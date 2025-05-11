@@ -281,5 +281,12 @@
   <script src="https://unpkg.com/@zxing/library@0.21.0/umd/index.min.js"></script>
   <script src="/public/js/utils.js"></script>
   <script src="/public/js/cargar-producto-logic.js"></script>
+  <script>
+    // Fallback para ZXing
+    if (typeof ZXing === 'undefined') {
+      console.error('ZXing no cargó desde CDN. Intentando fallback...');
+      document.write('<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.0/umd/index.min.js"><\/script>');
+    }
+  </script>
 </body>
 </html>

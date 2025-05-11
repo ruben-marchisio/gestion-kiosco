@@ -1,3 +1,7 @@
+# Archivos y carpetas a ignorar
 node_modules/
-*.registro
+!node_modules/@zxing/
+dist/
+build/
 .env
+*.log

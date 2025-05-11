@@ -7,7 +7,7 @@
     "start": "node servidor.js"
   },
   "dependencies": {
-    "@zxing/browser": "^0.1.4",
+    "@zxing/library": "^0.21.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.1",

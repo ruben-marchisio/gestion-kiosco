@@ -53,8 +53,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   const beepSound = new Audio('https://www.soundjay.com/buttons/beep-01a.mp3');
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
 
-  console.log('Iniciando configuración de escaneo con @zxing/browser...');
+  console.log('Iniciando configuración de escaneo con @zxing/library...');
   console.log('Protocolo actual:', window.location.protocol, 'URL:', window.location.href);
+  console.log('ZXing cargado:', typeof ZXing); // Verificar carga de ZXing
 
   // Verificar soporte para getUserMedia
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -251,8 +252,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     try {
       const hints = new Map();
       hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-        ZXing.BarcodeFormat.EAN_8,
-        ZXing.BarcodeFormat.EAN_13
+        ZXing.BarcodeFormat.EAN_13 // Limitado a EAN_13 para pruebas
       ]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
       hints.set(ZXing.DecodeHintType.PURE_BARCODE, true); // Priorizar códigos lineales
