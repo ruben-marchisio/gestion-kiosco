@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Estado para productos en proceso
   let productosEnProceso = [];
+  let escaner = null;
 
   // URL base
   const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
@@ -236,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fila.innerHTML = `
         <td>${producto.nombre}</td>
         <td>${producto.marca}</td>
-        <td>${producto.categoria}${producto.subcategoria ? ` (${producto.subcategoria})` : ''}</td>
+        <td@${producto.categoria}${producto.subcategoria ? ` (${producto.subcategoria})` : ''}</td>
         <td>${producto.cantidadUnidades}</td>
         <td class="estado">${producto.estado}</td>
         <td><i class="${producto.icono !== 'default' ? `fas fa-${producto.icono}` : ''}"></i></td>
@@ -401,15 +402,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Iniciar escáner
-  let escaner = null;
-
+  // Función para inicializar el escáner
   async function intentarInicializarEscanner(reintentosRestantes = 2) {
     if (reintentosRestantes <= 0) {
       console.error('Máximo de reintentos alcanzado.');
       mostrarToast('Error: No se pudo inicializar el escáner.', 'error');
       escaner = null;
-      return;
+      return false;
     }
 
     console.log('Intentando inicializar escáner, reintentos:', reintentosRestantes);
@@ -417,20 +416,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof ZXing === 'undefined') {
         console.error('ZXing no está cargado.');
         mostrarToast('Error: Librería ZXing no cargada.', 'error');
-        return;
+        return false;
       }
 
       const permissionStatus = await navigator.permissions.query({ name: 'camera' });
       console.log('Estado de permiso de cámara:', permissionStatus.state);
       if (permissionStatus.state === 'denied') {
         mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración.', 'error');
-        return;
+        return false;
       }
 
       if (!document.querySelector('#camara-carga') || !recrearContenedorCamara()) {
         console.error('Fallo al recrear contenedor.');
-        intentarInicializarEscanner(reintentosRestantes - 1);
-        return;
+        return intentarInicializarEscanner(reintentosRestantes - 1);
       }
 
       limpiarEventosContenedor();
@@ -454,23 +452,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const success = await escaner.inicializar();
       if (!success) {
         console.error('Fallo al inicializar, reintentando...');
-        intentarInicializarEscanner(reintentosRestantes - 1);
-      } else {
-        console.log('Escáner inicializado correctamente.');
+        return intentarInicializarEscanner(reintentosRestantes - 1);
       }
+      console.log('Escáner inicializado correctamente.');
+      return true;
     } catch (error) {
       console.error('Error al iniciar:', error.name, error.message);
       mostrarToast('Error al iniciar: ' + error.message, 'error');
-      intentarInicializarEscanner(reintentosRestantes - 1);
+      return intentarInicializarEscanner(reintentosRestantes - 1);
     }
   }
 
-  // Iniciar el escáner al cargar la página
-  if (typeof ZXing === 'undefined') {
-    console.error('ZXing no está cargado al iniciar.');
-    mostrarToast('Error: No se pudo cargar la librería de escaneo.', 'error');
-  } else {
-    console.log('ZXing cargado, iniciando escáner...');
-    intentarInicializarEscanner();
-  }
+  // Evento para inicializar el escáner al hacer clic en "Escanear"
+  btnEscanear.addEventListener('click', async () => {
+    if (!escaner) {
+      mostrarToast('Iniciando escáner...', 'info');
+      const success = await intentarInicializarEscanner();
+      if (!success) {
+        mostrarToast('No se pudo inicializar el escáner.', 'error');
+      }
+    }
+  });
 });
