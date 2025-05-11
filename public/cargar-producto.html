@@ -30,10 +30,16 @@
             <input type="text" id="codigo" name="codigo" readonly>
             <div id="camara-carga" class="camara" style="display: none;">
               <div class="guia-codigo"></div>
+              <svg id="circulo-progreso" width="30" height="30" style="position: absolute; top: 10px; right: 10px;">
+                <circle cx="15" cy="15" r="12" stroke="#28a745" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle>
+              </svg>
             </div>
             <div class="botones-escaneo" style="margin-top: 10px;">
-              <button type="button" id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i> Escanear</button>
-              <button type="button" id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i> Detener Escaneo</button>
+              <button type="button" id="escanear" class="boton-escaneo"><i class="fas fa-barcode"></i></button>
+              <div id="botones-camara" style="display: none;">
+                <button type="button" id="escanear-ahora" class="boton-escaneo"><i class="fas fa-barcode"></i></button>
+                <button type="button" id="cerrar-camara" class="boton-cerrar"><i class="fas fa-times"></i></button>
+              </div>
             </div>
           </div>
           <div class="form-campo">
@@ -48,98 +54,125 @@
             <label for="categoria">Categoría</label>
             <select id="categoria" name="categoria" required>
               <option value="">Selecciona una categoría</option>
-              <option value="bebidas">Bebidas</option>
-              <option value="golosinas">Golosinas</option>
-              <option value="lacteos">Lácteos</option>
-              <option value="cigarrillos">Cigarrillos</option>
-              <option value="fiambre">Fiambre</option>
-              <option value="congelados">Congelados</option>
-              <option value="panaderia">Panadería</option>
-              <option value="almacen">Almacén</option>
-              <option value="verduleria">Verdulería</option>
+              <option value="bebidas"><i class="fas fa-glass-whiskey"></i> Bebidas</option>
+              <option value="golosinas"><i class="fas fa-candy-cane"></i> Golosinas</option>
+              <option value="lacteos"><i class="fas fa-cheese"></i> Lácteos</option>
+              <option value="cigarrillos"><i class="fas fa-smoking"></i> Cigarrillos</option>
+              <option value="fiambre"><i class="fas fa-bacon"></i> Fiambre</option>
+              <option value="congelados"><i class="fas fa-ice-cream"></i> Congelados</option>
+              <option value="panaderia"><i class="fas fa-bread-slice"></i> Panadería</option>
+              <option value="almacen"><i class="fas fa-seedling"></i> Almacén</option>
+              <option value="verduleria"><i class="fas fa-carrot"></i> Verdulería</option>
+              <option value="limpieza"><i class="fas fa-broom"></i> Limpieza</option>
+              <option value="higiene_personal"><i class="fas fa-soap"></i> Higiene personal</option>
+              <option value="sin_tacc"><i class="fas fa-wheat"></i> Sin TACC</option>
+              <option value="productos_varios"><i class="fas fa-box"></i> Productos varios</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-bebidas" style="display: none;">
             <label for="select-subcategoria-bebidas">Subcategoría Bebidas</label>
             <select id="select-subcategoria-bebidas" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="con-alcohol">Con alcohol</option>
-              <option value="gaseosas">Gaseosas</option>
-              <option value="agua">Agua</option>
-              <option value="energizante">Energizante</option>
+              <option value="con_alcohol"><i class="fas fa-cocktail"></i> Con alcohol</option>
+              <option value="gaseosas"><i class="fas fa-glass-whiskey"></i> Gaseosas</option>
+              <option value="agua"><i class="fas fa-tint"></i> Agua</option>
+              <option value="energizante"><i class="fas fa-bolt"></i> Energizante</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-golosinas" style="display: none;">
             <label for="select-subcategoria-golosinas">Subcategoría Golosinas</label>
             <select id="select-subcategoria-golosinas" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="chocolates">Chocolates</option>
-              <option value="caramelos">Caramelos</option>
-              <option value="chicles">Chicles</option>
-              <option value="galletitas">Galletitas</option>
+              <option value="chocolate"><i class="fas fa-candy-cane"></i> Chocolate</option>
+              <option value="caramelos"><i class="fas fa-candy-cane"></i> Caramelos</option>
+              <option value="chicles"><i class="fas fa-circle"></i> Chicles</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-lacteos" style="display: none;">
             <label for="select-subcategoria-lacteos">Subcategoría Lácteos</label>
             <select id="select-subcategoria-lacteos" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="leche">Leche</option>
-              <option value="yogur">Yogur</option>
-              <option value="queso">Queso</option>
-              <option value="manteca">Manteca</option>
+              <option value="leche"><i class="fas fa-mug-hot"></i> Leche</option>
+              <option value="yogures"><i class="fas fa-ice-cream"></i> Yogures</option>
+              <option value="quesos"><i class="fas fa-cheese"></i> Quesos</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-cigarrillos" style="display: none;">
             <label for="select-subcategoria-cigarrillos">Subcategoría Cigarrillos</label>
             <select id="select-subcategoria-cigarrillos" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
+              <option value="comunes"><i class="fas fa-smoking"></i> Comunes</option>
+              <option value="convertibles"><i class="fas fa-smoking"></i> Convertibles</option>
+              <option value="tabaco"><i class="fas fa-leaf"></i> Tabaco</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-fiambre" style="display: none;">
             <label for="select-subcategoria-fiambre">Subcategoría Fiambre</label>
             <select id="select-subcategoria-fiambre" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="queso">Queso</option>
-              <option value="jamon">Jamón</option>
-              <option value="salame">Salame</option>
+              <option value="primera_marca"><i class="fas fa-bacon"></i> Primera marca</option>
+              <option value="segunda_marca"><i class="fas fa-bacon"></i> Segunda marca</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-congelados" style="display: none;">
             <label for="select-subcategoria-congelados">Subcategoría Congelados</label>
             <select id="select-subcategoria-congelados" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="helados">Helados</option>
-              <option value="hamburguesas">Hamburguesas</option>
-              <option value="pizzas">Pizzas</option>
+              <option value="carnes"><i class="fas fa-drumstick-bite"></i> Carnes</option>
+              <option value="helados"><i class="fas fa-ice-cream"></i> Helados</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-panaderia" style="display: none;">
             <label for="select-subcategoria-panaderia">Subcategoría Panadería</label>
             <select id="select-subcategoria-panaderia" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="pan">Pan</option>
-              <option value="facturas">Facturas</option>
-              <option value="tortas">Tortas</option>
+              <option value="dulce"><i class="fas fa-cookie"></i> Dulce</option>
+              <option value="salado"><i class="fas fa-bread-slice"></i> Salado</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-almacen" style="display: none;">
             <label for="select-subcategoria-almacen">Subcategoría Almacén</label>
             <select id="select-subcategoria-almacen" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="harinas">Harinas</option>
-              <option value="aceites-vinagres">Aceites y vinagres</option>
-              <option value="aderezos-condimentos">Aderezos y condimentos</option>
-              <option value="fideos-arroz">Fideos y arroz</option>
-              <option value="enlatados-conservas">Enlatados y conservas</option>
-              <option value="infusiones">Infusiones</option>
+              <option value="harinas"><i class="fas fa-seedling"></i> Harinas</option>
+              <option value="aceites_vinagres"><i class="fas fa-oil-can"></i> Aceites vinagres</option>
+              <option value="aderezos_condimentos"><i class="fas fa-pepper-hot"></i> Aderezos condimentos</option>
+              <option value="fideos_arroz"><i class="fas fa-utensils"></i> Fideos arroz</option>
+              <option value="enlatados_conservas"><i class="fas fa-fish"></i> Enlatados conservas</option>
+              <option value="infusiones"><i class="fas fa-mug-hot"></i> Infusiones</option>
             </select>
           </div>
           <div class="form-campo" id="subcategoria-verduleria" style="display: none;">
             <label for="select-subcategoria-verduleria">Subcategoría Verdulería</label>
             <select id="select-subcategoria-verduleria" name="subcategoria">
               <option value="">Selecciona una subcategoría</option>
-              <option value="frutas">Frutas</option>
-              <option value="verduras">Verduras</option>
+              <option value="frutas"><i class="fas fa-apple-alt"></i> Frutas</option>
+              <option value="vegetales"><i class="fas fa-carrot"></i> Vegetales</option>
+              <option value="huevos"><i class="fas fa-egg"></i> Huevos</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-limpieza" style="display: none;">
+            <label for="select-subcategoria-limpieza">Subcategoría Limpieza</label>
+            <select id="select-subcategoria-limpieza" name="subcategoria" disabled>
+              <option value="">Sin subcategorías</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-higiene_personal" style="display: none;">
+            <label for="select-subcategoria-higiene_personal">Subcategoría Higiene personal</label>
+            <select id="select-subcategoria-higiene_personal" name="subcategoria" disabled>
+              <option value="">Sin subcategorías</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-sin_tacc" style="display: none;">
+            <label for="select-subcategoria-sin_tacc">Subcategoría Sin TACC</label>
+            <select id="select-subcategoria-sin_tacc" name="subcategoria" disabled>
+              <option value="">Sin subcategorías</option>
+            </select>
+          </div>
+          <div class="form-campo" id="subcategoria-productos_varios" style="display: none;">
+            <label for="select-subcategoria-productos_varios">Subcategoría Productos varios</label>
+            <select id="select-subcategoria-productos_varios" name="subcategoria" disabled>
+              <option value="">Sin subcategorías</option>
             </select>
           </div>
           <div class="form-campo">
@@ -192,10 +225,19 @@
             <label for="icono-producto">Ícono del Producto (Opcional)</label>
             <select id="icono-producto" name="icono">
               <option value="default">Sin ícono</option>
-              <option value="bottle-water">Botella (Bebida)</option>
-              <option value="candy">Caramelo</option>
-              <option value="milk">Leche</option>
+              <option value="glass-whiskey">Botella (Bebida)</option>
+              <option value="candy-cane">Caramelo</option>
+              <option value="cheese">Queso</option>
               <option value="smoking">Cigarrillo</option>
+              <option value="bacon">Fiambre</option>
+              <option value="ice-cream">Helado</option>
+              <option value="bread-slice">Pan</option>
+              <option value="seedling">Harina</option>
+              <option value="carrot">Verdura</option>
+              <option value="broom">Limpieza</option>
+              <option value="soap">Higiene</option>
+              <option value="wheat">Sin TACC</option>
+              <option value="box">Varios</option>
             </select>
           </div>
           <div class="form-acciones">
@@ -236,7 +278,7 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js" onload="console.log('QuaggaJS cargado')" onerror="console.error('Error al cargar QuaggaJS')"></script>
+  <script src="https://unpkg.com/@zxing/browser@0.1.4"></script>
   <script src="/public/js/utils.js"></script>
   <script src="/public/js/cargar-producto-logic.js"></script>
 </body>
