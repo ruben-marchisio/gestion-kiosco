@@ -413,12 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Intentando inicializar escáner, reintentos:', reintentosRestantes);
     try {
-      if (typeof ZXing === 'undefined') {
-        console.error('ZXing no está cargado.');
-        mostrarToast('Error: Librería ZXing no cargada.', 'error');
-        return false;
-      }
-
       const permissionStatus = await navigator.permissions.query({ name: 'camera' });
       console.log('Estado de permiso de cámara:', permissionStatus.state);
       if (permissionStatus.state === 'denied') {
