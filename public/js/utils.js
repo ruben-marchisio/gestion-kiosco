@@ -466,7 +466,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         });
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
-        mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
+        mostrarToast('Error al iniciar escaneo: ' + err.message, 'error');
         stopVideoStream();
         camaraAbierta = false;
         escaneando = false;

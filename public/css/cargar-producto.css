@@ -128,8 +128,8 @@ footer a {
 .camara {
   position: relative;
   width: 100%;
-  max-width: 640px;
-  height: 480px;
+  max-width: 400px; /* Achicado para acercarse al guia-codigo */
+  height: 200px; /* Achicado para ser más rectangular */
   margin: 10px auto;
   border: 2px solid #ccc;
   overflow: hidden;
@@ -145,10 +145,10 @@ footer a {
 
 .guia-codigo {
   position: absolute;
-  top: 30%; /* Centrado verticalmente más arriba */
+  top: 20%; /* Ajustado para centrar en el contenedor más pequeño */
   left: 10%;
   right: 10%;
-  bottom: 30%; /* Rectángulo más pequeño */
+  bottom: 20%; /* Más pequeño y rectangular */
   border: 2px solid #ccc;
   pointer-events: none;
 }
@@ -175,7 +175,7 @@ footer a {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 640px;
+  max-width: 400px; /* Ajustado al nuevo tamaño de .camara */
 }
 
 .boton-escaneo, .boton-cerrar {
@@ -259,11 +259,12 @@ footer a {
   }
 
   .camara {
-    height: 360px;
+    max-width: 300px; /* Más pequeño en móviles */
+    height: 150px;
   }
 
   .guia-codigo {
-    top: 25%;
-    bottom: 35%;
+    top: 15%;
+    bottom: 25%;
   }
 }
