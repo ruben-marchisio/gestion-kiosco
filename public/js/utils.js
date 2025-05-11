@@ -226,6 +226,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         ZXing.BarcodeFormat.EAN_13,
         ZXing.BarcodeFormat.QR_CODE
       ]);
+      hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
       reader = new ZXing.BrowserMultiFormatReader(hints);
       console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
@@ -264,7 +265,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       contenedorCamara.style.display = 'block';
       btnEscanear.style.display = 'none';
       document.querySelector('#botones-camara').style.display = 'flex';
-      mostrarToast('Cámara abierta. Presiona el ícono verde para escanear.', 'info');
+      mostrarToast('Cámara abierta. Alinea el código en el recuadro.', 'info');
 
       console.log('Elemento de video creado:', videoElement);
       setTimeout(() => {
@@ -313,13 +314,16 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     }
   }, 500);
 
-  const manejarClickEscanearAhora = debounce(() => {
+  const manejarClickEscanearAhora = debounce(async () => {
     console.log('Evento click en #escanear-ahora, escaneando:', escaneando);
     if (camaraAbierta && !escaneando) {
       escaneando = true;
       contenedorCamara.querySelector('.guia-codigo').classList.add('escaneando');
       try {
+        // Retrasar decodificación para estabilizar video
+        await new Promise(resolve => setTimeout(resolve, 500));
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+          console.log('Procesando frame de video...');
           if (result && escaneando) {
             const code = result.text;
             console.log('Código detectado:', code);
