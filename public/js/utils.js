@@ -71,7 +71,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   // Verificar carga de ZXing
   if (typeof ZXing === 'undefined') {
     console.error('ZXing no está cargado.');
-    mostrarToast('Error: No se pudo cargar la librería de escaneo. Verifica tu conexión.', 'error');
+    mostrarToast('Error: No se pudo cargar la librería de escaneo.', 'error');
     return { inicializar: () => Promise.resolve(false), detener: () => {}, reset: () => {} };
   }
 
@@ -100,7 +100,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         return false;
       }
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       });
       console.log('Permiso de cámara concedido.');
       mediaStream.getTracks().forEach(track => track.stop());
@@ -121,31 +125,22 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           console.log('Deteniendo pista de video:', track);
           track.stop();
           track.enabled = false;
-          if (track.readyState !== 'ended') {
-            console.warn('Pista no terminó:', track.readyState);
-            track.stop();
-          }
         });
-        let attempts = 0;
-        const maxAttempts = 5;
-        const checkStream = setInterval(() => {
-          console.log('Verificando estado del stream, intento:', attempts + 1);
-          if (!stream || !stream.active || attempts >= maxAttempts) {
-            clearInterval(checkStream);
-            console.log('Estado final del stream:', { active: stream ? stream.active : 'null' });
-            stream = null;
-          }
-          attempts++;
-        }, 500);
+        stream = null;
       }
       if (videoElement) {
         videoElement.srcObject = null;
+        videoElement.pause();
         videoElement.remove();
         videoElement = null;
       }
       contenedorCamara.innerHTML = '<div class="guia-codigo"></div><svg id="circulo-progreso" width="30" height="30" style="position: absolute; top: 10px; right: 10px;"><circle cx="15" cy="15" r="12" stroke="#28a745" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle></svg>';
       contenedorCamara.style.display = 'none';
       console.log('Stream detenido y contenedor limpiado.');
+      if (reader) {
+        reader.reset();
+        reader = null;
+      }
       if (isMobileDevice()) {
         console.log('Forzando liberación de recursos en móvil.');
         setTimeout(() => {
@@ -155,11 +150,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               console.log('Recursos liberados en móvil.');
             })
             .catch(err => console.error('Error al liberar recursos:', err.message));
-        }, 7000);
-      }
-      if (reader) {
-        reader.reset();
-        reader = null;
+        }, 1000);
       }
     } catch (error) {
       console.error('Error al detener el stream:', error.name, error.message);
@@ -220,13 +211,18 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
 
     contenedorCamara.innerHTML = '<div class="guia-codigo"></div><svg id="circulo-progreso" width="30" height="30" style="position: absolute; top: 10px; right: 10px;"><circle cx="15" cy="15" r="12" stroke="#28a745" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle></svg>';
     videoElement = document.createElement('video');
+    videoElement.setAttribute('autoplay', 'true');
+    videoElement.setAttribute('muted', 'true');
+    videoElement.setAttribute('playsinline', 'true');
     videoElement.style.width = '100%';
     videoElement.style.height = '100%';
     contenedorCamara.appendChild(videoElement);
 
     try {
-      reader = new ZXing.BrowserMultiFormatReader();
-      console.log('ZXing inicializado.');
+      reader = new ZXing.BrowserMultiFormatReader(null, {
+        formats: [ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.QR_CODE]
+      });
+      console.log('ZXing inicializado con formatos:', reader.formats);
 
       camaraAbierta = true;
       contenedorCamara.style.display = 'block';
@@ -266,11 +262,16 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     btnCerrarCamara.addEventListener('click', manejarClickCerrarCamara);
   }
 
-  const manejarClickEscanear = debounce(() => {
+  const manejarClickEscanear = debounce(async () => {
     console.log('Evento click en #escanear, camaraAbierta:', camaraAbierta);
     if (!camaraAbierta) {
-      mostrarToast('Iniciando escaneo...', 'info');
-      inicializarEscanner();
+      mostrarToast('Iniciando escáner...', 'info');
+      const success = await inicializarEscanner();
+      if (!success) {
+        inicializando = false;
+      }
+    } else {
+      console.log('Cámara ya abierta, ignorando clic.');
     }
   }, 500);
 
@@ -279,47 +280,75 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     if (camaraAbierta && !escaneando) {
       escaneando = true;
       contenedorCamara.querySelector('.guia-codigo').classList.add('escaneando');
-      reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
-        if (result && escaneando) {
-          const code = result.text;
-          console.log('Código detectado:', code);
+      try {
+        reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+          if (result && escaneando) {
+            const code = result.text;
+            console.log('Código detectado:', code);
 
-          lastCodes.push(code);
-          const progress = lastCodes.length / confirmacionesRequeridas;
-          const circulo = contenedorCamara.querySelector('#circulo-progreso circle');
-          circulo.setAttribute('data-progress', progress);
-          circulo.setAttribute('stroke-dashoffset', 75.4 * (1 - progress));
+            lastCodes.push(code);
+            const progress = lastCodes.length / confirmacionesRequeridas;
+            const circulo = contenedorCamara.querySelector('#circulo-progreso circle');
+            circulo.setAttribute('data-progress', progress);
+            circulo.setAttribute('stroke-dashoffset', 75.4 * (1 - progress));
 
-          if (lastCodes.length >= confirmacionesRequeridas) {
-            const confirmedCode = lastCodes.every(c => c === code) ? code : null;
-            if (confirmedCode && confirmedCode !== ultimoCodigoEscaneado) {
-              ultimoCodigoEscaneado = confirmedCode;
-              escaneando = false;
-              contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
+            if (lastCodes.length >= confirmacionesRequeridas) {
+              const confirmedCode = lastCodes.every(c => c === code) ? code : null;
+              if (confirmedCode && confirmedCode !== ultimoCodigoEscaneado) {
+                ultimoCodigoEscaneado = confirmedCode;
+                escaneando = false;
+                contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
 
-              beepSound.play().catch(err => console.error('Error al reproducir beep:', err));
-              if (navigator.vibrate) navigator.vibrate(200);
+                beepSound.play().catch(err => console.error('Error al reproducir beep:', err));
+                if (navigator.vibrate) navigator.vibrate(200);
 
-              if (inputCodigo) inputCodigo.value = confirmedCode;
-              mostrarToast(`Código escaneado: ${confirmedCode}`, 'success');
+                if (inputCodigo) inputCodigo.value = confirmedCode;
+                mostrarToast(`Código escaneado: ${confirmedCode}`, 'success');
 
-              const usuarioId = localStorage.getItem('usuarioId');
-              fetch(`${BASE_URL}/api/productos/codigo/${confirmedCode}?usuarioId=${usuarioId}`, {
-                signal: AbortSignal.timeout(3000)
-              })
-                .then(res => {
-                  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                  return res.json();
+                const usuarioId = localStorage.getItem('usuarioId');
+                fetch(`${BASE_URL}/api/productos/codigo/${confirmedCode}?usuarioId=${usuarioId}`, {
+                  signal: AbortSignal.timeout(3000)
                 })
-                .then(data => {
-                  if (data.producto) {
-                    console.log('Producto en stock:', data.producto);
-                    completarCallback(data.producto);
-                    mostrarToast(`Producto encontrado en tu stock. Redirigiendo a <a href="/public/stock.html?codigo=${confirmedCode}">Stock</a>.`, 'info');
-                    setTimeout(() => {
-                      window.location.href = `/public/stock.html?codigo=${confirmedCode}`;
-                    }, 3000);
-                  } else {
+                  .then(res => {
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return res.json();
+                  })
+                  .then(data => {
+                    if (data.producto) {
+                      console.log('Producto en stock:', data.producto);
+                      completarCallback(data.producto);
+                      mostrarToast(`Producto encontrado en tu stock. Redirigiendo a <a href="/public/stock.html?codigo=${confirmedCode}">Stock</a>.`, 'info');
+                      setTimeout(() => {
+                        window.location.href = `/public/stock.html?codigo=${confirmedCode}`;
+                      }, 3000);
+                    } else {
+                      fetch(`${BASE_URL}/api/productos-comunes/codigo/${confirmedCode}`, {
+                        signal: AbortSignal.timeout(3000)
+                      })
+                        .then(res => {
+                          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                          return res.json();
+                        })
+                        .then(dataComun => {
+                          if (dataComun.producto) {
+                            console.log('Producto en base común:', dataComun.producto);
+                            completarCallback(dataComun.producto);
+                            mostrarToast(`Código escaneado: ${confirmedCode}. Producto encontrado. Completa los datos.`, 'info');
+                          } else {
+                            console.log('Producto no encontrado.');
+                            completarCallback(null);
+                            mostrarToast(`Código escaneado: ${confirmedCode}. Producto no encontrado, ingresa manualmente.`, 'info');
+                          }
+                        })
+                        .catch(err => {
+                          console.error('Error en base común:', err);
+                          completarCallback(null);
+                          mostrarToast(`Código escaneado: ${confirmedCode}. Error de conexión, ingresa manualmente.`, 'error');
+                        });
+                    }
+                  })
+                  .catch(err => {
+                    console.error('Error en stock:', err);
                     fetch(`${BASE_URL}/api/productos-comunes/codigo/${confirmedCode}`, {
                       signal: AbortSignal.timeout(3000)
                     })
@@ -329,72 +358,55 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
                       })
                       .then(dataComun => {
                         if (dataComun.producto) {
-                          console.log('Producto en base común:', dataComun.producto);
+                          console.log('Producto en base común (respaldo):', dataComun.producto);
                           completarCallback(dataComun.producto);
                           mostrarToast(`Código escaneado: ${confirmedCode}. Producto encontrado. Completa los datos.`, 'info');
                         } else {
-                          console.log('Producto no encontrado.');
+                          console.log('Producto no encontrado (respaldo).');
                           completarCallback(null);
                           mostrarToast(`Código escaneado: ${confirmedCode}. Producto no encontrado, ingresa manualmente.`, 'info');
                         }
                       })
                       .catch(err => {
-                        console.error('Error en base común:', err);
+                        console.error('Error en base común (respaldo):', err);
                         completarCallback(null);
                         mostrarToast(`Código escaneado: ${confirmedCode}. Error de conexión, ingresa manualmente.`, 'error');
                       });
-                  }
-                })
-                .catch(err => {
-                  console.error('Error en stock:', err);
-                  fetch(`${BASE_URL}/api/productos-comunes/codigo/${confirmedCode}`, {
-                    signal: AbortSignal.timeout(3000)
                   })
-                    .then(res => {
-                      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                      return res.json();
-                    })
-                    .then(dataComun => {
-                      if (dataComun.producto) {
-                        console.log('Producto en base común (respaldo):', dataComun.producto);
-                        completarCallback(dataComun.producto);
-                        mostrarToast(`Código escaneado: ${confirmedCode}. Producto encontrado. Completa los datos.`, 'info');
-                      } else {
-                        console.log('Producto no encontrado (respaldo).');
-                        completarCallback(null);
-                        mostrarToast(`Código escaneado: ${confirmedCode}. Producto no encontrado, ingresa manualmente.`, 'info');
-                      }
-                    })
-                    .catch(err => {
-                      console.error('Error en base común (respaldo):', err);
-                      completarCallback(null);
-                      mostrarToast(`Código escaneado: ${confirmedCode}. Error de conexión, ingresa manualmente.`, 'error');
-                    });
-                })
-                .finally(() => {
-                  stopVideoStream();
-                  camaraAbierta = false;
-                  btnEscanear.style.display = 'block';
-                  document.querySelector('#botones-camara').style.display = 'none';
-                  console.log('Escaneo finalizado.');
-                  asignarEventos();
-                });
-            } else if (!confirmedCode) {
-              lastCodes.shift();
+                  .finally(() => {
+                    stopVideoStream();
+                    camaraAbierta = false;
+                    btnEscanear.style.display = 'block';
+                    document.querySelector('#botones-camara').style.display = 'none';
+                    console.log('Escaneo finalizado.');
+                    asignarEventos();
+                  });
+              } else if (!confirmedCode) {
+                lastCodes.shift();
+              }
             }
           }
-        }
-        if (err && err.name !== 'NotFoundException') {
-          console.error('Error en escaneo:', err);
-          mostrarToast('Error al escanear: ' + err.message, 'error');
-          stopVideoStream();
-          camaraAbierta = false;
-          escaneando = false;
-          btnEscanear.style.display = 'block';
-          document.querySelector('#botones-camara').style.display = 'none';
-          asignarEventos();
-        }
-      });
+          if (err && err.name !== 'NotFoundException') {
+            console.error('Error en escaneo:', err);
+            mostrarToast('Error al escanear: ' + err.message, 'error');
+            stopVideoStream();
+            camaraAbierta = false;
+            escaneando = false;
+            btnEscanear.style.display = 'block';
+            document.querySelector('#botones-camara').style.display = 'none';
+            asignarEventos();
+          }
+        });
+      } catch (error) {
+        console.error('Error al iniciar decodeFromVideoDevice:', error);
+        mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
+        stopVideoStream();
+        camaraAbierta = false;
+        escaneando = false;
+        btnEscanear.style.display = 'block';
+        document.querySelector('#botones-camara').style.display = 'none';
+        asignarEventos();
+      }
     }
   }, 500);
 
