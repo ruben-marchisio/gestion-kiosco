@@ -133,14 +133,22 @@ footer a {
   margin: 10px auto;
   border: 2px solid #ccc;
   overflow: hidden;
+  background: #000; /* Fondo negro para detectar video no renderizado */
+}
+
+.camara video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .guia-codigo {
   position: absolute;
-  top: 5%;
-  left: 5%;
-  right: 5%;
-  bottom: 5%;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
   border: 2px solid #ccc;
   pointer-events: none;
 }

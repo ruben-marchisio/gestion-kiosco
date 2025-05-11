@@ -102,8 +102,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+          width: { ideal: 640 },
+          height: { ideal: 480 }
         }
       });
       console.log('Permiso de cámara concedido.');
@@ -150,7 +150,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               console.log('Recursos liberados en móvil.');
             })
             .catch(err => console.error('Error al liberar recursos:', err.message));
-        }, 1000);
+        }, 2000);
       }
     } catch (error) {
       console.error('Error al detener el stream:', error.name, error.message);
@@ -216,13 +216,18 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     videoElement.setAttribute('playsinline', 'true');
     videoElement.style.width = '100%';
     videoElement.style.height = '100%';
+    videoElement.style.objectFit = 'cover';
     contenedorCamara.appendChild(videoElement);
 
     try {
-      reader = new ZXing.BrowserMultiFormatReader(null, {
-        formats: [ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.QR_CODE]
-      });
-      console.log('ZXing inicializado con formatos:', reader.formats);
+      const hints = new Map();
+      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+        ZXing.BarcodeFormat.EAN_8,
+        ZXing.BarcodeFormat.EAN_13,
+        ZXing.BarcodeFormat.QR_CODE
+      ]);
+      reader = new ZXing.BrowserMultiFormatReader(hints);
+      console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
       camaraAbierta = true;
       contenedorCamara.style.display = 'block';
@@ -232,9 +237,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
 
       console.log('Elemento de video creado:', videoElement);
       setTimeout(() => {
-        console.log('Resolución del video:', {
+        console.log('Estado del video:', {
           width: videoElement.videoWidth,
-          height: videoElement.videoHeight
+          height: videoElement.videoHeight,
+          readyState: videoElement.readyState,
+          paused: videoElement.paused
         });
       }, 1000);
 
@@ -376,6 +383,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
                   .finally(() => {
                     stopVideoStream();
                     camaraAbierta = false;
+                    escaneando = false;
+                    inicializando = false;
                     btnEscanear.style.display = 'block';
                     document.querySelector('#botones-camara').style.display = 'none';
                     console.log('Escaneo finalizado.');
@@ -392,6 +401,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             stopVideoStream();
             camaraAbierta = false;
             escaneando = false;
+            inicializando = false;
             btnEscanear.style.display = 'block';
             document.querySelector('#botones-camara').style.display = 'none';
             asignarEventos();
@@ -403,6 +413,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         stopVideoStream();
         camaraAbierta = false;
         escaneando = false;
+        inicializando = false;
         btnEscanear.style.display = 'block';
         document.querySelector('#botones-camara').style.display = 'none';
         asignarEventos();
@@ -416,6 +427,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       escaneando = false;
       stopVideoStream();
       camaraAbierta = false;
+      inicializando = false;
       btnEscanear.style.display = 'block';
       document.querySelector('#botones-camara').style.display = 'none';
       mostrarToast('Escaneo cancelado.', 'info');
@@ -432,6 +444,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         escaneando = false;
         stopVideoStream();
         camaraAbierta = false;
+        inicializando = false;
         btnEscanear.style.display = 'block';
         document.querySelector('#botones-camara').style.display = 'none';
         console.log('Escáner detenido.');
