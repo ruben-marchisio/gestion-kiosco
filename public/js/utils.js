@@ -66,7 +66,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   if (!contenedorCamara) {
     console.error('Contenedor de cámara no encontrado.');
     mostrarToast('Error: Contenedor de cámara no encontrado.', 'error');
-    return { inicializar: () => Promise.resolve(false), detener: () => {}, reset: () => {} };
   }
 
   // Verificar carga de ZXing
@@ -103,8 +102,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 320 },
-          height: { ideal: 240 }
+          width: { ideal: 640 }, // Aumentado para mejor nitidez
+          height: { ideal: 480 }, // Aumentado para mejor nitidez
+          focusMode: 'continuous' // Enfoque automático
         }
       });
       console.log('Permiso de cámara concedido. Stream:', mediaStream);
@@ -236,15 +236,20 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 320 },
-          height: { ideal: 240 }
+          width: { ideal: 640 }, // Aumentado para mejor nitidez
+          height: { ideal: 480 }, // Aumentado para mejor nitidez
+          focusMode: 'continuous' // Enfoque automático
         }
       });
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      videoElement.srcObject = stream;
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Reducido a 2000ms
+      if (videoElement.srcObject) {
+        console.log('Video ya tiene stream, evitando reasignación.');
+      } else {
+        videoElement.srcObject = stream;
+      }
 
       // Esperar a que el video esté listo
       await new Promise((resolve, reject) => {
@@ -256,11 +261,16 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           console.error('Error en el video:', err);
           reject(err);
         }, { once: true });
-        videoElement.play().catch(err => {
-          console.error('Error al reproducir video:', err);
-          mostrarToast('Error al reproducir video: ' + err.message, 'error');
-          reject(err);
-        });
+        if (videoElement.paused) {
+          videoElement.play().catch(err => {
+            console.error('Error al reproducir video:', err);
+            mostrarToast('Error al reproducir video: ' + err.message, 'error');
+            reject(err);
+          });
+        } else {
+          console.log('Video ya está reproduciendo.');
+          resolve();
+        }
       });
 
       camaraAbierta = true;
@@ -325,10 +335,12 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Reducido a 2000ms
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
           frameCount++;
-          console.log(`Procesando frame de video #${frameCount}...`);
+          if (frameCount % 10 === 1) { // Log cada 10 frames para reducir mensajes
+            console.log(`Procesando frame de video #${frameCount}...`);
+          }
           if (result && escaneando) {
             const code = result.text;
             console.log('Código detectado:', code);
@@ -445,7 +457,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             document.querySelector('#botones-camara').style.display = 'none';
             asignarEventos();
           } else if (err && err instanceof ZXing.NotFoundException) {
-            console.log(`No se detectó código en frame ${frameCount}, continuando escaneo...`);
+            if (frameCount % 10 === 1) { // Log cada 10 frames para reducir mensajes
+              console.log(`No se detectó código en frame ${frameCount}, continuando escaneo...`);
+            }
             setTimeout(() => {
               if (escaneando && lastCodes.length === 0) {
                 mostrarToast('Ajusta la luz o alinea mejor el código en el recuadro.', 'info');
