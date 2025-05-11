@@ -434,8 +434,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
                 lastCodes.shift();
               }
             }
-          }
-          if (err && err.name !== 'NotFoundException') {
+          } else if (err && !(err instanceof ZXing.NotFoundException)) {
             console.error(`Error en escaneo (frame ${frameCount}):`, err);
             mostrarToast('Error al escanear: ' + err.message, 'error');
             stopVideoStream();
@@ -445,10 +444,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             btnEscanear.style.display = 'block';
             document.querySelector('#botones-camara').style.display = 'none';
             asignarEventos();
-          }
-          if (err && err.name === 'NotFoundException') {
+          } else if (err && err instanceof ZXing.NotFoundException) {
             console.log(`No se detectó código en frame ${frameCount}, continuando escaneo...`);
-            // Mostrar toast guía tras 10 segundos
             setTimeout(() => {
               if (escaneando && lastCodes.length === 0) {
                 mostrarToast('Ajusta la luz o alinea mejor el código en el recuadro.', 'info');
