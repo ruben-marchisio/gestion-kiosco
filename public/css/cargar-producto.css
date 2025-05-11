@@ -145,10 +145,10 @@ footer a {
 
 .guia-codigo {
   position: absolute;
-  top: 10%;
+  top: 30%; /* Centrado verticalmente más arriba */
   left: 10%;
   right: 10%;
-  bottom: 10%;
+  bottom: 30%; /* Rectángulo más pequeño */
   border: 2px solid #ccc;
   pointer-events: none;
 }
@@ -260,5 +260,10 @@ footer a {
 
   .camara {
     height: 360px;
+  }
+
+  .guia-codigo {
+    top: 25%;
+    bottom: 35%;
   }
 }
