@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Función para inicializar el escáner
-  async function intentarInicializarEscanner(reintentosRestantes = 5) {
+  async function intentarInicializarEscanner(reintentosRestantes = 2) {
     if (reintentosRestantes <= 0) {
       console.error('Máximo de reintentos alcanzado.');
       mostrarToast('Error: No se pudo inicializar el escáner.', 'error');
@@ -413,6 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Intentando inicializar escáner, reintentos:', reintentosRestantes);
     try {
+      if (typeof ZXing === 'undefined') {
+        console.error('ZXing no está cargado.');
+        mostrarToast('Error: Librería ZXing no cargada.', 'error');
+        return false;
+      }
+
       const permissionStatus = await navigator.permissions.query({ name: 'camera' });
       console.log('Estado de permiso de cámara:', permissionStatus.state);
       if (permissionStatus.state === 'denied') {
