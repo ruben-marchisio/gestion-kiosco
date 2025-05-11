@@ -327,7 +327,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       try {
         // Retrasar decodificación para estabilizar video
         await new Promise(resolve => setTimeout(resolve, 3000));
-        reader.decodeFromVideoDevice(null, videoElement, (result, err, controls) => {
+        reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
           frameCount++;
           console.log(`Procesando frame de video #${frameCount}...`);
           if (result && escaneando) {
@@ -422,11 +422,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
                       });
                   })
                   .finally(() => {
-                    try {
-                      controls.stop();
-                    } catch (error) {
-                      console.error('Error al detener controles:', error);
-                    }
                     stopVideoStream();
                     camaraAbierta = false;
                     escaneando = false;
@@ -444,11 +439,6 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           if (err && err.name !== 'NotFoundException') {
             console.error(`Error en escaneo (frame ${frameCount}):`, err);
             mostrarToast('Error al escanear: ' + err.message, 'error');
-            try {
-              controls.stop();
-            } catch (error) {
-              console.error('Error al detener controles:', error);
-            }
             stopVideoStream();
             camaraAbierta = false;
             escaneando = false;

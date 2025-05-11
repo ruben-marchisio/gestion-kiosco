@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fila.innerHTML = `
         <td>${producto.nombre}</td>
         <td>${producto.marca}</td>
-        <td@${producto.categoria}${producto.subcategoria ? ` (${producto.subcategoria})` : ''}</td>
+        <td>${producto.categoria}${producto.subcategoria ? ` (${producto.subcategoria})` : ''}</td>
         <td>${producto.cantidadUnidades}</td>
         <td class="estado">${producto.estado}</td>
         <td><i class="${producto.icono !== 'default' ? `fas fa-${producto.icono}` : ''}"></i></td>
@@ -434,9 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
       limpiarEventosContenedor();
 
       if (escaner) {
-        console.log('Reiniciando escáner existente.');
+        console.log('Deteniendo escáner existente.');
         escaner.detener();
-        await new Promise(resolve => setTimeout(resolve, 7000));
         escaner.reset();
         escaner = null;
       }
