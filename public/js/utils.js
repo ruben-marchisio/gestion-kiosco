@@ -16,7 +16,7 @@ function mostrarToast(mensaje, tipo = 'info') {
 
   setTimeout(() => {
     toast.remove();
-  }, 3000);
+  }, 5000); // 5s para mayor visibilidad
 }
 
 // Función para detectar si es un dispositivo móvil
@@ -227,6 +227,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         ZXing.BarcodeFormat.QR_CODE
       ]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+      hints.set(ZXing.DecodeHintType.ASSUME_ONE_BARCODE, true);
       reader = new ZXing.BrowserMultiFormatReader(hints);
       console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
@@ -241,7 +242,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       videoElement.srcObject = stream;
 
       // Esperar a que el video esté listo
@@ -319,9 +320,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     if (camaraAbierta && !escaneando) {
       escaneando = true;
       contenedorCamara.querySelector('.guia-codigo').classList.add('escaneando');
+      mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
           console.log('Procesando frame de video...');
           if (result && escaneando) {
@@ -440,6 +442,16 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             btnEscanear.style.display = 'block';
             document.querySelector('#botones-camara').style.display = 'none';
             asignarEventos();
+          }
+          // Ignorar NotFoundException para seguir intentando
+          if (err && err.name === 'NotFoundException') {
+            console.log('No se detectó código en este frame, continuando escaneo...');
+            // Mostrar toast guía tras 10 segundos
+            setTimeout(() => {
+              if (escaneando && lastCodes.length === 0) {
+                mostrarToast('Ajusta la luz o alinea mejor el código en el recuadro.', 'info');
+              }
+            }, 10000);
           }
         });
       } catch (error) {
