@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ ...producto, usuarioId })
       });
 
-      if (!response.ok) throw new Error(`HTTP ${res.status}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json();
 
       mostrarToast(result.mensaje || 'Producto confirmado.', 'success');
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ ...producto, usuarioId })
         });
 
-        if (!response.ok) throw new Error(`HTTP ${res.status}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         await response.json();
       }
 
@@ -414,10 +414,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Intentando inicializar escáner, reintentos:', reintentosRestantes);
     try {
+      if (typeof ZXing === 'undefined') {
+        console.error('ZXing no está cargado.');
+        mostrarToast('Error: Librería ZXing no cargada.', 'error');
+        return;
+      }
+
       const permissionStatus = await navigator.permissions.query({ name: 'camera' });
       console.log('Estado de permiso de cámara:', permissionStatus.state);
       if (permissionStatus.state === 'denied') {
-        mostrarToast('Permiso de cámara denegado.', 'error');
+        mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración.', 'error');
         return;
       }
 
@@ -450,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Fallo al inicializar, reintentando...');
         intentarInicializarEscanner(reintentosRestantes - 1);
       } else {
-        console.log('Escáner inicializado.');
+        console.log('Escáner inicializado correctamente.');
       }
     } catch (error) {
       console.error('Error al iniciar:', error.name, error.message);
@@ -462,8 +468,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Iniciar el escáner al cargar la página
   if (typeof ZXing === 'undefined') {
     console.error('ZXing no está cargado al iniciar.');
-    mostrarToast('Error: No se pudo cargar la librería de escaneo. Verifica tu conexión.', 'error');
+    mostrarToast('Error: No se pudo cargar la librería de escaneo.', 'error');
   } else {
+    console.log('ZXing cargado, iniciando escáner...');
     intentarInicializarEscanner();
   }
 });

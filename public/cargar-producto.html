@@ -278,8 +278,13 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="/public/js/zxing-browser.min.js"></script>
+  <script src="/public/js/zxing-browser.min.js" onerror="mostrarToast('Error al cargar ZXing. Verifica que zxing-browser.min.js esté en public/js.', 'error')"></script>
   <script src="/public/js/utils.js"></script>
   <script src="/public/js/cargar-producto-logic.js"></script>
+  <script>
+    if (typeof ZXing !== 'undefined') {
+      mostrarToast('Librería ZXing cargada correctamente.', 'success');
+    }
+  </script>
 </body>
 </html>
