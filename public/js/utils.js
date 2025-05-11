@@ -43,6 +43,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   let inicializando = false;
   let stream = null;
   let intentos = 0;
+  let frameCount = 0; // Contador de frames procesados
   const maxIntentos = 3;
   let lastCodes = [];
   const confirmacionesRequeridas = 3;
@@ -169,6 +170,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       lastCodes = [];
       inicializando = false;
       intentos = 0;
+      frameCount = 0;
       console.log('Escáner reiniciado.');
     } catch (error) {
       console.error('Error al reiniciar:', error.name, error.message);
@@ -242,7 +244,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       videoElement.srcObject = stream;
 
       // Esperar a que el video esté listo
@@ -319,13 +321,15 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     console.log('Evento click en #escanear-ahora, escaneando:', escaneando);
     if (camaraAbierta && !escaneando) {
       escaneando = true;
+      frameCount = 0; // Reiniciar contador de frames
       contenedorCamara.querySelector('.guia-codigo').classList.add('escaneando');
       mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         reader.decodeFromVideoDevice(null, videoElement, (result, err, controls) => {
-          console.log('Procesando frame de video...');
+          frameCount++;
+          console.log(`Procesando frame de video #${frameCount}...`);
           if (result && escaneando) {
             const code = result.text;
             console.log('Código detectado:', code);
@@ -438,7 +442,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             }
           }
           if (err && err.name !== 'NotFoundException') {
-            console.error('Error en escaneo:', err);
+            console.error(`Error en escaneo (frame ${frameCount}):`, err);
             mostrarToast('Error al escanear: ' + err.message, 'error');
             try {
               controls.stop();
@@ -453,9 +457,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             document.querySelector('#botones-camara').style.display = 'none';
             asignarEventos();
           }
-          // Ignorar NotFoundException para seguir intentando
           if (err && err.name === 'NotFoundException') {
-            console.log('No se detectó código en este frame, continuando escaneo...');
+            console.log(`No se detectó código en frame ${frameCount}, continuando escaneo...`);
             // Mostrar toast guía tras 10 segundos
             setTimeout(() => {
               if (escaneando && lastCodes.length === 0) {
@@ -466,7 +469,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         });
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
-        mostrarToast('Error al iniciar escaneo: ' + err.message, 'error');
+        mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
         stopVideoStream();
         camaraAbierta = false;
         escaneando = false;
