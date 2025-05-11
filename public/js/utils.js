@@ -46,7 +46,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   let frameCount = 0; // Contador de frames procesados
   const maxIntentos = 10; // Aumentado para más intentos
   let lastCodes = [];
-  const confirmacionesRequeridas = 3;
+  const confirmacionesRequeridas = 2; // Reducido para mejor detección
   let reader = null;
   let decodeController = null; // Controlador para detener decodificación
 
@@ -104,8 +104,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 1280 }, // Aumentado para máxima nitidez
-          height: { ideal: 720 }, // Aumentado para máxima nitidez
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
           focusMode: 'continuous'
         }
       });
@@ -170,11 +170,18 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       console.log('Deteniendo decodificación...');
       decodeController = null;
       if (reader) {
-        reader.reset();
+        reader.reset(); // Resetear lector sin afectar video
       }
       escaneando = false;
       contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
-      mostrarToast('Escaneo pausado.', 'info');
+      mostrarToast('Escaneo pausado. Mantén presionado para continuar.', 'info');
+      // Asegurar que el video siga activo
+      if (videoElement && stream && videoElement.srcObject !== stream) {
+        videoElement.srcObject = stream;
+        if (videoElement.paused) {
+          videoElement.play().catch(err => console.error('Error al reanudar video:', err));
+        }
+      }
     }
   }
 
@@ -182,6 +189,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   function resetScanner() {
     console.log('Reiniciando escáner.');
     try {
+      stopDecoding();
       stopVideoStream();
       camaraAbierta = false;
       escaneando = false;
@@ -371,7 +379,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           }
           if (result && escaneando) {
             const code = result.text;
-            console.log('Código detectado:', code);
+            console.log('Código detectado:', code, 'Formato:', result.format);
 
             lastCodes.push(code);
             const progress = lastCodes.length / confirmacionesRequeridas;
@@ -496,7 +504,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               }
             }, 10000);
           }
-        }, { maxDecodeInterval: 200 }); // Ajustado para equilibrar rendimiento
+        }, { maxDecodeInterval: 300 }); // Aumentado para mejor detección
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
         mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
