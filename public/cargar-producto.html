@@ -278,17 +278,23 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="/public/js/zxing-browser.min.js" onerror="mostrarToast('Error al cargar ZXing. Verifica que zxing-browser.min.js esté en public/js. Error: ' + (event.message || event.type || 'Desconocido'), 'error')"></script>
+  <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js" onerror="mostrarToast('Error al cargar @zxing/library. Error: ' + (event.message || event.type || 'Desconocido'), 'error')"></script>
+  <script src="/public/js/zxing-browser.min.js" onerror="mostrarToast('Error al cargar zxing-browser.min.js. Verifica que esté en public/js. Error: ' + (event.message || event.type || 'Desconocido'), 'error')"></script>
   <script src="/public/js/utils.js"></script>
   <script src="/public/js/cargar-producto-logic.js"></script>
   <script>
     console.log('Verificando carga de ZXing...');
-    if (typeof ZXing !== 'undefined') {
-      console.log('ZXing cargado correctamente.');
-      mostrarToast('Librería ZXing cargada correctamente.', 'success');
-    } else {
-      console.error('ZXing no está definido tras cargar el script.');
-      mostrarToast('Error: ZXing no está definido. Verifica el contenido de zxing-browser.min.js o la conexión a /public/js/zxing-browser.min.js.', 'error');
+    try {
+      if (typeof ZXing !== 'undefined') {
+        console.log('ZXing cargado correctamente:', ZXing);
+        mostrarToast('Librería ZXing cargada correctamente.', 'success');
+      } else {
+        console.error('ZXing no está definido tras cargar los scripts.');
+        mostrarToast('Error: ZXing no está definido. Verifica @zxing/library y zxing-browser.min.js.', 'error');
+      }
+    } catch (e) {
+      console.error('Excepción al verificar ZXing:', e);
+      mostrarToast('Error al verificar ZXing: ' + e.message, 'error');
     }
   </script>
 </body>
