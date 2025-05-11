@@ -89,7 +89,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       contenedorCamara.innerHTML = '<div class="guia-codigo"></div><svg id="circulo-progreso" width="30" height="30" style="position: absolute; top: 10px; right: 10px;"><circle cx="15" cy="15" r="12" stroke="#28a745" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle></svg>';
       contenedorCamara.style.display = 'none';
       console.log('Stream detenido y contenedor limpiado.');
-      if (Quagga.isRunning()) {
+      if (Quagga.isRunning && Quagga.isRunning()) {
         Quagga.stop();
       }
       if (isMobileDevice()) {
@@ -170,7 +170,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       });
       console.log('Stream de video iniciado:', stream);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Aumentado a 2000ms
       videoElement.srcObject = stream;
 
       await new Promise((resolve, reject) => {
@@ -189,37 +189,40 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         });
       });
 
-      Quagga.init({
-        inputStream: {
-          name: "Live",
-          type: "LiveStream",
-          target: videoElement,
-          constraints: {
-            facingMode: "environment",
-            width: { min: 320 },
-            height: { min: 240 }
+      return new Promise((resolve, reject) => {
+        Quagga.init({
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: videoElement,
+            constraints: {
+              facingMode: "environment",
+              width: { min: 320 },
+              height: { min: 240 }
+            },
+            area: { top: "5%", bottom: "5%", left: "5%", right: "5%" }
           },
-          area: { top: "5%", bottom: "5%", left: "5%", right: "5%" }
-        },
-        decoder: {
-          readers: ["ean_8_reader", "ean_13_reader"]
-        }
-      }, function(err) {
-        if (err) {
-          console.error('Error al iniciar Quagga:', err);
-          mostrarToast('Error al iniciar Quagga: ' + err.message, 'error');
-          stopVideoStream();
-          return;
-        }
-        console.log('Quagga inicializado correctamente.');
-        camaraAbierta = true;
-        contenedorCamara.style.display = 'block';
-        btnEscanear.style.display = 'none';
-        document.querySelector('#botones-camara').style.display = 'flex';
-        mostrarToast('Cámara abierta. Alinea el código en el recuadro.', 'info');
+          decoder: {
+            readers: ["ean_8_reader", "ean_13_reader"]
+          },
+          numOfWorkers: 0 // Deshabilitar Web Workers
+        }, function(err) {
+          if (err) {
+            console.error('Error al iniciar Quagga:', err);
+            mostrarToast('Error al iniciar el escáner Quagga: ' + err.message, 'error');
+            stopVideoStream();
+            reject(err);
+            return;
+          }
+          console.log('Quagga inicializado correctamente.');
+          camaraAbierta = true;
+          contenedorCamara.style.display = 'block';
+          btnEscanear.style.display = 'none';
+          document.querySelector('#botones-camara').style.display = 'flex';
+          mostrarToast('Cámara abierta. Alinea el código en el recuadro.', 'info');
+          resolve(true);
+        });
       });
-
-      return true;
     } catch (error) {
       console.error('Error al inicializar Quagga:', error);
       mostrarToast('Error al inicializar el escáner: ' + error.message, 'error');
@@ -261,7 +264,15 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       escaneando = true;
       contenedorCamara.querySelector('.guia-codigo').classList.add('escaneando');
       mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
-      Quagga.start();
+      try {
+        Quagga.start();
+      } catch (error) {
+        console.error('Error al iniciar escaneo:', error);
+        mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
+        escaneando = false;
+        contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
+        return;
+      }
 
       Quagga.onDetected(function(result) {
         const code = result.codeResult.code;
@@ -278,7 +289,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           if (confirmedCode) {
             escaneando = false;
             contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
-            Quagga.stop();
+            try {
+              Quagga.stop();
+            } catch (error) {
+              console.error('Error al detener Quagga:', error);
+            }
 
             beepSound.play().catch(err => console.error('Error al reproducir beep:', err));
             if (navigator.vibrate) navigator.vibrate(200);
