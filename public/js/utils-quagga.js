@@ -170,7 +170,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       });
       console.log('Stream de video iniciado:', stream);
 
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Aumentado a 2000ms
+      await new Promise(resolve => setTimeout(resolve, 2000));
       videoElement.srcObject = stream;
 
       await new Promise((resolve, reject) => {
@@ -197,13 +197,12 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
             target: videoElement,
             constraints: {
               facingMode: "environment",
-              width: { min: 320 },
-              height: { min: 240 }
-            },
-            area: { top: "5%", bottom: "5%", left: "5%", right: "5%" }
+              width: { ideal: 320 },
+              height: { ideal: 240 }
+            }
           },
           decoder: {
-            readers: ["ean_8_reader", "ean_13_reader"]
+            readers: ["ean_13_reader"] // Simplificado a EAN-13
           },
           numOfWorkers: 0 // Deshabilitar Web Workers
         }, function(err) {
