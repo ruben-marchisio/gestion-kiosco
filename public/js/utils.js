@@ -242,7 +242,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       videoElement.srcObject = stream;
 
       // Esperar a que el video esté listo
@@ -323,8 +323,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       mostrarToast('Escaneando... Alinea el código en el recuadro.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        reader.decodeFromVideoDevice(null, videoElement, (result, err, controls) => {
           console.log('Procesando frame de video...');
           if (result && escaneando) {
             const code = result.text;
@@ -418,6 +418,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
                       });
                   })
                   .finally(() => {
+                    try {
+                      controls.stop();
+                    } catch (error) {
+                      console.error('Error al detener controles:', error);
+                    }
                     stopVideoStream();
                     camaraAbierta = false;
                     escaneando = false;
@@ -435,6 +440,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           if (err && err.name !== 'NotFoundException') {
             console.error('Error en escaneo:', err);
             mostrarToast('Error al escanear: ' + err.message, 'error');
+            try {
+              controls.stop();
+            } catch (error) {
+              console.error('Error al detener controles:', error);
+            }
             stopVideoStream();
             camaraAbierta = false;
             escaneando = false;
