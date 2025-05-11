@@ -44,7 +44,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   let stream = null;
   let intentos = 0;
   let frameCount = 0; // Contador de frames procesados
-  const maxIntentos = 3;
+  const maxIntentos = 10; // Aumentado para más intentos
   let lastCodes = [];
   const confirmacionesRequeridas = 3;
   let reader = null;
@@ -449,7 +449,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
           }
           if (err && err.name === 'NotFoundException') {
             console.log(`No se detectó código en frame ${frameCount}, continuando escaneo...`);
-            // Mostrar toast guía tras 10 segundos
+            // Retraso entre frames para evitar sobrecarga
             setTimeout(() => {
               if (escaneando && lastCodes.length === 0) {
                 mostrarToast('Ajusta la luz o alinea mejor el código en el recuadro.', 'info');
