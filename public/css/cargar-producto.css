@@ -128,8 +128,8 @@ footer a {
 .camara {
   position: relative;
   width: 100%;
-  max-width: 320px; /* Tamaño optimizado */
-  height: 160px; /* Rectangular */
+  max-width: 280px; /* Ajustado para proporción vertical */
+  height: 350px; /* Vertical */
   margin: 10px auto;
   border: 2px solid #ccc;
   overflow: hidden;
@@ -145,16 +145,20 @@ footer a {
 
 .guia-codigo {
   position: absolute;
-  top: 5%; /* Agrandado para casi ocupar el contenedor */
-  left: 5%;
-  right: 5%;
-  bottom: 5%;
+  top: 10%; /* Más espacio para tolerancia */
+  left: 10%;
+  width: 80%; /* 224px en 280px */
+  height: 80%; /* 280px en 350px */
   border: 2px solid #ccc;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
   pointer-events: none;
+  transition: border-color 0.3s ease;
 }
 
 .guia-codigo.escaneando {
   border-color: #28a745;
+  background: rgba(40, 167, 69, 0.2);
   animation: blink 0.5s infinite;
 }
 
@@ -175,7 +179,7 @@ footer a {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 320px; /* Ajustado al contenedor */
+  max-width: 280px; /* Ajustado al contenedor */
 }
 
 .boton-escaneo, .boton-cerrar {
@@ -256,16 +260,16 @@ footer a {
   #botones-camara {
     flex-direction: row;
     justify-content: space-between;
-    max-width: 280px;
+    max-width: 240px;
   }
 
   .camara {
-    max-width: 280px;
-    height: 140px;
+    max-width: 240px;
+    height: 300px;
   }
 
   .guia-codigo {
-    top: 5%;
-    bottom: 5%;
+    width: 80%; /* 192px en 240px */
+    height: 80%; /* 240px en 300px */
   }
 }

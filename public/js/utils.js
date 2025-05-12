@@ -46,7 +46,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   let frameCount = 0; // Contador de frames procesados
   const maxIntentos = 10; // Aumentado para más intentos
   let lastCodes = [];
-  const confirmacionesRequeridas = 2; // Restaurado para precisión
+  const confirmacionesRequeridas = 2; // Precisión
   let reader = null;
   let decodeController = null; // Controlador para detener decodificación
 
@@ -258,9 +258,9 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
         ZXing.BarcodeFormat.EAN_13
       ]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-      hints.set(ZXing.DecodeHintType.PURE_BARCODE, false); // Tolerancia para detecciones
-      // Habilitar detección multi-orientación
-      hints.set(ZXing.DecodeHintType.ALLOWED_ORIENTATIONS, true); // Intento de multi-orientación
+      hints.set(ZXing.DecodeHintType.PURE_BARCODE, false); // Tolerancia
+      // Intento de multi-orientación
+      hints.set(ZXing.DecodeHintType.ALLOWED_ORIENTATIONS, true);
       reader = new ZXing.BrowserMultiFormatReader(hints);
       console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
@@ -522,7 +522,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               }
             }, 10000);
           }
-        }, { maxDecodeInterval: 300 }); // Reducido para mayor velocidad
+        }, { maxDecodeInterval: 400 }); // Punto medio para velocidad y precisión
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
         mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
