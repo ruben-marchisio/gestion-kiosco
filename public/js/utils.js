@@ -34,7 +34,7 @@ function debounce(func, wait) {
   };
 }
 
-// Función para iniciar el escaneo continuo con @zxing/browser
+// Función para iniciar el escaneo continuo con @zxing/library
 function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora, btnCerrarCamara, inputCodigo, completarCallback) {
   let camaraAbierta = false;
   let escaneando = false;
@@ -105,8 +105,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 1280 }, // Reducido para mejor rendimiento
+          height: { ideal: 720 }, // Reducido para mejor rendimiento
           focusMode: 'continuous'
         }
       });
@@ -176,8 +176,10 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       escaneando = false;
       contenedorCamara.querySelector('.guia-codigo').classList.remove('escaneando');
       mostrarToast('Escaneo pausado. Mantén presionado para continuar.', 'info');
-      // Asegurar que el video siga activo
-      if (videoElement && stream && videoElement.srcObject !== stream) {
+      // Evitar reasignar srcObject si ya está activo
+      if (videoElement && stream && videoElement.srcObject === stream && !videoElement.paused) {
+        console.log('Video ya activo, evitando reproducción innecesaria.');
+      } else if (videoElement && stream) {
         videoElement.srcObject = stream;
         if (videoElement.paused) {
           videoElement.play().catch(err => console.error('Error al reanudar video:', err));
@@ -252,7 +254,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     try {
       const hints = new Map();
       hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-        ZXing.BarcodeFormat.EAN_13 // Limitado a EAN_13 para pruebas
+        ZXing.BarcodeFormat.EAN_8, // Añadido para mayor compatibilidad
+        ZXing.BarcodeFormat.EAN_13
       ]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
       hints.set(ZXing.DecodeHintType.PURE_BARCODE, true); // Priorizar códigos lineales
@@ -271,7 +274,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500)); // Reducido para minimizar parpadeos
       if (videoElement.srcObject) {
         console.log('Video ya tiene stream, evitando reasignación.');
       } else {
@@ -369,7 +372,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       mostrarToast('Escaneando... Mantén presionado y alinea el código.', 'info');
       try {
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500)); // Reducido para minimizar parpadeos
         decodeController = {};
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
           if (!decodeController) return; // Detener si decodeController es nulo
@@ -504,7 +507,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               }
             }, 10000);
           }
-        }, { maxDecodeInterval: 300 }); // Aumentado para mejor detección
+        }, { maxDecodeInterval: 500 }); // Aumentado para mejor detección
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
         mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
