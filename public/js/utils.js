@@ -46,7 +46,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
   let frameCount = 0; // Contador de frames procesados
   const maxIntentos = 10; // Aumentado para más intentos
   let lastCodes = [];
-  const confirmacionesRequeridas = 2; // Reducido para mejor detección
+  const confirmacionesRequeridas = 1; // Reducido para menor estrictidad
   let reader = null;
   let decodeController = null; // Controlador para detener decodificación
 
@@ -105,8 +105,8 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 1280 }, // Reducido para mejor rendimiento
-          height: { ideal: 720 }, // Reducido para mejor rendimiento
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
           focusMode: 'continuous'
         }
       });
@@ -254,11 +254,11 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
     try {
       const hints = new Map();
       hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-        ZXing.BarcodeFormat.EAN_8, // Añadido para mayor compatibilidad
+        ZXing.BarcodeFormat.EAN_8,
         ZXing.BarcodeFormat.EAN_13
       ]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-      hints.set(ZXing.DecodeHintType.PURE_BARCODE, true); // Priorizar códigos lineales
+      hints.set(ZXing.DecodeHintType.PURE_BARCODE, false); // Desactivado para menor estrictidad
       reader = new ZXing.BrowserMultiFormatReader(hints);
       console.log('ZXing inicializado con formatos:', Array.from(hints.get(ZXing.DecodeHintType.POSSIBLE_FORMATS)));
 
@@ -274,7 +274,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       console.log('Stream de video iniciado:', stream);
 
       // Retrasar asignación del stream para asegurar inicialización
-      await new Promise(resolve => setTimeout(resolve, 500)); // Reducido para minimizar parpadeos
+      await new Promise(resolve => setTimeout(resolve, 500));
       if (videoElement.srcObject) {
         console.log('Video ya tiene stream, evitando reasignación.');
       } else {
@@ -371,8 +371,21 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
       contenedorCamara.querySelector('.guia-codigo').classList.add('escaneando');
       mostrarToast('Escaneando... Mantén presionado y alinea el código.', 'info');
       try {
+        // Evitar reasignar srcObject o reproducir si ya está activo
+        if (videoElement && stream && videoElement.srcObject === stream && !videoElement.paused) {
+          console.log('Video ya activo, iniciando decodificación directamente.');
+        } else if (videoElement && stream) {
+          videoElement.srcObject = stream;
+          if (videoElement.paused) {
+            await videoElement.play().catch(err => {
+              console.error('Error al reproducir video:', err);
+              mostrarToast('Error al reproducir video: ' + err.message, 'error');
+              throw err;
+            });
+          }
+        }
         // Retrasar decodificación para estabilizar video
-        await new Promise(resolve => setTimeout(resolve, 500)); // Reducido para minimizar parpadeos
+        await new Promise(resolve => setTimeout(resolve, 500));
         decodeController = {};
         reader.decodeFromVideoDevice(null, videoElement, (result, err) => {
           if (!decodeController) return; // Detener si decodeController es nulo
@@ -507,7 +520,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               }
             }, 10000);
           }
-        }, { maxDecodeInterval: 500 }); // Aumentado para mejor detección
+        }, { maxDecodeInterval: 1000 }); // Aumentado para mejor detección
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
         mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');
