@@ -522,7 +522,7 @@ function iniciarEscaneoContinuo(contenedorCamara, btnEscanear, btnEscanearAhora,
               }
             }, 10000);
           }
-        }, { maxDecodeInterval: 400 }); // Punto medio para velocidad y precisión
+        }, { maxDecodeInterval: 300 }); // Más rápido
       } catch (error) {
         console.error('Error al iniciar decodeFromVideoDevice:', error);
         mostrarToast('Error al iniciar escaneo: ' + error.message, 'error');

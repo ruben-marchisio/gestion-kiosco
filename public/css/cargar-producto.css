@@ -128,8 +128,8 @@ footer a {
 .camara {
   position: relative;
   width: 100%;
-  max-width: 280px; /* Ajustado para proporción vertical */
-  height: 350px; /* Vertical */
+  max-width: 260px; /* Reducido para mejor rendimiento */
+  height: 320px; /* Más pequeño, vertical */
   margin: 10px auto;
   border: 2px solid #ccc;
   overflow: hidden;
@@ -146,9 +146,9 @@ footer a {
 .guia-codigo {
   position: absolute;
   top: 10%; /* Más espacio para tolerancia */
-  left: 10%;
-  width: 80%; /* 224px en 280px */
-  height: 80%; /* 280px en 350px */
+  left: 15%; /* Centrado, más angosto */
+  width: 70%; /* ~182px en 260px, más angosto */
+  height: 85%; /* ~272px en 320px */
   border: 2px solid #ccc;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -179,7 +179,7 @@ footer a {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 280px; /* Ajustado al contenedor */
+  max-width: 260px; /* Ajustado al contenedor */
 }
 
 .boton-escaneo, .boton-cerrar {
@@ -260,16 +260,16 @@ footer a {
   #botones-camara {
     flex-direction: row;
     justify-content: space-between;
-    max-width: 240px;
+    max-width: 220px;
   }
 
   .camara {
-    max-width: 240px;
-    height: 300px;
+    max-width: 220px;
+    height: 280px;
   }
 
   .guia-codigo {
-    width: 80%; /* 192px en 240px */
-    height: 80%; /* 240px en 300px */
+    width: 70%; /* ~154px en 220px */
+    height: 85%; /* ~238px en 280px */
   }
 }
