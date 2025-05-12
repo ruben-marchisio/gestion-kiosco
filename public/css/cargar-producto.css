@@ -1,21 +1,29 @@
+/* Importar fuente Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 /* Estilos generales */
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(to bottom, #121212, #1e272e); /* Fondo oscuro */
+  color: #ffffff; /* Blanco puro para legibilidad */
+  letter-spacing: 0.5px;
 }
 
+/* Header */
 header {
-  background: linear-gradient(to right, #28a745, #2ecc71);
-  color: white;
-  padding: 10px 20px;
+  background: #121212;
+  border-bottom: 2px solid #00ddeb; /* Neón cian */
+  color: #ffffff;
+  padding: 15px 20px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 221, 235, 0.2);
+  animation: zoomIn 0.8s ease-in;
 }
 
 .logo-img {
-  width: 50px;
+  width: 70px; /* Más grande */
   height: auto;
+  animation: rotateIn 0.8s ease-in;
 }
 
 .nav-principal {
@@ -23,26 +31,42 @@ header {
 }
 
 .nav-principal a {
-  color: white;
-  margin: 0 10px;
+  color: #ffffff; /* Blanco puro */
+  margin: 0 15px;
   text-decoration: none;
+  font-weight: 700; /* Más audaz */
+  font-size: 18px; /* Equivalente a text-lg */
+  transition: text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.nav-principal a:hover {
+  text-shadow: 0 0 10px #00ddeb, 0 0 20px #00ddeb;
+  transform: scale(1.1);
 }
 
 .nav-principal a.activo {
-  font-weight: bold;
-  border-bottom: 2px solid white;
+  font-weight: 700;
+  border-bottom: 2px solid #00ddeb;
 }
 
+/* Main */
 main {
   padding: 20px;
 }
 
 .formulario-carga, .lista-productos-proceso {
-  background: white;
+  background: #1e272e; /* Negro suave */
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #00ddeb;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   margin-bottom: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.formulario-carga:hover, .lista-productos-proceso:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 221, 235, 0.3);
 }
 
 .form-campo {
@@ -52,36 +76,62 @@ main {
 .form-campo label {
   display: block;
   margin-bottom: 5px;
-  font-weight: bold;
+  font-weight: 700; /* Más audaz */
+  font-size: 16px; /* Equivalente a text-base */
+  color: #ffffff; /* Blanco puro */
 }
 
 .form-campo input, .form-campo select {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  border: 1px solid #b0bec5;
+  border-radius: 6px;
+  background: #2d3436;
+  color: #ffffff; /* Blanco puro */
+  font-size: 16px; /* Equivalente a text-base */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-campo input:focus, .form-campo select:focus {
+  border-color: #00ddeb;
+  box-shadow: 0 0 8px rgba(0, 221, 235, 0.4);
+  outline: none;
 }
 
 .form-acciones, .acciones-globales {
   display: flex;
   gap: 10px;
+
 }
 
 .boton-accion {
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 700; /* Más audaz */
+  font-size: 18px; /* Equivalente a text-lg */
+  transition: all 0.3s ease;
 }
 
 .boton-primario {
-  background: #28a745;
-  color: white;
+  background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
+  color: #ff1744; /* Rojo neón para Agregar Producto y Confirmar Todos */
+  animation: glow 2s infinite;
 }
 
 .boton-cancelar {
-  background: #dc3545;
-  color: white;
+  background: #ff1744; /* Rojo neón */
+  color: #ffffff; /* Blanco puro */
+}
+
+.boton-accion:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(187, 46, 4, 0.493);
+}
+
+.boton-accion:active {
+  transform: scale(0.95);
 }
 
 .tabla-productos-proceso {
@@ -91,49 +141,72 @@ main {
 }
 
 .tabla-productos-proceso th, .tabla-productos-proceso td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  border: 1px solid #b0bec5;
+  padding: 10px;
   text-align: left;
+  color: #ffffff; /* Blanco puro */
+  font-size: 16px; /* Equivalente a text-base */
 }
 
 .tabla-productos-proceso th {
-  background: #28a745;
-  color: white;
+  background: #00b8d4; /* Cian */
+  color: #ffffff; /* Blanco puro */
+  font-weight: 700;
+}
+
+.tabla-productos-proceso tr:nth-child(even) {
+  background: #e2edf0;
+}
+
+.tabla-productos-proceso tr:hover {
+  background: #b2ebf2; /* Cian claro */
 }
 
 .tabla-productos-proceso tr.pendiente {
-  background: #fff3cd;
+  background: #636e72;
+
 }
 
 .tabla-productos-proceso tr.completo {
-  background: #d4edda;
+  background: #00b8d4;
 }
 
+/* Footer */
 footer {
   text-align: center;
-  padding: 10px;
-  background: #333;
-  color: white;
+  padding: 15px;
+  background: #121212;
+  color: #ffffff; /* Blanco puro */
   position: relative;
   bottom: 0;
   width: 100%;
+  box-shadow: 0 -2px 8px rgba(0, 221, 235, 0.2);
 }
 
 footer a {
-  color: white;
+  color: #ffffff;
   text-decoration: none;
+  font-size: 18px; /* Equivalente a text-lg */
+  font-weight: 700;
+  transition: text-shadow 0.3s ease;
+}
+
+footer a:hover {
+  text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0; /* Púrpura neón */
 }
 
 /* Estilos de escaneo */
 .camara {
   position: relative;
   width: 100%;
-  max-width: 260px; /* Reducido para mejor rendimiento */
-  height: 320px; /* Más pequeño, vertical */
+  max-width: 260px;
+  height: 320px;
   margin: 10px auto;
-  border: 2px solid #ccc;
+  border: 2px solid #00ddeb; /* Neón cian */
+  border-radius: 8px;
   overflow: hidden;
-  background: #000; /* Fondo negro para detectar video no renderizado */
+  background: #000;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.3);
 }
 
 .camara video {
@@ -145,27 +218,37 @@ footer a {
 
 .guia-codigo {
   position: absolute;
-  top: 10%; /* Más espacio para tolerancia */
-  left: 15%; /* Centrado, más angosto */
-  width: 70%; /* ~182px en 260px, más angosto */
-  height: 85%; /* ~272px en 320px */
-  border: 2px solid #ccc;
+  top: 10%;
+  left: 15%;
+  width: 70%; /* ~182px, angosta */
+  height: 85%; /* ~272px */
+  border: 2px solid #b0bec5;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   pointer-events: none;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.guia-codigo::after {
+  content: 'Alineá el código de lado';
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #00ddeb; /* Neón cian */
+  font-size: 14px; /* Ligeramente más grande */
+  font-weight: 700;
+  background: rgba(18, 18, 18, 0.9);
+  padding: 5px 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 221, 235, 0.4);
+  animation: fadeIn 1s ease-in;
 }
 
 .guia-codigo.escaneando {
-  border-color: #28a745;
-  background: rgba(40, 167, 69, 0.2);
-  animation: blink 0.5s infinite;
-}
-
-@keyframes blink {
-  0% { border-color: #28a745; }
-  50% { border-color: transparent; }
-  100% { border-color: #28a745; }
+  border-color: #00ddeb;
+  background: rgba(0, 221, 235, 0.2);
+  animation: neonBlink 1s infinite; /* Vibrante */
 }
 
 .botones-escaneo {
@@ -179,7 +262,7 @@ footer a {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 260px; /* Ajustado al contenedor */
+  max-width: 260px;
 }
 
 .boton-escaneo, .boton-cerrar {
@@ -192,27 +275,35 @@ footer a {
   justify-content: center;
   cursor: pointer;
   font-size: 24px;
+  transition: all 0.3s ease;
 }
 
 .boton-escaneo {
-  background: linear-gradient(to right, #28a745, #2ecc71);
-  color: white;
+  background: linear-gradient(to right, #00ddeb, #00b8d4);
+  color: #ff1744; /* Rojo neón */
 }
 
 .boton-cerrar {
-  background: #dc3545;
-  color: white;
+  background: #ff1744;
+  color: #ffffff;
 }
 
 .boton-escaneo:hover {
-  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
-}
-
-.boton-cerrar:hover {
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
   transform: scale(1.1);
 }
 
+.boton-cerrar:hover {
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
+  transform: scale(1.1);
+}
+
+.boton-escaneo:active, .boton-cerrar:active {
+  transform: scale(0.95);
+}
+
 #circulo-progreso circle {
+  stroke: #00ddeb; /* Neón cian */
   transition: stroke-dashoffset 0.3s ease;
 }
 
@@ -226,31 +317,75 @@ footer a {
 
 .toast {
   background: #333;
-  color: white;
+  color: #ffffff; /* Blanco puro */
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 6px;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.3);
+  font-size: 18px; /* Equivalente a text-lg */
+  font-weight: 700;
+  animation: bounceInRight 0.4s ease-in;
 }
 
 .toast.exito {
-  background: #28a745;
+  background: #00b8d4;
 }
 
 .toast.error {
-  background: #dc3545;
+  background: #ff1744;
 }
 
 .toast.info {
-  background: #17a2b8;
+  background: #9c27b0; /* Púrpura neón */
+}
+
+/* Animaciones */
+@keyframes neonBlink {
+  0% { border-color: #00ddeb; }
+  50% { border-color: #9c27b0; } /* Púrpura neón */
+  100% { border-color: #00ddeb; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rotateIn {
+  from { transform: rotate(0deg); opacity: 0; }
+  to { transform: rotate(360deg); opacity: 1; }
+}
+
+@keyframes bounceInRight {
+  from { transform: translateX(50px); opacity: 0; }
+  60% { transform: translateX(-10px); opacity: 1; }
+  80% { transform: translateX(5px); }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(0, 221, 235, 0.5); }
+  100% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
 }
 
 /* Responsividad */
 @media (max-width: 600px) {
   .formulario-carga, .lista-productos-proceso {
-    padding: 10px;
+    padding: 15px;
   }
 
   .botones-escaneo {
@@ -269,7 +404,12 @@ footer a {
   }
 
   .guia-codigo {
-    width: 70%; /* ~154px en 220px */
-    height: 85%; /* ~238px en 280px */
+    width: 70%; /* ~154px */
+    height: 85%; /* ~238px */
+  }
+
+  .guia-codigo::after {
+    font-size: 12px;
+    padding: 4px 8px;
   }
 }
