@@ -161,7 +161,6 @@
                 required
                 class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
               >
-                <
                 <option value="">Selecciona una categoría</option>
                 <option value="bebidas">
                   <i class="fas fa-glass-whiskey"></i> Bebidas
@@ -662,42 +661,38 @@
         </div>
 
         <div
-          class="lista-productos-proceso bg-gray-800 p-6 rounded-lg border border-cyan-400 shadow-lg shadow-cyan-500/20 hover:-translate-y-1 transition"
-        >
-          <h3 class="text-xl font-bold text-cyan-400 mb-4">
-            Productos en Proceso
-          </h3>
-          <table id="tabla-productos-proceso" class="w-full text-sm">
-            <thead>
-              <tr class="bg-cyan-600 text-gray-900">
-                <th class="p-2">Nombre</th>
-                <th class="p-2">Marca</th>
-                <th class="p-2">Categoría</th>
-                <th class="p-2">Cantidad</th>
-                <th class="p-2">Estado</th>
-                <th class="p-2">Ícono</th>
-                <th class="p-2">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="lista-productos-body" class="text-gray-200"></tbody>
-          </table>
-          <div class="acciones-globales flex gap-4 mt-4">
-            <button
-              type="button"
-              id="confirmar-todos"
-              class="boton-accion h-12 px-4 bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-md hover:shadow-cyan hover:scale-105 active:scale-95 transition"
-            >
-              <i class="fas fa-check mr-1"></i> Confirmar Todos
-            </button>
-            <button
-              type="button"
-              id="cancelar-todo"
-              class="boton-accion h-12 px-4 bg-red-600 text-gray-200 rounded-md hover:shadow-red-600 hover:scale-105 active:scale-95 transition"
-            >
-              <i class="fas fa-times mr-1"></i> Cancelar Todo
-            </button>
-          </div>
-        </div>
+  class="lista-productos-proceso bg-gray-800 p-6 rounded-lg border border-cyan-400 shadow-lg shadow-cyan-500/20 hover:-translate-y-1 transition"
+>
+  <h3 class="text-xl font-bold text-cyan-400 mb-4">Productos en Proceso</h3>
+  <div class="overflow-x-auto"> <!-- Added for horizontal scrolling on small screens -->
+    <table id="tabla-productos-proceso" class="tabla-productos-proceso w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-cyan-600 text-gray-900">
+          <th class="p-2 w-1/2 font-bold">Nombre</th>
+          <th class="p-2 w-1/5 font-bold">Cantidad</th>
+          <th class="p-2 w-3/10 font-bold">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="lista-productos-body" class="text-gray-200"></tbody>
+    </table>
+  </div>
+  <div class="acciones-globales flex gap-4 mt-4 justify-center">
+    <button
+      type="button"
+      id="confirmar-todos"
+      class="boton-accion h-12 px-4 bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-md hover:shadow-cyan hover:scale-105 active:scale-95 transition"
+    >
+      <i class="fas fa-check mr-1"></i> Confirmar Todos
+    </button>
+    <button
+      type="button"
+      id="cancelar-todo"
+      class="boton-accion h-12 px-4 bg-red-600 text-gray-200 rounded-md hover:shadow-red-600 hover:scale-105 active:scale-95 transition"
+    >
+      <i class="fas fa-times mr-1"></i> Cancelar Todo
+    </button>
+  </div>
+</div>
 
         <div
           id="toast-container"

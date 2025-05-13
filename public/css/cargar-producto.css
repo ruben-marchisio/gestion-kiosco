@@ -4,16 +4,15 @@
 /* Estilos generales */
 body {
   font-family: "Roboto", sans-serif;
-  background: linear-gradient(to bottom, #121212, #1e272e); /* Fondo oscuro */
-  color: #ffffff !important; /* Blanco puro para legibilidad */
+  background: linear-gradient(to bottom, #121212, #1e272e);
+  color: #ffffff;
   letter-spacing: 0.5px;
 }
 
 /* Header */
 header {
   background: #121212;
-  border-bottom: 2px solid #00ddeb; /* Neón cian */
-  color: #ffffff !important;
+  border-bottom: 2px solid #00ddeb;
   padding: 15px 20px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 221, 235, 0.2);
@@ -21,7 +20,7 @@ header {
 }
 
 .logo-img {
-  width: 70px; /* Más grande */
+  width: 70px;
   height: auto;
   animation: rotateIn 0.8s ease-in;
 }
@@ -31,11 +30,11 @@ header {
 }
 
 .nav-principal a {
-  color: #ffffff !important; /* Blanco puro */
+  color: #ffffff;
   margin: 0 15px;
   text-decoration: none;
-  font-weight: 700; /* Más audaz */
-  font-size: 18px; /* Equivalente a text-lg */
+  font-weight: 700;
+  font-size: 18px;
   transition: text-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -54,18 +53,33 @@ main {
   padding: 20px;
 }
 
-.formulario-carga,
-.lista-productos-proceso {
-  background: #1e272e; /* Negro suave */
+.formulario-carga {
+  background: #1e272e;
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid #00ddeb;
+  border: 2px solid #00ddeb;
   box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
-  margin-bottom: 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.formulario-carga:hover,
+.formulario-carga:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 221, 235, 0.3);
+}
+
+.lista-productos-proceso {
+  background: #1e272e;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #00ddeb;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .lista-productos-proceso:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0, 221, 235, 0.3);
@@ -78,9 +92,9 @@ main {
 .form-campo label {
   display: block;
   margin-bottom: 5px;
-  font-weight: 700; /* Más audaz */
-  font-size: 16px; /* Equivalente a text-base */
-  color: #ffffff !important; /* Blanco puro */
+  font-weight: 700;
+  font-size: 16px;
+  color: #ffffff;
 }
 
 .form-campo input,
@@ -90,8 +104,8 @@ main {
   border: 1px solid #b0bec5;
   border-radius: 6px;
   background: #2d3436;
-  color: #ffffff !important; /* Blanco puro */
-  font-size: 16px; /* Equivalente a text-base */
+  color: #ffffff;
+  font-size: 16px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -106,6 +120,7 @@ main {
 .acciones-globales {
   display: flex;
   gap: 10px;
+  justify-content: center;
 }
 
 .boton-accion {
@@ -113,22 +128,26 @@ main {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: 700; /* Más audaz */
-  font-size: 18px; /* Equivalente a text-lg */
+  font-weight: 700;
+  font-size: 18px;
   transition: all 0.3s ease;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .boton-primario,
 #agregar-producto.boton-accion,
 #confirmar-todos.boton-accion {
-  background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
-  color: #ffffff !important; /* Blanco puro para Agregar Producto y Confirmar Todos */
-  animation: glow 2s infinite;
+  background: linear-gradient(to right, #00ddeb, #00b8d4);
+  color: #ffffff;
 }
 
-.boton-cancelar {
-  background: #ff1744; /* Rojo neón */
-  color: #ffffff !important; /* Blanco puro */
+.boton-cancelar,
+#cancelar-producto.boton-accion,
+#cancelar-todo.boton-accion {
+  background: #ff1744;
+  color: #ffffff;
 }
 
 .boton-accion:hover {
@@ -143,23 +162,25 @@ main {
 .tabla-productos-proceso {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  background: #1e272e;
+  border: 2px solid #00ddeb;
 }
 
 .tabla-productos-proceso th,
 .tabla-productos-proceso td {
-  border: 1px solid #b0bec5;
-  padding: 10px;
-  text-align: left;
-  color: #ffffff !important; /* Blanco puro */
-  font-size: 16px; /* Equivalente a text-base */
+  border: 1px solid #00ddeb;
+  padding: 12px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.tabla-productos-proceso thead tr,
-.tabla-productos-proceso thead th,
-#tabla-productos-proceso thead tr th {
-  background: #00b8d4; /* Cian */
-  color: #ffffff !important; /* Blanco puro para encabezados */
+.tabla-productos-proceso th {
+  background: #00b8d4;
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -168,49 +189,57 @@ main {
 }
 
 .tabla-productos-proceso tr:hover {
-  background: #b2ebf2; /* Cian claro */
+  background: rgba(0, 221, 235, 0.2);
+  box-shadow: 0 0 8px rgba(0, 221, 235, 0.3);
 }
 
 .tabla-productos-proceso tr.pendiente {
-  background: #636e72;
+  background: rgba(150, 160, 165, 0.2);
+  border-bottom: 2px solid #00ddeb;
 }
 
 .tabla-productos-proceso tr.completo {
-  background: #00b8d4;
+  background: rgba(0, 200, 230, 0.2);
+  border-bottom: 2px solid #00ddeb;
 }
 
-/* Footer */
-footer {
-  text-align: center;
-  padding: 15px;
-  background: #121212;
-  color: #ffffff !important; /* Blanco puro */
-  position: relative;
-  bottom: 0;
-  width: 100%;
-  box-shadow: 0 -2px 8px rgba(0, 221, 235, 0.2);
+.tabla-productos-proceso td.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: nowrap;
 }
 
-footer a {
-  color: #ffffff !important;
-  text-decoration: none;
-  font-size: 18px; /* Equivalente a text-lg */
-  font-weight: 700;
-  transition: text-shadow 0.3s ease;
+.tabla-productos-proceso .boton-accion {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+  min-width: 90px;
+  white-space: nowrap;
 }
 
-footer a:hover {
-  text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0; /* Púrpura neón */
+.tabla-productos-proceso .confirmar-producto {
+  background: linear-gradient(to right, #00ddeb, #00b8d4);
+  color: #ffffff;
 }
 
-/* Estilos de escaneo */
+.tabla-productos-proceso .eliminar-producto {
+  background: #ff1744;
+  color: #ffffff;
+}
+
+/* Estilo de escaneo */
 .camara {
   position: relative;
   width: 100%;
   max-width: 260px;
   height: 320px;
   margin: 10px auto;
-  border: 2px solid #00ddeb; /* Neón cian */
+  border: 2px solid #00ddeb;
   border-radius: 8px;
   overflow: hidden;
   background: #000;
@@ -228,8 +257,8 @@ footer a:hover {
   position: absolute;
   top: 10%;
   left: 15%;
-  width: 70%; /* ~182px, angosta */
-  height: 85%; /* ~272px */
+  width: 70%;
+  height: 85%;
   border: 2px solid #b0bec5;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -243,8 +272,8 @@ footer a:hover {
   top: -30px;
   left: 50%;
   transform: translateX(-50%);
-  color: #00ddeb; /* Neón cian */
-  font-size: 14px; /* Ligeramente más grande */
+  color: #00ddeb;
+  font-size: 14px;
   font-weight: 700;
   background: rgba(18, 18, 18, 0.9);
   padding: 5px 10px;
@@ -256,7 +285,7 @@ footer a:hover {
 .guia-codigo.escaneando {
   border-color: #00ddeb;
   background: rgba(0, 221, 235, 0.2);
-  animation: neonBlink 1s infinite; /* Vibrante */
+  animation: neonBlink 1s infinite;
 }
 
 .botones-escaneo {
@@ -289,12 +318,12 @@ footer a:hover {
 
 .boton-escaneo {
   background: linear-gradient(to right, #00ddeb, #00b8d4);
-  color: #ffffff !important; /* Blanco puro */
+  color: #ffffff;
 }
 
 .boton-cerrar {
   background: #ff1744;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .boton-escaneo:hover {
@@ -313,7 +342,7 @@ footer a:hover {
 }
 
 #circulo-progreso circle {
-  stroke: #00ddeb; /* Neón cian */
+  stroke: #00ddeb;
   transition: stroke-dashoffset 0.3s ease;
 }
 
@@ -327,7 +356,7 @@ footer a:hover {
 
 .toast {
   background: #333;
-  color: #ffffff !important; /* Blanco puro */
+  color: #ffffff;
   padding: 10px 20px;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -335,7 +364,7 @@ footer a:hover {
   align-items: center;
   gap: 10px;
   box-shadow: 0 4px 12px rgba(0, 221, 235, 0.3);
-  font-size: 18px; /* Equivalente a text-lg */
+  font-size: 18px;
   font-weight: 700;
   animation: bounceInRight 0.4s ease-in;
 }
@@ -349,13 +378,13 @@ footer a:hover {
 }
 
 .toast.info {
-  background: #9c27b0; /* Púrpura neón */
+  background: #9c27b0;
 }
 
 /* Animaciones */
 @keyframes neonBlink {
   0% { border-color: #00ddeb; }
-  50% { border-color: #9c27b0; } /* Púrpura neón */
+  50% { border-color: #9c27b0; }
   100% { border-color: #00ddeb; }
 }
 
@@ -381,17 +410,6 @@ footer a:hover {
   to { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes glow {
-  0% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(0, 221, 235, 0.5); }
-  100% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
-}
-
 /* Responsividad */
 @media (max-width: 600px) {
   .formulario-carga,
@@ -415,12 +433,40 @@ footer a:hover {
   }
 
   .guia-codigo {
-    width: 70%; /* ~154px */
-    height: 85%; /* ~238px */
+    width: 70%;
+    height: 85%;
   }
 
   .guia-codigo::after {
     font-size: 12px;
     padding: 4px 8px;
+  }
+
+  .boton-accion {
+    padding: 8px 16px;
+    font-size: 16px;
+    min-width: 100px;
+  }
+
+  .tabla-productos-proceso th,
+  .tabla-productos-proceso td {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .tabla-productos-proceso .boton-accion {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-width: 80px;
+    line-height: 1.6;
+  }
+
+  .tabla-productos-proceso .boton-accion i {
+    margin-right: 4px;
+    font-size: 13px;
+  }
+
+  .tabla-productos-proceso td.acciones {
+    gap: 8px;
   }
 }

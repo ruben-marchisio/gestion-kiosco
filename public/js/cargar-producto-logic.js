@@ -45,14 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   console.log('Botones encontrados:', btnEscanear, btnEscanearAhora, btnCerrarCamara);
 
-  // Función para limpiar eventos del contenedor
-  function limpiarEventosContenedor() {
-    if (camaraCarga) {
-      const clone = camaraCarga.cloneNode(true);
-      camaraCarga.parentNode.replaceChild(clone, camaraCarga);
-      camaraCarga = clone;
-      console.log('Eventos del contenedor limpiados.');
-    }
+  // Función para mostrar toast
+  function mostrarToast(mensaje, tipo) {
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo} flex items-center gap-2 p-3 rounded-md`;
+    toast.innerHTML = `<i class="fas fa-${tipo === 'error' ? 'exclamation-circle' : tipo === 'success' ? 'check-circle' : 'info-circle'}"></i> ${mensaje}`;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   }
 
   // Función para recrear el contenedor de la cámara
@@ -78,15 +78,25 @@ document.addEventListener('DOMContentLoaded', () => {
       circulo.style.position = 'absolute';
       circulo.style.top = '10px';
       circulo.style.right = '10px';
-      circulo.innerHTML = '<circle cx="15" cy="15" r="12" stroke="#28a745" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle>';
+      circulo.innerHTML = '<circle cx="15" cy="15" r="12" stroke="#00ddeb" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle>';
       newContainer.appendChild(circulo);
       parent.replaceChild(newContainer, oldContainer);
       camaraCarga = newContainer;
       console.log('Contenedor de cámara recreado.');
       return true;
     } catch (error) {
-      console.error('Error al recrear contenedor:', error);
+      console.error('Error al recrear contenedor:', titre);
       return false;
+    }
+  }
+
+  // Función para limpiar eventos del contenedor
+  function limpiarEventosContenedor() {
+    if (camaraCarga) {
+      const clone = camaraCarga.cloneNode(true);
+      camaraCarga.parentNode.replaceChild(clone, camaraCarga);
+      camaraCarga = clone;
+      console.log('Eventos del contenedor limpiados.');
     }
   }
 
@@ -234,23 +244,24 @@ document.addEventListener('DOMContentLoaded', () => {
     tablaProductosProceso.innerHTML = '';
     productosEnProceso.forEach((producto, index) => {
       const fila = document.createElement('tr');
+      fila.classList.add(
+        producto.estado === 'Pendiente' ? 'pendiente' : 'completo',
+        'hover:bg-cyan-900',
+        'transition',
+        'bg-gray-800'
+      );
       fila.innerHTML = `
-        <td>${producto.nombre}</td>
-        <td>${producto.marca}</td>
-        <td>${producto.categoria}${producto.subcategoria ? ` (${producto.subcategoria})` : ''}</td>
-        <td>${producto.cantidadUnidades}</td>
-        <td class="estado">${producto.estado}</td>
-        <td><i class="${producto.icono !== 'default' ? `fas fa-${producto.icono}` : ''}"></i></td>
-        <td class="acciones">
-          <button class="boton-accion editar confirmar-producto" data-index="${index}"><i class="fas fa-check"></i></button>
-          <button class="boton-accion eliminar eliminar-producto" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
+        <td class="p-3">${producto.nombre || 'Sin nombre'}</td>
+        <td class="p-3">${producto.cantidadUnidades || 0}</td>
+        <td class="acciones p-3 flex justify-center gap-2">
+          <button class="boton-accion confirmar-producto text-sm px-4 py-2 rounded-md" data-index="${index}">
+            <i class="fas fa-check mr-1"></i> Confirmar
+          </button>
+          <button class="boton-accion eliminar-producto text-sm px-4 py-2 rounded-md" data-index="${index}">
+            <i class="fas fa-trash-alt mr-1"></i> Eliminar
+          </button>
         </td>
       `;
-      if (producto.estado === 'Pendiente') {
-        fila.classList.add('pendiente');
-      } else if (producto.estado === 'Confirmado') {
-        fila.classList.add('completo');
-      }
       tablaProductosProceso.appendChild(fila);
     });
 
