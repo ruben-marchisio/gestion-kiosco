@@ -1,210 +1,295 @@
-/* Estilos generales para el cuerpo de la página */
+/* Importar fuente Roboto */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+/* Estilos generales */
 body {
-  font-family: 'Poppins', Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(to bottom, #121212, #1e272e); /* Fondo oscuro */
+  color: #ffffff !important; /* Blanco puro */
+  letter-spacing: 0.5px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-  /* Propósito: Define la apariencia base de menu-principal.html */
-  /* Usa la fuente Poppins (consistente con otras páginas) con fallback a Arial */
-  /* Aplica un fondo gradiente azul-gris, organiza el contenido en columna para ocupar toda la altura */
 
-/* Encabezado */
+/* Header */
 header {
-  background-color: #2c3e50;
-  color: white;
+  background: #121212;
+  border-bottom: 2px solid #00ddeb; /* Neón cian */
+  color: #ffffff !important;
+  padding: 15px 20px;
   text-align: center;
-  padding: 0.6em 0;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 221, 235, 0.2);
+  animation: zoomIn 0.8s ease-in;
 }
+
 .logo {
   display: flex;
   justify-content: center;
   margin-bottom: 8px;
 }
+
 .logo-img {
-  width: 45px;
+  width: 60px; /* Ajustado para consistencia */
   height: auto;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px solid #00ddeb; /* Borde cian */
+  animation: rotateIn 0.8s ease-in;
 }
+
 h1 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 24px; /* Equivalente a text-2xl */
+  font-weight: 700;
+  color: #00ddeb; /* Cian neón */
 }
+
 .nav-principal {
   position: absolute;
   top: 10px;
   right: 10px;
 }
-.nav-principal button {
+
+.nav-principal button.cerrar-sesion {
   display: flex;
   align-items: center;
-  color: white;
-  text-decoration: none;
-  font-size: 13px;
-  padding: 6px 10px;
+  background: #ff1744; /* Rojo neón */
+  color: #ffffff !important; /* Blanco puro */
+  font-size: 14px; /* Equivalente a text-sm */
+  font-weight: 700;
+  padding: 8px 12px;
   border-radius: 20px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
   border: none;
-  background: none;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
-.nav-principal button:hover {
-  background-color: #3498db;
+
+.nav-principal button.cerrar-sesion:hover {
+  background: #e60026; /* Rojo más oscuro */
   transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
 }
-.nav-principal button i {
+
+.nav-principal button.cerrar-sesion i {
   margin-right: 4px;
-  font-size: 15px;
+  font-size: 16px;
 }
-  /* Propósito: Estiliza el encabezado con logo, título, y botón de cerrar sesión */
-  /* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra para profundidad */
-  /* Logo más pequeño (45px) que en otras páginas, centrado */
-  /* Título (h1) más compacto (20px), sin márgenes */
-  /* Botón de cerrar sesión en la esquina superior derecha, con efecto de hover (fondo azul, escalado) */
 
 /* Contenido Principal */
 main {
   flex: 1;
-  padding-top: 100px;
-  padding-bottom: 50px;
+  padding-top: 120px; /* Espacio para header fijo */
+  padding-bottom: 60px; /* Espacio para footer fijo */
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
+
 #inicio {
   width: 96%;
-  max-width: 1000px;
-  background-color: rgba(255, 255, 255, 0.9);
+  max-width: 960px; /* Similar a max-w-3xl */
+  background: #1e272e; /* Negro suave */
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid #00ddeb; /* Borde cian */
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   padding: 20px;
   text-align: center;
   animation: fadeIn 1s ease-in-out;
 }
+
 .alert {
-  font-size: 16px;
-  color: #e74c3c;
+  font-size: 16px; /* Equivalente a text-base */
+  font-weight: 700;
+  color: #ffffff !important; /* Blanco puro */
   margin-bottom: 20px;
-  padding: 10px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(231, 76, 60, 0.1);
+  background: rgba(255, 23, 68, 0.2); /* Rojo neón claro */
   border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(255, 23, 68, 0.3);
+  animation: bounceInRight 0.4s ease-in;
 }
+
 .alert i {
   margin-right: 8px;
+  font-size: 18px;
+  color: #ff1744; /* Rojo neón */
 }
-  /* Propósito: Formatea la sección principal con alertas y botones */
-  /* Main usa flexbox para centrar el contenido, con padding para evitar superposición con el encabezado y pie de página */
-  /* La sección #inicio es un contenedor blanco semitransparente, ancho (96%), con bordes redondeados, sombra, y animación de entrada */
-  /* La alerta destaca con fondo rojo claro, ícono, y texto centrado */
 
 /* Botones de acción */
 .acciones-principales {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 15px;
   justify-items: center;
 }
+
 .boton-accion {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 18px 20px;
-  background-color: #3498db;
-  color: white;
+  background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
+  color: #ffffff !important; /* Blanco puro */
   border: none;
   border-radius: 20px;
   text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 16px; /* Equivalente a text-base */
+  font-weight: 700;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
   max-width: 320px;
+  animation: glow 2s infinite;
 }
+
 .boton-accion:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
 }
+
+.boton-accion:active {
+  transform: scale(0.95);
+}
+
 .boton-accion i {
   margin-right: 8px;
   font-size: 18px;
 }
-  /* Propósito: Estiliza los botones de acciones principales (Cargar Producto, Ver Stock, etc.) */
-  /* Organiza los botones en una cuadrícula adaptable (mínimo 140px por botón) */
-  /* Botones azules (#3498db) con texto blanco, bordes redondeados, y efectos de hover (color más oscuro, elevación, sombra) */
-  /* Íconos grandes para destacar las acciones */
 
 /* Pie de Página */
 footer {
   text-align: center;
-  padding: 0.8em 0;
-  background-color: #2c3e50;
-  color: white;
+  padding: 15px;
+  background: #121212;
+  color: #ffffff !important; /* Blanco puro */
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 1000;
+  box-shadow: 0 -2px 8px rgba(0, 221, 235, 0.2);
 }
+
 footer a {
-  color: white;
+  color: #ffffff !important;
   text-decoration: none;
-  font-size: 13px;
-  transition: color 0.3s ease;
+  font-size: 16px; /* Equivalente a text-base */
+  font-weight: 700;
+  transition: text-shadow 0.3s ease;
 }
+
 footer a:hover {
-  color: #3498db;
+  text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0; /* Púrpura neón */
 }
+
 footer a i {
   margin-right: 4px;
+  font-size: 18px;
 }
-  /* Propósito: Estiliza el pie de página con el enlace de volver */
-  /* Fondo oscuro, fijo en la parte inferior, con enlace blanco que cambia a azul al pasar el mouse, más compacto que en otras páginas */
 
-/* Animación para la entrada del contenido */
+/* Animaciones */
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rotateIn {
+  from { transform: rotate(0deg); opacity: 0; }
+  to { transform: rotate(360deg); opacity: 1; }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-  /* Propósito: Añade una animación suave a la sección principal */
-  /* Desvanece y desplaza hacia arriba el contenido al cargar, igual que en otras páginas */
+
+@keyframes bounceInRight {
+  from { transform: translateX(50px); opacity: 0; }
+  60% { transform: translateX(-10px); opacity: 1; }
+  80% { transform: translateX(5px); }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(0, 221, 235, 0.5); }
+  100% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
+}
 
 /* Estilos responsivos */
 @media (max-width: 600px) {
-  header { padding: 0.5em 0; }
-  .logo-img { width: 40px; }
-  h1 { font-size: 16px; }
-  .nav-principal button { font-size: 11px; padding: 5px 8px; }
-  main { padding-top: 110px; padding-bottom: 40px; }
-  #inicio { width: 98%; padding: 15px; }
-  .alert { font-size: 14px; padding: 12px; margin-bottom: 25px; }
-  .acciones-principales { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .boton-accion { padding: 20px 25px; font-size: 14px; max-width: 90%; }
-  footer { padding: 0.6em 0; }
+  header {
+    padding: 10px 15px;
+  }
+  .logo-img {
+    width: 50px;
+  }
+  h1 {
+    font-size: 20px; /* Equivalente a text-xl */
+  }
+  .nav-principal button.cerrar-sesion {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  main {
+    padding-top: 100px;
+    padding-bottom: 50px;
+  }
+  #inicio {
+    width: 98%;
+    padding: 15px;
+  }
+  .alert {
+    font-size: 14px;
+    padding: 10px;
+  }
+  .acciones-principales {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .boton-accion {
+    padding: 16px 20px;
+    font-size: 14px;
+    max-width: 90%;
+  }
+  footer {
+    padding: 10px;
+  }
 }
+
 @media (min-width: 601px) and (max-width: 900px) {
-  .acciones-principales { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-  .boton-accion { padding: 18px 20px; font-size: 14px; max-width: 340px; }
-  h1 { font-size: 18px; }
-  .nav-principal button { font-size: 12px; }
+  .acciones-principales {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .boton-accion {
+    padding: 18px 20px;
+    font-size: 15px;
+    max-width: 340px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  .nav-principal button.cerrar-sesion {
+    font-size: 13px;
+  }
 }
+
 @media (min-width: 901px) {
-  .acciones-principales { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-  .boton-accion { padding: 18px 20px; font-size: 14px; max-width: 360px; }
+  .acciones-principales {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .boton-accion {
+    padding: 18px 20px;
+    font-size: 16px;
+    max-width: 360px;
+  }
 }
-  /* Propósito: Ajusta los estilos para diferentes tamaños de pantalla */
-  /* En móviles (≤600px): Reduce tamaños, apila botones en columna, ajusta padding para evitar superposición */
-  /* En tabletas (601-900px): Aumenta el tamaño mínimo de los botones en la cuadrícula */
-  /* En pantallas grandes (≥901px): Botones más anchos en la cuadrícula */

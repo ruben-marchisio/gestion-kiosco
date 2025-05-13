@@ -1,294 +1,733 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión Kiosco - Cargar Producto</title>
-  <!-- Tailwind CSS CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/public/css/cargar-producto.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-200 font-roboto">
-  <header class="bg-gray-900 border-b-2 border-cyan-400 shadow-cyan p-4 animate-zoomIn">
-    <div class="container mx-auto flex flex-col items-center">
-      <img src="/public/imagenes/logo.jpg" alt="Logo Gestión Kiosco" class="w-16 mb-2 animate-rotateIn">
-      <h1 class="text-2xl font-bold text-cyan-400">Cargar Producto</h1>
-      <nav class="nav-principal flex flex-wrap justify-center gap-3 mt-2">
-        <a href="/public/menu-principal.html" class="flex items-center px-3 py-1 text-base text-gray-200 hover:bg-cyan-500/20 hover:scale-105 transition"><i class="fas fa-home mr-1"></i> Inicio</a>
-        <a href="/public/cargar-producto.html" class="flex items-center px-3 py-1 text-base text-cyan-400 font-bold border-b-2 border-cyan-400"><i class="fas fa-plus mr-1"></i> Agregar Producto</a>
-        <a href="/public/stock.html" class="flex items-center px-3 py-1 text-base text-gray-200 hover:bg-cyan-500/20 hover:scale-105 transition"><i class="fas fa-boxes mr-1"></i> Stock</a>
-      </nav>
-    </div>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión Kiosco - Cargar Producto</title>
+    <!-- Tailwind CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/public/css/cargar-producto.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body
+    class="bg-gradient-to-b from-gray-900 to-gray-800 text-gray-200 font-roboto"
+  >
+    <header
+      class="bg-gray-900 border-b-2 border-cyan-400 shadow-cyan p-4 animate-zoomIn"
+    >
+      <div class="container mx-auto flex flex-col items-center">
+        <img
+          src="/public/imagenes/logo.jpg"
+          alt="Logo Gestión Kiosco"
+          class="w-16 mb-2 animate-rotateIn"
+        />
+        <h1 class="text-2xl font-bold text-cyan-400">Cargar Producto</h1>
+        <nav class="nav-principal flex flex-wrap justify-center gap-3 mt-2">
+          <a
+            href="/public/menu-principal.html"
+            class="flex items-center px-3 py-1 text-base text-gray-200 hover:bg-cyan-500/20 hover:scale-105 transition"
+            ><i class="fas fa-home mr-1"></i> Inicio</a
+          >
 
-  <main class="container mx-auto p-4 max-w-3xl">
-    <section id="cargar-producto">
-      <div class="formulario-carga bg-gray-800 p-6 rounded-lg border border-cyan-400 shadow-lg shadow-cyan-500/20 hover:-translate-y-1 transition">
-        <h2 class="text-xl font-bold text-cyan-400 mb-4">Cargar Producto</h2>
-        <form id="form-cargar-producto" class="space-y-4">
-          <div class="form-campo">
-            <label for="codigo" class="block text-sm font-bold text-gray-200">Código de Barras</label>
-            <input type="text" id="codigo" name="codigo" readonly class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-            <div id="camara-carga" class="camara relative w-full max-w-[260px] h-[320px] mx-auto my-2 border-2 border-cyan-400 rounded-lg overflow-hidden bg-black shadow-lg shadow-cyan-500/20" style="display: none;">
-              <div class="guia-codigo absolute top-[10%] left-[15%] w-[70%] h-[85%] border-2 border-gray-600 rounded-md bg-white/10 transition animate-neonBlink"></div>
-              <svg id="circulo-progreso" width="30" height="30" class="absolute top-2 right-2">
-                <circle cx="15" cy="15" r="12" stroke="#00ddeb" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle>
-              </svg>
-            </div>
-            <div class="botones-escaneo flex flex-col items-center gap-2 mt-2">
-              <button type="button" id="escanear" class="boton-escaneo w-12 h-12 flex items-center justify-center bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-full hover:shadow-cyan hover:scale-105 active:scale-95 transition"><i class="fas fa-barcode"></i></button>
-              <div id="botones-camara" class="flex justify-between w-full max-w-[260px]" style="display: none;">
-                <button type="button" id="escanear-ahora" class="boton-escaneo w-12 h-12 flex items-center justify-center bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-full hover:shadow-cyan hover:scale-105 active:scale-95 transition"><i class="fas fa-barcode"></i></button>
-                <button type="button" id="cerrar-camara" class="boton-cerrar w-12 h-12 flex items-center justify-center bg-red-600 text-gray-200 rounded-full hover:shadow-red-600 hover:scale-105 active:scale-95 transition"><i class="fas fa-times"></i></button>
+          <a
+            href="/public/stock.html"
+            class="flex items-center px-3 py-1 text-base text-gray-200 hover:bg-cyan-500/20 hover:scale-105 transition"
+            ><i class="fas fa-boxes mr-1"></i> Stock</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto p-4 max-w-3xl">
+      <section id="cargar-producto">
+        <div
+          class="formulario-carga bg-gray-800 p-6 rounded-lg border border-cyan-400 shadow-lg shadow-cyan-500/20 hover:-translate-y-1 transition"
+        >
+          <h2 class="text-xl font-bold text-cyan-400 mb-4">Cargar Producto</h2>
+          <form id="form-cargar-producto" class="space-y-4">
+            <div class="form-campo">
+              <label for="codigo" class="block text-sm font-bold text-gray-200"
+                >Código de Barras</label
+              >
+              <input
+                type="text"
+                id="codigo"
+                name="codigo"
+                readonly
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+              <div
+                id="camara-carga"
+                class="camara relative w-full max-w-[260px] h-[320px] mx-auto my-2 border-2 border-cyan-400 rounded-lg overflow-hidden bg-black shadow-lg shadow-cyan-500/20"
+                style="display: none"
+              >
+                <div
+                  class="guia-codigo absolute top-[10%] left-[15%] w-[70%] h-[85%] border-2 border-gray-600 rounded-md bg-white/10 transition animate-neonBlink"
+                ></div>
+                <svg
+                  id="circulo-progreso"
+                  width="30"
+                  height="30"
+                  class="absolute top-2 right-2"
+                >
+                  <circle
+                    cx="15"
+                    cy="15"
+                    r="12"
+                    stroke="#00ddeb"
+                    stroke-width="3"
+                    fill="none"
+                    stroke-dasharray="75.4"
+                    stroke-dashoffset="75.4"
+                    data-progress="0"
+                  ></circle>
+                </svg>
+              </div>
+              <div
+                class="botones-escaneo flex flex-col items-center gap-2 mt-2"
+              >
+                <button
+                  type="button"
+                  id="escanear"
+                  class="boton-escaneo w-12 h-12 flex items-center justify-center bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-full hover:shadow-cyan hover:scale-105 active:scale-95 transition"
+                >
+                  <i class="fas fa-barcode"></i>
+                </button>
+                <div
+                  id="botones-camara"
+                  class="flex justify-between w-full max-w-[260px]"
+                  style="display: none"
+                >
+                  <button
+                    type="button"
+                    id="escanear-ahora"
+                    class="boton-escaneo w-12 h-12 flex items-center justify-center bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-full hover:shadow-cyan hover:scale-105 active:scale-95 transition"
+                  >
+                    <i class="fas fa-barcode"></i>
+                  </button>
+                  <button
+                    type="button"
+                    id="cerrar-camara"
+                    class="boton-cerrar w-12 h-12 flex items-center justify-center bg-red-600 text-gray-200 rounded-full hover:shadow-red-600 hover:scale-105 active:scale-95 transition"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-campo">
-            <label for="nombre-producto" class="block text-sm font-bold text-gray-200">Nombre del Producto</label>
-            <input type="text" id="nombre-producto" name="nombre" placeholder="Ej. Coca-Cola 500ml" required class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="marca" class="block text-sm font-bold text-gray-200">Marca</label>
-            <input type="text" id="marca" name="marca" placeholder="Ej. Coca-Cola" required class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="categoria" class="block text-sm font-bold text-gray-200">Categoría</label>
-            <select id="categoria" name="categoria" required class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <  <option value="">Selecciona una categoría</option>
-              <option value="bebidas"><i class="fas fa-glass-whiskey"></i> Bebidas</option>
-              <option value="golosinas"><i class="fas fa-candy-cane"></i> Golosinas</option>
-              <option value="lacteos"><i class="fas fa-cheese"></i> Lácteos</option>
-              <option value="cigarrillos"><i class="fas fa-smoking"></i> Cigarrillos</option>
-              <option value="fiambre"><i class="fas fa-bacon"></i> Fiambre</option>
-              <option value="congelados"><i class="fas fa-ice-cream"></i> Congelados</option>
-              <option value="panaderia"><i class="fas fa-bread-slice"></i> Panadería</option>
-              <option value="almacen"><i class="fas fa-seedling"></i> Almacén</option>
-              <option value="verduleria"><i class="fas fa-carrot"></i> Verdulería</option>
-              <option value="limpieza"><i class="fas fa-broom"></i> Limpieza</option>
-              <option value="higiene_personal"><i class="fas fa-soap"></i> Higiene personal</option>
-              <option value="sin_tacc"><i class="fas fa-wheat"></i> Sin TACC</option>
-              <option value="productos_varios"><i class="fas fa-box"></i> Productos varios</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-bebidas">
-            <label for="select-subcategoria-bebidas" class="block text-sm font-bold text-gray-200">Subcategoría Bebidas</label>
-            <select id="select-subcategoria-bebidas" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="con_alcohol"><i class="fas fa-cocktail"></i> Con alcohol</option>
-              <option value="gaseosas"><i class="fas fa-glass-whiskey"></i> Gaseosas</option>
-              <option value="agua"><i class="fas fa-tint"></i> Agua</option>
-              <option value="energizante"><i class="fas fa-bolt"></i> Energizante</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-golosinas">
-            <label for="select-subcategoria-golosinas" class="block text-sm font-bold text-gray-200">Subcategoría Golosinas</label>
-            <select id="select-subcategoria-golosinas" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="chocolate"><i class="fas fa-candy-cane"></i> Chocolate</option>
-              <option value="caramelos"><i class="fas fa-candy-cane"></i> Caramelos</option>
-              <option value="chicles"><i class="fas fa-circle"></i> Chicles</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-lacteos">
-            <label for="select-subcategoria-lacteos" class="block text-sm font-bold text-gray-200">Subcategoría Lácteos</label>
-            <select id="select-subcategoria-lacteos" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="leche"><i class="fas fa-mug-hot"></i> Leche</option>
-              <option value="yogures"><i class="fas fa-ice-cream"></i> Yogures</option>
-              <option value="quesos"><i class="fas fa-cheese"></i> Quesos</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-cigarrillos">
-            <label for="select-subcategoria-cigarrillos" class="block text-sm font-bold text-gray-200">Subcategoría Cigarrillos</label>
-            <select id="select-subcategoria-cigarrillos" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="comunes"><i class="fas fa-smoking"></i> Comunes</option>
-              <option value="convertibles"><i class="fas fa-smoking"></i> Convertibles</option>
-              <option value="tabaco"><i class="fas fa-leaf"></i> Tabaco</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-fiambre">
-            <label for="select-subcategoria-fiambre" class="block text-sm font-bold text-gray-200">Subcategoría Fiambre</label>
-            <select id="select-subcategoria-fiambre" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="primera_marca"><i class="fas fa-bacon"></i> Primera marca</option>
-              <option value="segunda_marca"><i class="fas fa-bacon"></i> Segunda marca</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-congelados">
-            <label for="select-subcategoria-congelados" class="block text-sm font-bold text-gray-200">Subcategoría Congelados</label>
-            <select id="select-subcategoria-congelados" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="carnes"><i class="fas fa-drumstick-bite"></i> Carnes</option>
-              <option value="helados"><i class="fas fa-ice-cream"></i> Helados</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-panaderia">
-            <label for="select-subcategoria-panaderia" class="block text-sm font-bold text-gray-200">Subcategoría Panadería</label>
-            <select id="select-subcategoria-panaderia" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="dulce"><i class="fas fa-cookie"></i> Dulce</option>
-              <option value="salado"><i class="fas fa-bread-slice"></i> Salado</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-almacen">
-            <label for="select-subcategoria-almacen" class="block text-sm font-bold text-gray-200">Subcategoría Almacén</label>
-            <select id="select-subcategoria-almacen" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="harinas"><i class="fas fa-seedling"></i> Harinas</option>
-              <option value="aceites_vinagres"><i class="fas fa-oil-can"></i> Aceites vinagres</option>
-              <option value="aderezos_condimentos"><i class="fas fa-pepper-hot"></i> Aderezos condimentos</option>
-              <option value="fideos_arroz"><i class="fas fa-utensils"></i> Fideos arroz</option>
-              <option value="enlatados_conservas"><i class="fas fa-fish"></i> Enlatados conservas</option>
-              <option value="infusiones"><i class="fas fa-mug-hot"></i> Infusiones</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-verduleria">
-            <label for="select-subcategoria-verduleria" class="block text-sm font-bold text-gray-200">Subcategoría Verdulería</label>
-            <select id="select-subcategoria-verduleria" name="subcategoria" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una subcategoría</option>
-              <option value="frutas"><i class="fas fa-apple-alt"></i> Frutas</option>
-              <option value="vegetales"><i class="fas fa-carrot"></i> Vegetales</option>
-              <option value="huevos"><i class="fas fa-egg"></i> Huevos</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-limpieza">
-            <label for="select-subcategoria-limpieza" class="block text-sm font-bold text-gray-200">Subcategoría Limpieza</label>
-            <select id="select-subcategoria-limpieza" name="subcategoria" disabled class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Sin subcategorías</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-higiene_personal">
-            <label for="select-subcategoria-higiene_personal" class="block text-sm font-bold text-gray-200">Subcategoría Higiene personal</label>
-            <select id="select-subcategoria-higiene_personal" name="subcategoria" disabled class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Sin subcategorías</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-sin_tacc">
-            <label for="select-subcategoria-sin_tacc" class="block text-sm font-bold text-gray-200">Subcategoría Sin TACC</label>
-            <select id="select-subcategoria-sin_tacc" name="subcategoria" disabled class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Sin subcategorías</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="subcategoria-productos_varios">
-            <label for="select-subcategoria-productos_varios" class="block text-sm font-bold text-gray-200">Subcategoría Productos varios</label>
-            <select id="select-subcategoria-productos_varios" name="subcategoria" disabled class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Sin subcategorías</option>
-            </select>
-          </div>
-          <div class="form-campo">
-            <label for="precio-lista" class="block text-sm font-bold text-gray-200">Precio de Lista</label>
-            <input type="number" id="precio-lista" name="precioLista" placeholder="Ej. 1000" step="0.01" required class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="porcentaje-ganancia" class="block text-sm font-bold text-gray-200">Porcentaje de Ganancia (%)</label>
-            <input type="number" id="porcentaje-ganancia" name="porcentajeGanancia" placeholder="Ej. 20" step="0.01" required class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="precio-final" class="block text-sm font-bold text-gray-200">Precio Final</label>
-            <input type="number" id="precio-final" name="precioFinal" readonly class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="unidad" class="block text-sm font-bold text-gray-200">Unidad</label>
-            <select id="unidad" name="unidad" required class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="">Selecciona una unidad</option>
-              <option value="kilo">Kilo</option>
-              <option value="unidad">Unidad</option>
-              <option value="docena">Docena</option>
-              <option value="pack">Pack</option>
-            </select>
-          </div>
-          <div class="form-campo hidden" id="cantidad-packs">
-            <label for="packs" class="block text-sm font-bold text-gray-200">Cantidad de Packs</label>
-            <input type="number" id="packs" name="packs" value="0" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo hidden" id="unidades-por-pack">
-            <label for="unidadesPorPack" class="block text-sm font-bold text-gray-200">Unidades por Pack</label>
-            <input type="number" id="unidadesPorPack" name="unidadesPorPack" value="0" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo hidden" id="cantidad-docenas">
-            <label for="docenas" class="block text-sm font-bold text-gray-200">Cantidad de Docenas</label>
-            <input type="number" id="docenas" name="docenas" value="0" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="unidadesSueltas" class="block text-sm font-bold text-gray-200">Unidades Sueltas</label>
-            <input type="number" id="unidadesSueltas" name="unidadesSueltas" value="0" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="cantidad-total" class="block text-sm font-bold text-gray-200">Cantidad Total (Unidades)</label>
-            <input type="number" id="cantidad-total" name="cantidadUnidades" readonly class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="fecha-vencimiento" class="block text-sm font-bold text-gray-200">Fecha de Vencimiento</label>
-            <input type="date" id="fecha-vencimiento" name="fechaVencimiento" required class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-          </div>
-          <div class="form-campo">
-            <label for="icono-producto" class="block text-sm font-bold text-gray-200">Ícono del Producto (Opcional)</label>
-            <select id="icono-producto" name="icono" class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none">
-              <option value="default">Sin ícono</option>
-              <option value="glass-whiskey">Botella (Bebida)</option>
-              <option value="candy-cane">Caramelo</option>
-              <option value="cheese">Queso</option>
-              <option value="smoking">Cigarrillo</option>
-              <option value="bacon">Fiambre</option>
-              <option value="ice-cream">Helado</option>
-              <option value="bread-slice">Pan</option>
-              <option value="seedling">Harina</option>
-              <option value="carrot">Verdura</option>
-              <option value="broom">Limpieza</option>
-              <option value="soap">Higiene</option>
-              <option value="wheat">Sin TACC</option>
-              <option value="box">Varios</option>
-            </select>
-          </div>
-          <div class="form-acciones flex gap-4">
-            <button type="button" id="agregar-producto" class="boton-accion h-12 px-4 bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-md hover:shadow-cyan hover:scale-105 active:scale-95 transition"><i class="fas fa-plus mr-1"></i> Agregar Producto</button>
-            <button type="button" id="cancelar-producto" class="boton-accion h-12 px-4 bg-red-600 text-gray-200 rounded-md hover:shadow-red-600 hover:scale-105 active:scale-95 transition"><i class="fas fa-times mr-1"></i> Cancelar</button>
-          </div>
-        </form>
-      </div>
-
-      <div class="lista-productos-proceso bg-gray-800 p-6 rounded-lg border border-cyan-400 shadow-lg shadow-cyan-500/20 hover:-translate-y-1 transition">
-        <h3 class="text-xl font-bold text-cyan-400 mb-4">Productos en Proceso</h3>
-        <table id="tabla-productos-proceso" class="w-full text-sm">
-          <thead>
-            <tr class="bg-cyan-600 text-gray-900">
-              <th class="p-2">Nombre</th>
-              <th class="p-2">Marca</th>
-              <th class="p-2">Categoría</th>
-              <th class="p-2">Cantidad</th>
-              <th class="p-2">Estado</th>
-              <th class="p-2">Ícono</th>
-              <th class="p-2">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="lista-productos-body" class="text-gray-200"></tbody>
-        </table>
-        <div class="acciones-globales flex gap-4 mt-4">
-          <button type="button" id="confirmar-todos" class="boton-accion h-12 px-4 bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-md hover:shadow-cyan hover:scale-105 active:scale-95 transition"><i class="fas fa-check mr-1"></i> Confirmar Todos</button>
-          <button type="button" id="cancelar-todo" class="boton-accion h-12 px-4 bg-red-600 text-gray-200 rounded-md hover:shadow-red-600 hover:scale-105 active:scale-95 transition"><i class="fas fa-times mr-1"></i> Cancelar Todo</button>
+            <div class="form-campo">
+              <label
+                for="nombre-producto"
+                class="block text-sm font-bold text-gray-200"
+                >Nombre del Producto</label
+              >
+              <input
+                type="text"
+                id="nombre-producto"
+                name="nombre"
+                placeholder="Ej. Coca-Cola 500ml"
+                required
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label for="marca" class="block text-sm font-bold text-gray-200"
+                >Marca</label
+              >
+              <input
+                type="text"
+                id="marca"
+                name="marca"
+                placeholder="Ej. Coca-Cola"
+                required
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label
+                for="categoria"
+                class="block text-sm font-bold text-gray-200"
+                >Categoría</label
+              >
+              <select
+                id="categoria"
+                name="categoria"
+                required
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <
+                <option value="">Selecciona una categoría</option>
+                <option value="bebidas">
+                  <i class="fas fa-glass-whiskey"></i> Bebidas
+                </option>
+                <option value="golosinas">
+                  <i class="fas fa-candy-cane"></i> Golosinas
+                </option>
+                <option value="lacteos">
+                  <i class="fas fa-cheese"></i> Lácteos
+                </option>
+                <option value="cigarrillos">
+                  <i class="fas fa-smoking"></i> Cigarrillos
+                </option>
+                <option value="fiambre">
+                  <i class="fas fa-bacon"></i> Fiambre
+                </option>
+                <option value="congelados">
+                  <i class="fas fa-ice-cream"></i> Congelados
+                </option>
+                <option value="panaderia">
+                  <i class="fas fa-bread-slice"></i> Panadería
+                </option>
+                <option value="almacen">
+                  <i class="fas fa-seedling"></i> Almacén
+                </option>
+                <option value="verduleria">
+                  <i class="fas fa-carrot"></i> Verdulería
+                </option>
+                <option value="limpieza">
+                  <i class="fas fa-broom"></i> Limpieza
+                </option>
+                <option value="higiene_personal">
+                  <i class="fas fa-soap"></i> Higiene personal
+                </option>
+                <option value="sin_tacc">
+                  <i class="fas fa-wheat"></i> Sin TACC
+                </option>
+                <option value="productos_varios">
+                  <i class="fas fa-box"></i> Productos varios
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-bebidas">
+              <label
+                for="select-subcategoria-bebidas"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Bebidas</label
+              >
+              <select
+                id="select-subcategoria-bebidas"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="con_alcohol">
+                  <i class="fas fa-cocktail"></i> Con alcohol
+                </option>
+                <option value="gaseosas">
+                  <i class="fas fa-glass-whiskey"></i> Gaseosas
+                </option>
+                <option value="agua"><i class="fas fa-tint"></i> Agua</option>
+                <option value="energizante">
+                  <i class="fas fa-bolt"></i> Energizante
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-golosinas">
+              <label
+                for="select-subcategoria-golosinas"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Golosinas</label
+              >
+              <select
+                id="select-subcategoria-golosinas"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="chocolate">
+                  <i class="fas fa-candy-cane"></i> Chocolate
+                </option>
+                <option value="caramelos">
+                  <i class="fas fa-candy-cane"></i> Caramelos
+                </option>
+                <option value="chicles">
+                  <i class="fas fa-circle"></i> Chicles
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-lacteos">
+              <label
+                for="select-subcategoria-lacteos"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Lácteos</label
+              >
+              <select
+                id="select-subcategoria-lacteos"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="leche">
+                  <i class="fas fa-mug-hot"></i> Leche
+                </option>
+                <option value="yogures">
+                  <i class="fas fa-ice-cream"></i> Yogures
+                </option>
+                <option value="quesos">
+                  <i class="fas fa-cheese"></i> Quesos
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-cigarrillos">
+              <label
+                for="select-subcategoria-cigarrillos"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Cigarrillos</label
+              >
+              <select
+                id="select-subcategoria-cigarrillos"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="comunes">
+                  <i class="fas fa-smoking"></i> Comunes
+                </option>
+                <option value="convertibles">
+                  <i class="fas fa-smoking"></i> Convertibles
+                </option>
+                <option value="tabaco">
+                  <i class="fas fa-leaf"></i> Tabaco
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-fiambre">
+              <label
+                for="select-subcategoria-fiambre"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Fiambre</label
+              >
+              <select
+                id="select-subcategoria-fiambre"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="primera_marca">
+                  <i class="fas fa-bacon"></i> Primera marca
+                </option>
+                <option value="segunda_marca">
+                  <i class="fas fa-bacon"></i> Segunda marca
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-congelados">
+              <label
+                for="select-subcategoria-congelados"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Congelados</label
+              >
+              <select
+                id="select-subcategoria-congelados"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="carnes">
+                  <i class="fas fa-drumstick-bite"></i> Carnes
+                </option>
+                <option value="helados">
+                  <i class="fas fa-ice-cream"></i> Helados
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-panaderia">
+              <label
+                for="select-subcategoria-panaderia"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Panadería</label
+              >
+              <select
+                id="select-subcategoria-panaderia"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="dulce">
+                  <i class="fas fa-cookie"></i> Dulce
+                </option>
+                <option value="salado">
+                  <i class="fas fa-bread-slice"></i> Salado
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-almacen">
+              <label
+                for="select-subcategoria-almacen"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Almacén</label
+              >
+              <select
+                id="select-subcategoria-almacen"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="harinas">
+                  <i class="fas fa-seedling"></i> Harinas
+                </option>
+                <option value="aceites_vinagres">
+                  <i class="fas fa-oil-can"></i> Aceites vinagres
+                </option>
+                <option value="aderezos_condimentos">
+                  <i class="fas fa-pepper-hot"></i> Aderezos condimentos
+                </option>
+                <option value="fideos_arroz">
+                  <i class="fas fa-utensils"></i> Fideos arroz
+                </option>
+                <option value="enlatados_conservas">
+                  <i class="fas fa-fish"></i> Enlatados conservas
+                </option>
+                <option value="infusiones">
+                  <i class="fas fa-mug-hot"></i> Infusiones
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-verduleria">
+              <label
+                for="select-subcategoria-verduleria"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Verdulería</label
+              >
+              <select
+                id="select-subcategoria-verduleria"
+                name="subcategoria"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una subcategoría</option>
+                <option value="frutas">
+                  <i class="fas fa-apple-alt"></i> Frutas
+                </option>
+                <option value="vegetales">
+                  <i class="fas fa-carrot"></i> Vegetales
+                </option>
+                <option value="huevos">
+                  <i class="fas fa-egg"></i> Huevos
+                </option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-limpieza">
+              <label
+                for="select-subcategoria-limpieza"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Limpieza</label
+              >
+              <select
+                id="select-subcategoria-limpieza"
+                name="subcategoria"
+                disabled
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Sin subcategorías</option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-higiene_personal">
+              <label
+                for="select-subcategoria-higiene_personal"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Higiene personal</label
+              >
+              <select
+                id="select-subcategoria-higiene_personal"
+                name="subcategoria"
+                disabled
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Sin subcategorías</option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-sin_tacc">
+              <label
+                for="select-subcategoria-sin_tacc"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Sin TACC</label
+              >
+              <select
+                id="select-subcategoria-sin_tacc"
+                name="subcategoria"
+                disabled
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Sin subcategorías</option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="subcategoria-productos_varios">
+              <label
+                for="select-subcategoria-productos_varios"
+                class="block text-sm font-bold text-gray-200"
+                >Subcategoría Productos varios</label
+              >
+              <select
+                id="select-subcategoria-productos_varios"
+                name="subcategoria"
+                disabled
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Sin subcategorías</option>
+              </select>
+            </div>
+            <div class="form-campo">
+              <label
+                for="precio-lista"
+                class="block text-sm font-bold text-gray-200"
+                >Precio de Lista</label
+              >
+              <input
+                type="number"
+                id="precio-lista"
+                name="precioLista"
+                placeholder="Ej. 1000"
+                step="0.01"
+                required
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label
+                for="porcentaje-ganancia"
+                class="block text-sm font-bold text-gray-200"
+                >Porcentaje de Ganancia (%)</label
+              >
+              <input
+                type="number"
+                id="porcentaje-ganancia"
+                name="porcentajeGanancia"
+                placeholder="Ej. 20"
+                step="0.01"
+                required
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label
+                for="precio-final"
+                class="block text-sm font-bold text-gray-200"
+                >Precio Final</label
+              >
+              <input
+                type="number"
+                id="precio-final"
+                name="precioFinal"
+                readonly
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label for="unidad" class="block text-sm font-bold text-gray-200"
+                >Unidad</label
+              >
+              <select
+                id="unidad"
+                name="unidad"
+                required
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="">Selecciona una unidad</option>
+                <option value="kilo">Kilo</option>
+                <option value="unidad">Unidad</option>
+                <option value="docena">Docena</option>
+                <option value="pack">Pack</option>
+              </select>
+            </div>
+            <div class="form-campo hidden" id="cantidad-packs">
+              <label for="packs" class="block text-sm font-bold text-gray-200"
+                >Cantidad de Packs</label
+              >
+              <input
+                type="number"
+                id="packs"
+                name="packs"
+                value="0"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo hidden" id="unidades-por-pack">
+              <label
+                for="unidadesPorPack"
+                class="block text-sm font-bold text-gray-200"
+                >Unidades por Pack</label
+              >
+              <input
+                type="number"
+                id="unidadesPorPack"
+                name="unidadesPorPack"
+                value="0"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo hidden" id="cantidad-docenas">
+              <label for="docenas" class="block text-sm font-bold text-gray-200"
+                >Cantidad de Docenas</label
+              >
+              <input
+                type="number"
+                id="docenas"
+                name="docenas"
+                value="0"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label
+                for="unidadesSueltas"
+                class="block text-sm font-bold text-gray-200"
+                >Unidades Sueltas</label
+              >
+              <input
+                type="number"
+                id="unidadesSueltas"
+                name="unidadesSueltas"
+                value="0"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label
+                for="cantidad-total"
+                class="block text-sm font-bold text-gray-200"
+                >Cantidad Total (Unidades)</label
+              >
+              <input
+                type="number"
+                id="cantidad-total"
+                name="cantidadUnidades"
+                readonly
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label
+                for="fecha-vencimiento"
+                class="block text-sm font-bold text-gray-200"
+                >Fecha de Vencimiento</label
+              >
+              <input
+                type="date"
+                id="fecha-vencimiento"
+                name="fechaVencimiento"
+                required
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              />
+            </div>
+            <div class="form-campo">
+              <label
+                for="icono-producto"
+                class="block text-sm font-bold text-gray-200"
+                >Ícono del Producto (Opcional)</label
+              >
+              <select
+                id="icono-producto"
+                name="icono"
+                class="w-full h-10 p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+              >
+                <option value="default">Sin ícono</option>
+                <option value="glass-whiskey">Botella (Bebida)</option>
+                <option value="candy-cane">Caramelo</option>
+                <option value="cheese">Queso</option>
+                <option value="smoking">Cigarrillo</option>
+                <option value="bacon">Fiambre</option>
+                <option value="ice-cream">Helado</option>
+                <option value="bread-slice">Pan</option>
+                <option value="seedling">Harina</option>
+                <option value="carrot">Verdura</option>
+                <option value="broom">Limpieza</option>
+                <option value="soap">Higiene</option>
+                <option value="wheat">Sin TACC</option>
+                <option value="box">Varios</option>
+              </select>
+            </div>
+            <div class="form-acciones flex gap-4">
+              <button
+                type="button"
+                id="agregar-producto"
+                class="boton-accion h-12 px-4 bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-md hover:shadow-cyan hover:scale-105 active:scale-95 transition"
+              >
+                <i class="fas fa-plus mr-1"></i> Agregar Producto
+              </button>
+              <button
+                type="button"
+                id="cancelar-producto"
+                class="boton-accion h-12 px-4 bg-red-600 text-gray-200 rounded-md hover:shadow-red-600 hover:scale-105 active:scale-95 transition"
+              >
+                <i class="fas fa-times mr-1"></i> Cancelar
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
 
-      <div id="toast-container" class="toast-container fixed bottom-4 right-4 z-50"></div>
-    </section>
-  </main>
+        <div
+          class="lista-productos-proceso bg-gray-800 p-6 rounded-lg border border-cyan-400 shadow-lg shadow-cyan-500/20 hover:-translate-y-1 transition"
+        >
+          <h3 class="text-xl font-bold text-cyan-400 mb-4">
+            Productos en Proceso
+          </h3>
+          <table id="tabla-productos-proceso" class="w-full text-sm">
+            <thead>
+              <tr class="bg-cyan-600 text-gray-900">
+                <th class="p-2">Nombre</th>
+                <th class="p-2">Marca</th>
+                <th class="p-2">Categoría</th>
+                <th class="p-2">Cantidad</th>
+                <th class="p-2">Estado</th>
+                <th class="p-2">Ícono</th>
+                <th class="p-2">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="lista-productos-body" class="text-gray-200"></tbody>
+          </table>
+          <div class="acciones-globales flex gap-4 mt-4">
+            <button
+              type="button"
+              id="confirmar-todos"
+              class="boton-accion h-12 px-4 bg-gradient-to-r from-cyan-400 to-cyan-600 text-gray-900 rounded-md hover:shadow-cyan hover:scale-105 active:scale-95 transition"
+            >
+              <i class="fas fa-check mr-1"></i> Confirmar Todos
+            </button>
+            <button
+              type="button"
+              id="cancelar-todo"
+              class="boton-accion h-12 px-4 bg-red-600 text-gray-200 rounded-md hover:shadow-red-600 hover:scale-105 active:scale-95 transition"
+            >
+              <i class="fas fa-times mr-1"></i> Cancelar Todo
+            </button>
+          </div>
+        </div>
 
-  <footer class="bg-gray-900 p-4 text-center border-t-2 border-cyan-400 shadow-cyan">
-    <a href="/public/menu-principal.html" class="text-gray-200 hover:text-purple-400 transition"><i class="fas fa-arrow-left mr-1"></i> Volver al Menú Principal</a>
-  </footer>
+        <div
+          id="toast-container"
+          class="toast-container fixed bottom-4 right-4 z-50"
+        ></div>
+      </section>
+    </main>
 
-  <!-- Scripts -->
-  <script src="https://unpkg.com/@zxing/library@0.21.0/umd/index.min.js"></script>
-  <script src="/public/js/utils.js"></script>
-  <script src="/public/js/cargar-producto-logic.js"></script>
-  <script>
-    // Fallback para ZXing
-    if (typeof ZXing === 'undefined') {
-      console.error('ZXing no cargó desde CDN. Intentando fallback...');
-      document.write('<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.0/umd/index.min.js"><\/script>');
-    }
-  </script>
-</body>
+    <footer
+      class="bg-gray-900 p-4 text-center border-t-2 border-cyan-400 shadow-cyan"
+    >
+      <a
+        href="/public/menu-principal.html"
+        class="text-gray-200 hover:text-purple-400 transition"
+        ><i class="fas fa-arrow-left mr-1"></i> Volver al Menú Principal</a
+      >
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@zxing/library@0.21.0/umd/index.min.js"></script>
+    <script src="/public/js/utils.js"></script>
+    <script src="/public/js/cargar-producto-logic.js"></script>
+    <script>
+      // Fallback para ZXing
+      if (typeof ZXing === "undefined") {
+        console.error("ZXing no cargó desde CDN. Intentando fallback...");
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.0/umd/index.min.js"><\/script>'
+        );
+      }
+    </script>
+  </body>
 </html>

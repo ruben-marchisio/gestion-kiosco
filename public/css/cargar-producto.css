@@ -1,11 +1,11 @@
 /* Importar fuente Roboto */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
 
 /* Estilos generales */
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background: linear-gradient(to bottom, #121212, #1e272e); /* Fondo oscuro */
-  color: #ffffff; /* Blanco puro para legibilidad */
+  color: #ffffff !important; /* Blanco puro para legibilidad */
   letter-spacing: 0.5px;
 }
 
@@ -13,7 +13,7 @@ body {
 header {
   background: #121212;
   border-bottom: 2px solid #00ddeb; /* Neón cian */
-  color: #ffffff;
+  color: #ffffff !important;
   padding: 15px 20px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 221, 235, 0.2);
@@ -31,7 +31,7 @@ header {
 }
 
 .nav-principal a {
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro */
   margin: 0 15px;
   text-decoration: none;
   font-weight: 700; /* Más audaz */
@@ -54,7 +54,8 @@ main {
   padding: 20px;
 }
 
-.formulario-carga, .lista-productos-proceso {
+.formulario-carga,
+.lista-productos-proceso {
   background: #1e272e; /* Negro suave */
   padding: 20px;
   border-radius: 8px;
@@ -64,7 +65,8 @@ main {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.formulario-carga:hover, .lista-productos-proceso:hover {
+.formulario-carga:hover,
+.lista-productos-proceso:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0, 221, 235, 0.3);
 }
@@ -78,30 +80,32 @@ main {
   margin-bottom: 5px;
   font-weight: 700; /* Más audaz */
   font-size: 16px; /* Equivalente a text-base */
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro */
 }
 
-.form-campo input, .form-campo select {
+.form-campo input,
+.form-campo select {
   width: 100%;
   padding: 10px;
   border: 1px solid #b0bec5;
   border-radius: 6px;
   background: #2d3436;
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro */
   font-size: 16px; /* Equivalente a text-base */
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.form-campo input:focus, .form-campo select:focus {
+.form-campo input:focus,
+.form-campo select:focus {
   border-color: #00ddeb;
   box-shadow: 0 0 8px rgba(0, 221, 235, 0.4);
   outline: none;
 }
 
-.form-acciones, .acciones-globales {
+.form-acciones,
+.acciones-globales {
   display: flex;
   gap: 10px;
-
 }
 
 .boton-accion {
@@ -114,20 +118,22 @@ main {
   transition: all 0.3s ease;
 }
 
-.boton-primario {
+.boton-primario,
+#agregar-producto.boton-accion,
+#confirmar-todos.boton-accion {
   background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
-  color: #ff1744; /* Rojo neón para Agregar Producto y Confirmar Todos */
+  color: #ffffff !important; /* Blanco puro para Agregar Producto y Confirmar Todos */
   animation: glow 2s infinite;
 }
 
 .boton-cancelar {
   background: #ff1744; /* Rojo neón */
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro */
 }
 
 .boton-accion:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 12px rgba(187, 46, 4, 0.493);
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.4);
 }
 
 .boton-accion:active {
@@ -140,22 +146,25 @@ main {
   margin-top: 10px;
 }
 
-.tabla-productos-proceso th, .tabla-productos-proceso td {
+.tabla-productos-proceso th,
+.tabla-productos-proceso td {
   border: 1px solid #b0bec5;
   padding: 10px;
   text-align: left;
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro */
   font-size: 16px; /* Equivalente a text-base */
 }
 
-.tabla-productos-proceso th {
+.tabla-productos-proceso thead tr,
+.tabla-productos-proceso thead th,
+#tabla-productos-proceso thead tr th {
   background: #00b8d4; /* Cian */
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro para encabezados */
   font-weight: 700;
 }
 
 .tabla-productos-proceso tr:nth-child(even) {
-  background: #e2edf0;
+  background: #2d3436;
 }
 
 .tabla-productos-proceso tr:hover {
@@ -164,7 +173,6 @@ main {
 
 .tabla-productos-proceso tr.pendiente {
   background: #636e72;
-
 }
 
 .tabla-productos-proceso tr.completo {
@@ -176,7 +184,7 @@ footer {
   text-align: center;
   padding: 15px;
   background: #121212;
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro */
   position: relative;
   bottom: 0;
   width: 100%;
@@ -184,7 +192,7 @@ footer {
 }
 
 footer a {
-  color: #ffffff;
+  color: #ffffff !important;
   text-decoration: none;
   font-size: 18px; /* Equivalente a text-lg */
   font-weight: 700;
@@ -230,7 +238,7 @@ footer a:hover {
 }
 
 .guia-codigo::after {
-  content: 'Alineá el código de lado';
+  content: "Alineá el código de lado";
   position: absolute;
   top: -30px;
   left: 50%;
@@ -265,7 +273,8 @@ footer a:hover {
   max-width: 260px;
 }
 
-.boton-escaneo, .boton-cerrar {
+.boton-escaneo,
+.boton-cerrar {
   width: 50px;
   height: 50px;
   border: none;
@@ -280,12 +289,12 @@ footer a:hover {
 
 .boton-escaneo {
   background: linear-gradient(to right, #00ddeb, #00b8d4);
-  color: #ff1744; /* Rojo neón */
+  color: #ffffff !important; /* Blanco puro */
 }
 
 .boton-cerrar {
   background: #ff1744;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .boton-escaneo:hover {
@@ -298,7 +307,8 @@ footer a:hover {
   transform: scale(1.1);
 }
 
-.boton-escaneo:active, .boton-cerrar:active {
+.boton-escaneo:active,
+.boton-cerrar:active {
   transform: scale(0.95);
 }
 
@@ -317,7 +327,7 @@ footer a:hover {
 
 .toast {
   background: #333;
-  color: #ffffff; /* Blanco puro */
+  color: #ffffff !important; /* Blanco puro */
   padding: 10px 20px;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -384,7 +394,8 @@ footer a:hover {
 
 /* Responsividad */
 @media (max-width: 600px) {
-  .formulario-carga, .lista-productos-proceso {
+  .formulario-carga,
+  .lista-productos-proceso {
     padding: 15px;
   }
 
