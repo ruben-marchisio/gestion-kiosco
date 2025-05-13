@@ -1,78 +1,99 @@
-/* Estilos generales para el cuerpo de la página */
+/* Importar fuente Roboto */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+/* Estilos generales */
 body {
-  font-family: "Poppins", Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(to bottom, #121212, #1e272e); /* Fondo oscuro */
+  color: #ffffff !important; /* Blanco puro */
+  letter-spacing: 0.5px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
 }
-/* Propósito: Configura la base visual de stock.html */
-/* Usa la fuente Poppins (coherente con otras páginas), fondo gradiente azul-gris */
-/* Organiza el contenido en columna, evita desplazamiento horizontal no deseado */
+
+/* Contenedor general */
+.container {
+  max-width: 960px; /* Igual que otras páginas */
+  margin: 0 auto;
+  position: relative;
+}
 
 /* Encabezado */
 header {
-  background-color: #2c3e50;
-  color: white;
+  background: #121212;
+  border-bottom: 2px solid #00ddeb; /* Neón cian */
+  color: #ffffff !important;
+  padding: 15px 20px;
   text-align: center;
-  padding: 0.5em 0;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 221, 235, 0.2);
+  animation: zoomIn 0.8s ease-in;
 }
+
 .logo {
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
+
 .logo-img {
-  width: 50px;
+  width: 60px;
   height: auto;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px solid #00ddeb; /* Borde cian */
+  animation: rotateIn 0.8s ease-in;
 }
+
 h1 {
   margin: 0;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 24px; /* Equivalente a text-2xl */
+  font-weight: 700;
+  color: #00ddeb; /* Cian neón */
 }
+
 .nav-principal {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 15px; /* Más espaciado */
   margin-top: 10px;
 }
+
 .nav-principal a {
   display: flex;
   align-items: center;
-  color: white;
+  color: #ffffff !important;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 14px; /* Equivalente a text-sm */
+  font-weight: 700;
   padding: 8px 12px;
   border-radius: 20px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
+
 .nav-principal a:hover {
-  background-color: #3498db;
+  background: rgba(0, 221, 235, 0.2); /* Cian neón claro */
   transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
 }
+
 .nav-principal a.activo {
-  background-color: #3498db;
+  background: rgba(0, 221, 235, 0.4);
+  font-weight: 700;
+  border-bottom: 2px solid #00ddeb;
 }
+
 .nav-principal a i {
   margin-right: 5px;
   font-size: 16px;
 }
-/* Propósito: Estiliza el encabezado con logo, título, y navegación */
-/* Fondo oscuro (#2c3e50), fijo en la parte superior, con sombra */
-/* Logo centrado (50px), con borde blanco circular */
-/* Título compacto (22px), navegación centrada con enlaces que resaltan en azul (#3498db) al pasar el mouse o estar activos, igual que en cargar-producto.css */
 
 /* Contenido Principal */
 main {
@@ -81,109 +102,151 @@ main {
   padding-bottom: 60px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   overflow-x: hidden;
 }
+
 #stock {
   width: 95%;
-  max-width: 1000px;
+  max-width: 960px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   overflow-x: hidden;
 }
-/* Propósito: Organiza la sección principal (filtros, escáner, lista, modales) */
-/* Main centra el contenido con flexbox, con padding para evitar superposición */
-/* #stock es un contenedor ancho (95%), en columna, con espacio entre secciones */
 
 /* Barra de Filtros */
 .barra-filtros {
   position: sticky;
   top: 100px;
-  background: rgba(255, 255, 255, 0.9);
+  background: #1e272e; /* Negro suave */
   border-radius: 10px;
+  border: 1px solid #00ddeb; /* Borde cian */
   padding: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   z-index: 500;
   display: flex;
+  flex-direction: column; /* Cambiado a columna */
   align-items: center;
   gap: 10px;
   width: 100%;
   box-sizing: border-box;
 }
+
 .buscador {
-  flex: 1;
+  width: 100%; /* Ocupa todo el ancho */
   display: flex;
-  align-items: center;
-  gap: 5px;
+  justify-content: center;
 }
+
 #buscador {
   width: 100%;
+  max-width: 600px; /* Limitar ancho para mejor apariencia */
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #b0bec5;
   border-radius: 8px;
+  background: #2d3436;
+  color: #ffffff !important;
   font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+#buscador:focus {
+  border-color: #00ddeb;
+  box-shadow: 0 0 8px rgba(0, 221, 235, 0.4);
+  outline: none;
+}
+
+.botones-escaneo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
 .boton-filtros {
   padding: 8px 12px;
   border-radius: 8px;
   border: none;
-  background-color: #3498db;
-  color: white;
+  background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
+  color: #ffffff !important;
   font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  animation: glow 2s infinite;
+  width: 100%;
+  max-width: 600px; /* Igual que el buscador */
 }
+
 .boton-filtros:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
 }
+
 .menu-filtros {
   position: absolute;
-  top: 50px;
+  top: 110px; /* Ajustado para la nueva disposición */
   right: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: #1e272e; /* Negro suave */
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #00ddeb;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   padding: 15px;
   width: 200px;
   z-index: 600;
 }
+
 .filtro-opcion {
   margin-bottom: 10px;
 }
+
 .filtro-opcion label {
   display: block;
   font-size: 14px;
-  color: #2c3e50;
+  color: #ffffff !important;
   margin-bottom: 5px;
 }
+
 .filtro-opcion select,
 .filtro-opcion input[type="checkbox"] {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #b0bec5;
   border-radius: 8px;
+  background: #2d3436;
+  color: #ffffff !important;
   font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.filtro-opcion select:focus,
+.filtro-opcion input[type="checkbox"]:focus {
+  border-color: #00ddeb;
+  box-shadow: 0 0 8px rgba(0, 221, 235, 0.4);
+  outline: none;
+}
+
 #filtro-todo {
   width: 100%;
   padding: 8px;
   border: none;
-  background-color: #3498db;
-  color: white;
+  background: linear-gradient(to right, #00ddeb, #00b8d4);
+  color: #ffffff !important;
   border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  animation: glow 2s infinite;
 }
+
 #filtro-todo:hover {
-  background-color: #2980b9;
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
 }
-/* Propósito: Estiliza la barra de búsqueda y filtros */
-/* Barra fija (sticky) con fondo blanco semitransparente, sombra, y disposición flexible */
-/* Campo de búsqueda (#buscador) con bordes suaves, acompañado de botones de escaneo */
-/* Menú de filtros (oculto por defecto) con selectores y checkboxes para categorías, subcategorías, y estados */
 
 /* Controles de Escaneo */
 .boton-escaneo {
@@ -191,48 +254,56 @@ main {
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease,
-    background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
+
 .boton-escaneo i {
   font-size: 16px;
 }
+
 .boton-activar {
-  background-color: #2ecc71;
-  color: white;
-  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+  background: #ff1744; /* Rojo neón */
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
 }
+
 .boton-activar:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
 }
+
 .boton-activar.boton-presionado {
-  background-color: #27ae60;
-  transform: translateY(2px);
-  box-shadow: 0 2px 5px rgba(46, 204, 113, 0.2);
+  background: #e60026;
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(255, 23, 68, 0.2);
 }
+
 .boton-detener {
-  background-color: #e74c3c;
-  color: white;
-  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+  background: #ff1744; /* Rojo neón */
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
 }
+
 .boton-detener:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
 }
+
 .camara {
   width: 100%;
-  max-width: 600px;
-  height: 240px;
+  max-width: 260px; /* Igual que cargar-producto.html */
+  height: 320px; /* Igual que cargar-producto.html */
   margin: 10px auto;
   position: relative;
-  border: 2px solid #2c3e50;
+  border: 2px solid #00ddeb; /* Neón cian */
   border-radius: 8px;
   background-color: #000;
   overflow: hidden;
   display: block;
   box-sizing: border-box;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.3);
 }
+
 #camara-stock video {
   width: 100%;
   height: 100%;
@@ -243,33 +314,50 @@ main {
   top: 0;
   left: 0;
 }
+
 .guia-codigo {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  height: 50px;
-  border: 2px dashed #ff0000;
+  top: 10%;
+  left: 15%;
+  width: 70%; /* ~182px, angosta */
+  height: 85%; /* ~272px */
+  border: 2px solid #b0bec5;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
   pointer-events: none;
-  z-index: 10;
+  transition: border-color 0.3s ease, background 0.3s ease;
+  animation: neonBlink 1s infinite;
 }
-/* Propósito: Estiliza los controles del escáner y el área de la cámara */
-/* Botones de escanear (verde) y detener (rojo) con efectos de hover y presión (boton-presionado oscurece y hunde el botón) */
-/* Cámara con borde oscuro, fondo negro, y video que cubre el espacio */
-/* Guía de código (rectángulo rojo punteado) para alinear el código de barras */
+
+.guia-codigo::after {
+  content: "Alineá el código de lado";
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #00ddeb; /* Neón cian */
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(18, 18, 18, 0.9);
+  padding: 5px 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 221, 235, 0.4);
+  animation: fadeIn 1s ease-in;
+}
 
 /* Lista de Productos (Tarjetas) */
 .lista-stock {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   padding-bottom: 20px;
 }
+
 .tarjeta-producto {
-  background: rgba(255, 255, 255, 0.9);
+  background: #1e272e; /* Negro suave */
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #00ddeb; /* Borde cian */
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   padding: 15px;
   display: flex;
   align-items: center;
@@ -277,47 +365,55 @@ main {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 .tarjeta-producto.sin-stock {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid #dc3545;
+  background: rgba(30, 39, 46, 0.7); /* Más claro */
+  border: 1px solid #ff1744; /* Borde rojo */
 }
+
 .tarjeta-producto:hover {
   transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 221, 235, 0.3);
 }
+
 .tarjeta-icono {
   font-size: 24px;
-  color: #2c3e50;
+  color: #00ddeb; /* Cian neón */
 }
+
 .tarjeta-info {
   flex: 1;
 }
+
 .tarjeta-nombre {
   font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: #ffffff !important;
 }
+
 .tarjeta-marca {
   font-size: 14px;
-  color: #666;
+  color: #b0bec5 !important;
 }
+
 .tarjeta-cantidad {
   font-size: 14px;
   font-weight: 500;
+  color: #ffffff !important;
 }
+
 .tarjeta-cantidad.stock-bajo {
-  color: #e67e22;
+  color: #e67e22 !important; /* Naranja */
 }
+
 .tarjeta-cantidad.sin-stock {
-  color: #dc3545;
+  color: #ff1744 !important; /* Rojo neón */
 }
+
 .tarjeta-precio {
   font-size: 14px;
-  color: #2c3e50;
+  color: #ffffff !important;
 }
-/* Propósito: Estiliza la lista de productos como tarjetas */
-/* Tarjetas blancas semitransparentes, con sombra y efecto de elevación al hover */
-/* Productos sin stock tienen fondo más claro y borde rojo */
-/* Información organizada con ícono, nombre, marca, cantidad (coloreada según estado: naranja para bajo, rojo para sin stock), y precio */
 
 /* Modales */
 .modal {
@@ -332,33 +428,41 @@ main {
   align-items: center;
   z-index: 2000;
 }
+
 .modal-contenido {
-  background: rgba(255, 255, 255, 0.95);
+  background: #1e272e; /* Negro suave */
   border-radius: 15px;
+  border: 1px solid #00ddeb; /* Borde cian */
   padding: 20px;
   width: 90%;
   max-width: 400px;
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
 }
+
 .modal-contenido h2 {
   font-size: 20px;
-  color: #2c3e50;
+  color: #00ddeb !important; /* Cian neón */
   margin-bottom: 15px;
   text-align: center;
 }
+
 .modal-detalles {
   margin-bottom: 20px;
 }
+
 .detalle-item {
   margin-bottom: 10px;
   font-size: 14px;
-  color: #2c3e50;
+  color: #ffffff !important;
 }
+
 .detalle-item span {
   font-weight: 500;
 }
+
 .modal-acciones {
   display: flex;
   flex-wrap: wrap;
@@ -366,127 +470,189 @@ main {
   justify-content: center;
   margin-top: 15px;
 }
+
 .form-campo {
   margin-bottom: 15px;
 }
+
 .form-campo label {
   display: block;
   font-size: 14px;
-  color: #2c3e50;
+  color: #ffffff !important;
   margin-bottom: 5px;
+  font-weight: 700;
 }
+
 .form-campo input,
 .form-campo select,
 .form-campo textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #b0bec5;
   border-radius: 8px;
+  background: #2d3436;
+  color: #ffffff !important;
   font-size: 14px;
   box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.form-campo input:focus,
+.form-campo select:focus,
+.form-campo textarea:focus {
+  border-color: #00ddeb;
+  box-shadow: 0 0 8px rgba(0, 221, 235, 0.4);
+  outline: none;
+}
+
 .form-campo textarea {
   height: 80px;
   resize: none;
 }
-/* Propósito: Estiliza los modales para detalles, edición de precios, agregar stock, y dar de baja */
-/* Fondo oscuro semitransparente, contenido blanco centrado con bordes redondeados */
-/* Campos de formulario (inputs, selectores, textarea) con bordes suaves y etiquetas */
-/* Botones de acción centrados, con disposición flexible para pantallas pequeñas */
+
+/* Botones de acción */
+.boton-accion {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.boton-primario {
+  background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
+  color: #ffffff !important;
+  animation: glow 2s infinite;
+}
+
+.boton-cancelar {
+  background: #ff1744; /* Rojo neón */
+  color: #ffffff !important;
+}
+
+.boton-accion:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
+}
+
+.boton-accion:active {
+  transform: scale(0.95);
+}
+
+.boton-accion i {
+  margin-right: 4px;
+  font-size: 16px;
+}
 
 /* Toasts */
 .toast-container {
   position: fixed;
-  top: 30px;
-  right: 30px;
+  bottom: 20px;
+  right: 20px;
   z-index: 3000;
   width: 350px;
 }
+
 .toast {
   padding: 15px 25px;
   border-radius: 10px;
-  color: white;
+  color: #ffffff !important;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 15px;
-  opacity: 0;
-  animation: fadeInToast 0.5s ease forwards,
-    fadeOutToast 0.5s ease 4.5s forwards;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  border-left: 5px solid;
+  animation: bounceInRight 0.4s ease-in;
+  box-shadow: 0 4px 12px rgba(0, 221, 235, 0.3);
 }
+
 .toast.exito {
-  background-color: #28a745;
-  border-left-color: #218838;
+  background: #00b8d4; /* Cian neón */
 }
+
 .toast.error {
-  background-color: #dc3545;
-  border-left-color: #c82333;
+  background: #ff1744; /* Rojo neón */
 }
+
 .toast.info {
-  background-color: #17a2b8;
-  border-left-color: #138496;
+  background: #9c27b0; /* Púrpura neón */
 }
-@keyframes fadeInToast {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes fadeOutToast {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-}
-/* Propósito: Estiliza las notificaciones (toasts) usadas por utils.js */
-/* Contenedor fijo en la esquina superior derecha */
-/* Toasts con colores según tipo (verde, rojo, azul), animaciones de entrada/salida, y borde izquierdo destacado, igual que en cargar-producto.css */
 
 /* Pie de Página */
 footer {
   text-align: center;
-  padding: 1em 0;
-  background-color: #2c3e50;
-  color: white;
+  padding: 15px;
+  background: #121212;
+  color: #ffffff !important;
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 1000;
+  box-shadow: 0 -2px 8px rgba(0, 221, 235, 0.2);
 }
+
 footer a {
-  color: white;
+  color: #ffffff !important;
   text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s ease;
+  font-size: 16px;
+  font-weight: 700;
+  transition: text-shadow 0.3s ease;
 }
+
 footer a:hover {
-  color: #3498db;
+  text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0; /* Púrpura neón */
 }
+
 footer a i {
-  margin-right: 5px;
+  margin-right: 4px;
+  font-size: 18px;
 }
-/* Propósito: Estiliza el pie de página con el enlace de volver */
-/* Fondo oscuro, fijo en la parte inferior, enlace blanco que cambia a azul al pasar el mouse */
+
+/* Animaciones */
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rotateIn {
+  from { transform: rotate(0deg); opacity: 0; }
+  to { transform: rotate(360deg); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceInRight {
+  from { transform: translateX(50px); opacity: 0; }
+  60% { transform: translateX(-10px); opacity: 1; }
+  80% { transform: translateX(5px); }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(0, 221, 235, 0.5); }
+  100% { box-shadow: 0 0 5px rgba(0, 221, 235, 0.3); }
+}
+
+@keyframes neonBlink {
+  0% { border-color: #00ddeb; }
+  50% { border-color: #9c27b0; }
+  100% { border-color: #00ddeb; }
+}
 
 /* Estilos Responsivos */
 @media (max-width: 600px) {
   header {
-    padding: 0.5em 0;
+    padding: 10px 15px;
   }
   .logo-img {
-    width: 40px;
+    width: 50px;
   }
   h1 {
-    font-size: 18px;
+    font-size: 20px;
   }
   .nav-principal {
     gap: 5px;
@@ -507,20 +673,24 @@ footer a i {
   .barra-filtros {
     top: 110px;
     padding: 5px;
-    flex-direction: column;
     gap: 5px;
   }
-  .buscador {
-    width: 100%;
+  #buscador {
+    max-width: 100%; /* Ocupa todo el ancho disponible */
+  }
+  .botones-escaneo {
+    gap: 5px;
   }
   .boton-filtros {
-    width: 100%;
-    padding: 8px;
+    max-width: 100%;
   }
   .menu-filtros {
-    top: 90px;
+    top: 110px; /* Ajustado para la nueva disposición */
     width: 90%;
     right: 5%;
+  }
+  .lista-stock {
+    gap: 10px;
   }
   .tarjeta-producto {
     padding: 10px;
@@ -538,7 +708,7 @@ footer a i {
     padding: 15px;
   }
   .toast-container {
-    top: 20px;
+    bottom: 20px;
     right: 10px;
     width: 90%;
     max-width: 350px;
@@ -549,11 +719,28 @@ footer a i {
   }
   .camara {
     height: 180px;
+    max-width: 220px;
   }
   .guia-codigo {
-    height: 40px;
+    width: 70%; /* ~154px */
+    height: 85%; /* ~136px */
+  }
+  .guia-codigo::after {
+    font-size: 12px;
+    padding: 4px 8px;
   }
 }
-/* Propósito: Ajusta los estilos para móviles (≤600px) */
-/* Reduce tamaños de logo, títulos, y padding; apila filtros en columna */
-/* Ajusta la cámara (180px de alto), toasts, y modales para pantallas pequeñas */
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .lista-stock {
+    gap: 12px;
+  }
+  .tarjeta-nombre {
+    font-size: 15px;
+  }
+  .tarjeta-marca,
+  .tarjeta-cantidad,
+  .tarjeta-precio {
+    font-size: 13px;
+  }
+}
