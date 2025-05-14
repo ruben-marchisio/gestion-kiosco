@@ -6,8 +6,8 @@ body {
   font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #121212, #1e272e); /* Fondo oscuro */
-  color: #ffffff !important; /* Blanco puro */
+  background: linear-gradient(to bottom, #121212, #1e272e);
+  color: #ffffff;
   letter-spacing: 0.5px;
   min-height: 100vh;
   display: flex;
@@ -17,7 +17,7 @@ body {
 
 /* Contenedor general */
 .container {
-  max-width: 960px; /* Igual que otras páginas */
+  max-width: 960px;
   margin: 0 auto;
   position: relative;
 }
@@ -25,8 +25,8 @@ body {
 /* Encabezado */
 header {
   background: #121212;
-  border-bottom: 2px solid #00ddeb; /* Neón cian */
-  color: #ffffff !important;
+  border-bottom: 2px solid #00ddeb;
+  color: #ffffff;
   padding: 15px 20px;
   text-align: center;
   position: fixed;
@@ -47,31 +47,31 @@ header {
   width: 60px;
   height: auto;
   border-radius: 50%;
-  border: 2px solid #00ddeb; /* Borde cian */
+  border: 2px solid #00ddeb;
   animation: rotateIn 0.8s ease-in;
 }
 
 h1 {
   margin: 0;
-  font-size: 24px; /* Equivalente a text-2xl */
+  font-size: 24px;
   font-weight: 700;
-  color: #00ddeb; /* Cian neón */
+  color: #00ddeb;
 }
 
 .nav-principal {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px; /* Más espaciado */
+  gap: 15px;
   margin-top: 10px;
 }
 
 .nav-principal a {
   display: flex;
   align-items: center;
-  color: #ffffff !important;
+  color: #ffffff;
   text-decoration: none;
-  font-size: 14px; /* Equivalente a text-sm */
+  font-size: 14px;
   font-weight: 700;
   padding: 8px 12px;
   border-radius: 20px;
@@ -79,7 +79,7 @@ h1 {
 }
 
 .nav-principal a:hover {
-  background: rgba(0, 221, 235, 0.2); /* Cian neón claro */
+  background: rgba(0, 221, 235, 0.2);
   transform: scale(1.05);
   box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
 }
@@ -120,14 +120,14 @@ main {
 .barra-filtros {
   position: sticky;
   top: 100px;
-  background: #1e272e; /* Negro suave */
+  background: #1e272e;
   border-radius: 10px;
-  border: 1px solid #00ddeb; /* Borde cian */
+  border: 1px solid #00ddeb;
   padding: 10px;
   box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   z-index: 500;
   display: flex;
-  flex-direction: column; /* Cambiado a columna */
+  flex-direction: column;
   align-items: center;
   gap: 10px;
   width: 100%;
@@ -135,20 +135,20 @@ main {
 }
 
 .buscador {
-  width: 100%; /* Ocupa todo el ancho */
+  width: 100%;
   display: flex;
   justify-content: center;
 }
 
 #buscador {
   width: 100%;
-  max-width: 600px; /* Limitar ancho para mejor apariencia */
-  padding: 8px;
+  max-width: 600px;
+  padding: 10px;
   border: 1px solid #b0bec5;
   border-radius: 8px;
   background: #2d3436;
-  color: #ffffff !important;
-  font-size: 14px;
+  color: #ffffff;
+  font-size: 16px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -167,18 +167,21 @@ main {
 }
 
 .boton-filtros {
-  padding: 8px 12px;
+  padding: 10px 16px;
   border-radius: 8px;
   border: none;
-  background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
-  color: #ffffff !important;
-  font-size: 14px;
+  background: linear-gradient(to right, #00ddeb, #00b8d4);
+  color: #ffffff;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   animation: glow 2s infinite;
   width: 100%;
-  max-width: 600px; /* Igual que el buscador */
+  max-width: 600px;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .boton-filtros:hover {
@@ -186,38 +189,42 @@ main {
   box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
 }
 
+.boton-filtros:active {
+  transform: scale(0.95);
+}
+
 .menu-filtros {
   position: absolute;
-  top: 110px; /* Ajustado para la nueva disposición */
+  top: 120px;
   right: 0;
-  background: #1e272e; /* Negro suave */
+  background: #1e272e;
   border-radius: 10px;
   border: 1px solid #00ddeb;
   box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   padding: 15px;
-  width: 200px;
+  width: 220px;
   z-index: 600;
 }
 
 .filtro-opcion {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .filtro-opcion label {
   display: block;
   font-size: 14px;
-  color: #ffffff !important;
+  color: #ffffff;
   margin-bottom: 5px;
 }
 
 .filtro-opcion select,
 .filtro-opcion input[type="checkbox"] {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #b0bec5;
   border-radius: 8px;
   background: #2d3436;
-  color: #ffffff !important;
+  color: #ffffff;
   font-size: 14px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -231,16 +238,19 @@ main {
 
 #filtro-todo {
   width: 100%;
-  padding: 8px;
+  padding: 10px 16px;
   border: none;
   background: linear-gradient(to right, #00ddeb, #00b8d4);
-  color: #ffffff !important;
+  color: #ffffff;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   animation: glow 2s infinite;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 #filtro-todo:hover {
@@ -248,54 +258,80 @@ main {
   box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
 }
 
+#filtro-todo:active {
+  transform: scale(0.95);
+}
+
 /* Controles de Escaneo */
 .boton-escaneo {
-  padding: 8px;
-  border-radius: 8px;
+  width: 50px;
+  height: 50px;
   border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  background: linear-gradient(to right, #00ddeb, #00b8d4);
+  color: #ffffff;
 }
 
-.boton-escaneo i {
-  font-size: 16px;
+.boton-cerrar {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  background: #ff1744;
+  color: #ffffff;
 }
 
-.boton-activar {
-  background: #ff1744; /* Rojo neón */
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
+.boton-escaneo:hover, .boton-cerrar:hover {
+  box-shadow: 0 0 12px rgba(0, 221, 235, 0.5);
+  transform: scale(1.1);
 }
 
-.boton-activar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
-}
-
-.boton-activar.boton-presionado {
-  background: #e60026;
+.boton-escaneo:active, .boton-cerrar:active {
   transform: scale(0.95);
-  box-shadow: 0 2px 5px rgba(255, 23, 68, 0.2);
 }
 
-.boton-detener {
-  background: #ff1744; /* Rojo neón */
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
+#botones-camara {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 260px;
+  margin: 10px auto;
 }
 
-.boton-detener:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
+#circulo-progreso {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+#circulo-progreso circle {
+  stroke: #00ddeb;
+  stroke-width: 3;
+  fill: none;
+  stroke-dasharray: 75.4;
+  stroke-dashoffset: 75.4;
+  transition: stroke-dashoffset 0.3s ease;
 }
 
 .camara {
   width: 100%;
-  max-width: 260px; /* Igual que cargar-producto.html */
-  height: 320px; /* Igual que cargar-producto.html */
+  max-width: 260px;
+  height: 320px;
   margin: 10px auto;
   position: relative;
-  border: 2px solid #00ddeb; /* Neón cian */
+  border: 2px solid #00ddeb;
   border-radius: 8px;
   background-color: #000;
   overflow: hidden;
@@ -308,7 +344,6 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: none;
   display: block;
   position: absolute;
   top: 0;
@@ -319,13 +354,18 @@ main {
   position: absolute;
   top: 10%;
   left: 15%;
-  width: 70%; /* ~182px, angosta */
-  height: 85%; /* ~272px */
+  width: 70%;
+  height: 85%;
   border: 2px solid #b0bec5;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   pointer-events: none;
   transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.guia-codigo.escaneando {
+  border-color: #00ddeb;
+  background: rgba(0, 221, 235, 0.2);
   animation: neonBlink 1s infinite;
 }
 
@@ -335,7 +375,7 @@ main {
   top: -30px;
   left: 50%;
   transform: translateX(-50%);
-  color: #00ddeb; /* Neón cian */
+  color: #00ddeb;
   font-size: 14px;
   font-weight: 700;
   background: rgba(18, 18, 18, 0.9);
@@ -354,21 +394,21 @@ main {
 }
 
 .tarjeta-producto {
-  background: #1e272e; /* Negro suave */
+  background: #1e272e;
   border-radius: 10px;
-  border: 1px solid #00ddeb; /* Borde cian */
+  border: 1px solid #00ddeb;
   box-shadow: 0 4px 12px rgba(0, 221, 235, 0.2);
   padding: 15px;
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .tarjeta-producto.sin-stock {
-  background: rgba(30, 39, 46, 0.7); /* Más claro */
-  border: 1px solid #ff1744; /* Borde rojo */
+  background: rgba(30, 39, 46, 0.7);
+  border: 1px solid #ff1744;
 }
 
 .tarjeta-producto:hover {
@@ -376,9 +416,14 @@ main {
   box-shadow: 0 6px 16px rgba(0, 221, 235, 0.3);
 }
 
+.tarjeta-producto.highlight {
+  border: 2px solid #00ddeb;
+  animation: pulse 1s ease-in-out 3;
+}
+
 .tarjeta-icono {
   font-size: 24px;
-  color: #00ddeb; /* Cian neón */
+  color: #00ddeb;
 }
 
 .tarjeta-info {
@@ -388,31 +433,55 @@ main {
 .tarjeta-nombre {
   font-size: 16px;
   font-weight: 700;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .tarjeta-marca {
   font-size: 14px;
-  color: #b0bec5 !important;
+  color: #b0bec5;
 }
 
 .tarjeta-cantidad {
   font-size: 14px;
   font-weight: 500;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .tarjeta-cantidad.stock-bajo {
-  color: #e67e22 !important; /* Naranja */
+  color: #e67e22;
 }
 
 .tarjeta-cantidad.sin-stock {
-  color: #ff1744 !important; /* Rojo neón */
+  color: #ff1744;
 }
 
 .tarjeta-precio {
   font-size: 14px;
-  color: #ffffff !important;
+  color: #ffffff;
+}
+
+/* Tabla de Lotes */
+.batch-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.batch-table th, .batch-table td {
+  border: 1px solid #00ddeb;
+  padding: 8px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.batch-table th {
+  background: #00b8d4;
+  font-weight: 700;
+}
+
+.batch-table tr:nth-child(even) {
+  background: #2d3436;
 }
 
 /* Modales */
@@ -430,9 +499,9 @@ main {
 }
 
 .modal-contenido {
-  background: #1e272e; /* Negro suave */
+  background: #1e272e;
   border-radius: 15px;
-  border: 1px solid #00ddeb; /* Borde cian */
+  border: 1px solid #00ddeb;
   padding: 20px;
   width: 90%;
   max-width: 400px;
@@ -444,9 +513,15 @@ main {
 
 .modal-contenido h2 {
   font-size: 20px;
-  color: #00ddeb !important; /* Cian neón */
+  color: #00ddeb;
   margin-bottom: 15px;
   text-align: center;
+}
+
+.modal-contenido p {
+  font-size: 14px;
+  color: #ffffff;
+  margin-bottom: 15px;
 }
 
 .modal-detalles {
@@ -456,7 +531,7 @@ main {
 .detalle-item {
   margin-bottom: 10px;
   font-size: 14px;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .detalle-item span {
@@ -478,7 +553,7 @@ main {
 .form-campo label {
   display: block;
   font-size: 14px;
-  color: #ffffff !important;
+  color: #ffffff;
   margin-bottom: 5px;
   font-weight: 700;
 }
@@ -487,11 +562,11 @@ main {
 .form-campo select,
 .form-campo textarea {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #b0bec5;
   border-radius: 8px;
   background: #2d3436;
-  color: #ffffff !important;
+  color: #ffffff;
   font-size: 14px;
   box-sizing: border-box;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -512,24 +587,27 @@ main {
 
 /* Botones de acción */
 .boton-accion {
-  padding: 8px 12px;
+  padding: 10px 16px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .boton-primario {
-  background: linear-gradient(to right, #00ddeb, #00b8d4); /* Neón cian */
-  color: #ffffff !important;
+  background: linear-gradient(to right, #00ddeb, #00b8d4);
+  color: #ffffff;
   animation: glow 2s infinite;
 }
 
 .boton-cancelar {
-  background: #ff1744; /* Rojo neón */
-  color: #ffffff !important;
+  background: #ff1744;
+  color: #ffffff;
 }
 
 .boton-accion:hover {
@@ -558,7 +636,7 @@ main {
 .toast {
   padding: 15px 25px;
   border-radius: 10px;
-  color: #ffffff !important;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 15px;
@@ -567,15 +645,15 @@ main {
 }
 
 .toast.exito {
-  background: #00b8d4; /* Cian neón */
+  background: #00b8d4;
 }
 
 .toast.error {
-  background: #ff1744; /* Rojo neón */
+  background: #ff1744;
 }
 
 .toast.info {
-  background: #9c27b0; /* Púrpura neón */
+  background: #9c27b0;
 }
 
 /* Pie de Página */
@@ -583,7 +661,7 @@ footer {
   text-align: center;
   padding: 15px;
   background: #121212;
-  color: #ffffff !important;
+  color: #ffffff;
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -592,7 +670,7 @@ footer {
 }
 
 footer a {
-  color: #ffffff !important;
+  color: #ffffff;
   text-decoration: none;
   font-size: 16px;
   font-weight: 700;
@@ -600,7 +678,7 @@ footer a {
 }
 
 footer a:hover {
-  text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0; /* Púrpura neón */
+  text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0;
 }
 
 footer a i {
@@ -643,6 +721,12 @@ footer a i {
   100% { border-color: #00ddeb; }
 }
 
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 221, 235, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(0, 221, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 221, 235, 0); }
+}
+
 /* Estilos Responsivos */
 @media (max-width: 600px) {
   header {
@@ -676,18 +760,51 @@ footer a i {
     gap: 5px;
   }
   #buscador {
-    max-width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: 100%;
+    padding: 8px;
+    font-size: 14px;
   }
   .botones-escaneo {
     gap: 5px;
   }
   .boton-filtros {
     max-width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
   }
   .menu-filtros {
-    top: 110px; /* Ajustado para la nueva disposición */
+    top: 120px;
     width: 90%;
     right: 5%;
+  }
+  .filtro-opcion select,
+  .filtro-opcion input[type="checkbox"] {
+    padding: 8px;
+    font-size: 14px;
+  }
+  #filtro-todo {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  .boton-escaneo, .boton-cerrar {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+  #botones-camara {
+    max-width: 220px;
+  }
+  .camara {
+    max-width: 220px;
+    height: 280px;
+  }
+  .guia-codigo {
+    width: 70%;
+    height: 85%;
+  }
+  .guia-codigo::after {
+    font-size: 12px;
+    padding: 4px 8px;
   }
   .lista-stock {
     gap: 10px;
@@ -703,9 +820,18 @@ footer a i {
   .tarjeta-precio {
     font-size: 12px;
   }
+  .batch-table th, .batch-table td {
+    padding: 6px;
+    font-size: 12px;
+  }
   .modal-contenido {
     width: 90%;
     padding: 15px;
+  }
+  .boton-accion {
+    padding: 8px 12px;
+    font-size: 14px;
+    min-width: 100px;
   }
   .toast-container {
     bottom: 20px;
@@ -716,18 +842,6 @@ footer a i {
   .toast {
     font-size: 14px;
     padding: 10px 15px;
-  }
-  .camara {
-    height: 180px;
-    max-width: 220px;
-  }
-  .guia-codigo {
-    width: 70%; /* ~154px */
-    height: 85%; /* ~136px */
-  }
-  .guia-codigo::after {
-    font-size: 12px;
-    padding: 4px 8px;
   }
 }
 
@@ -741,6 +855,9 @@ footer a i {
   .tarjeta-marca,
   .tarjeta-cantidad,
   .tarjeta-precio {
+    font-size: 13px;
+  }
+  .batch-table th, .batch-table td {
     font-size: 13px;
   }
 }

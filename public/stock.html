@@ -6,7 +6,7 @@
   <title>Gestión Kiosco - Stock</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/public/css/stock.css">
-  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+  <script src="https://unpkg.com/@zxing/library@0.21.0/umd/index.min.js"></script>
 </head>
 <body>
   <header>
@@ -30,8 +30,11 @@
           <input type="text" id="buscador" placeholder="Buscar por nombre, marca o código..." autocomplete="off">
         </div>
         <div class="botones-escaneo">
-          <button id="escanear" class="boton-escaneo boton-activar"><i class="fas fa-barcode"></i></button>
-          <button id="detener-escaneo" class="boton-escaneo boton-detener" style="display: none;"><i class="fas fa-stop"></i></button>
+          <button id="escanear" class="boton-escaneo"><i class="fas fa-barcode"></i></button>
+          <div id="botones-camara" style="display: none;">
+            <button id="escanear-ahora" class="boton-escaneo"><i class="fas fa-barcode"></i></button>
+            <button id="cerrar-camara" class="boton-cerrar"><i class="fas fa-times"></i></button>
+          </div>
         </div>
         <button id="boton-filtros" class="boton-filtros"><i class="fas fa-filter"></i> Filtros</button>
         <div id="menu-filtros" class="menu-filtros" style="display: none;">
@@ -56,11 +59,17 @@
           <div class="filtro-opcion">
             <label><input type="checkbox" id="filtro-por-vencer"> Productos por Vencer</label>
           </div>
+          <div class="filtro-opcion">
+            <label><input type="checkbox" id="filtro-sin-codigo"> Sin Código de Barras</label>
+          </div>
         </div>
       </div>
 
       <div id="camara-stock" class="camara" style="display: none;">
         <div class="guia-codigo"></div>
+        <svg id="circulo-progreso" width="30" height="30">
+          <circle cx="15" cy="15" r="12" stroke="#00ddeb" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle>
+        </svg>
       </div>
 
       <div id="lista-stock" class="lista-stock"></div>
@@ -73,8 +82,20 @@
             <button id="modal-editar-precios" class="boton-accion boton-primario"><i class="fas fa-edit"></i> Editar Precios</button>
             <button id="modal-agregar-stock" class="boton-accion boton-primario"><i class="fas fa-plus"></i> Agregar Stock</button>
             <button id="modal-dar-baja" class="boton-accion boton-cancelar"><i class="fas fa-minus-circle"></i> Dar de Baja</button>
+            <button id="modal-eliminar-producto" class="boton-accion boton-cancelar"><i class="fas fa-trash"></i> Eliminar Producto</button>
           </div>
           <button id="modal-cerrar" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cerrar</button>
+        </div>
+      </div>
+
+      <div id="modal-eliminar-producto" class="modal" style="display: none;">
+        <div class="modal-contenido">
+          <h2>Eliminar Producto</h2>
+          <p>¿Estás seguro de que deseas eliminar este producto permanentemente de tu stock?</p>
+          <div class="modal-acciones">
+            <button id="eliminar-confirmar" class="boton-accion boton-primario"><i class="fas fa-check"></i> Confirmar</button>
+            <button id="eliminar-cancelar" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar</button>
+          </div>
         </div>
       </div>
 
@@ -93,6 +114,10 @@
             <label for="edit-precio-final">Precio Final</label>
             <input type="number" id="edit-precio-final" readonly>
           </div>
+          <div class="form-campo">
+            <label for="edit-notification-days">Notificar Vencimiento (días antes)</label>
+            <input type="number" id="edit-notification-days" min="1" required>
+          </div>
           <div class="modal-acciones">
             <button id="edit-guardar-precios" class="boton-accion boton-primario"><i class="fas fa-save"></i> Guardar</button>
             <button id="edit-cancelar-precios" class="boton-accion boton-cancelar"><i class="fas fa-times"></i> Cancelar</button>
@@ -104,8 +129,12 @@
         <div class="modal-contenido">
           <h2>Agregar Stock</h2>
           <div class="form-campo">
+            <label for="agregar-lot-id">ID de Lote</label>
+            <input type="text" id="agregar-lot-id" placeholder="Ej. 5685" required>
+          </div>
+          <div class="form-campo">
             <label for="agregar-cantidad">Cantidad a Agregar</label>
-            <input type="number" id="agregar-cantidad" required>
+            <input type="number" id="agregar-cantidad" min="1" required>
           </div>
           <div class="form-campo">
             <label for="agregar-fecha-vencimiento">Fecha de Vencimiento</label>
@@ -122,8 +151,14 @@
         <div class="modal-contenido">
           <h2>Dar de Baja Producto</h2>
           <div class="form-campo">
+            <label for="baja-lot-id">Lote</label>
+            <select id="baja-lot-id" required>
+              <option value="">Selecciona un lote</option>
+            </select>
+          </div>
+          <div class="form-campo">
             <label for="baja-cantidad">Cantidad a Dar de Baja</label>
-            <input type="number" id="baja-cantidad" required>
+            <input type="number" id="baja-cantidad" min="1" required>
           </div>
           <div class="form-campo">
             <label for="baja-motivo">Motivo</label>
@@ -155,5 +190,14 @@
 
   <script src="/public/js/utils.js"></script>
   <script src="/public/js/stock-logic.js"></script>
+  <script>
+    // Fallback para ZXing
+    if (typeof ZXing === "undefined") {
+      console.error("ZXing no cargó desde CDN. Intentando fallback...");
+      document.write(
+        '<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.0/umd/index.min.js"><\/script>'
+      );
+    }
+  </script>
 </body>
 </html>
