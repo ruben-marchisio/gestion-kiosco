@@ -1,18 +1,9 @@
-// public/js/cargar-producto-logic.js
-// Versión corregida: escáner se abre con un solo click y flujo de carga de productos estable
-
-import { iniciarEscaneoContinuo, mostrarToast } from './utils.js';
-
 document.addEventListener('DOMContentLoaded', () => {
   console.log('cargar-producto-logic.js cargado');
 
-  // DOM elements
-  const form = document.querySelector('#form-cargar-producto');
-  const inputCodigo = document.querySelector('#codigo');
-  const inputNombre = document.querySelector('#nombre');
-  const inputMarca = document.querySelector('#marca');
+  // Elementos del DOM
+  const formCargarProducto = document.querySelector('#form-cargar-producto');
   const inputCategoria = document.querySelector('#categoria');
-  const inputSubcategoria = (val) => document.querySelector(`#subcategoria-${val}`);
   const inputUnidad = document.querySelector('#unidad');
   const inputPacks = document.querySelector('#packs');
   const inputUnidadesPorPack = document.querySelector('#unidadesPorPack');
@@ -22,168 +13,474 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputPrecioLista = document.querySelector('#precio-lista');
   const inputPorcentajeGanancia = document.querySelector('#porcentaje-ganancia');
   const inputPrecioFinal = document.querySelector('#precio-final');
-  const inputFechaVencimiento = document.querySelector('#fecha-vencimiento');
-  const inputIcono = document.querySelector('#icono-producto');
-
-  const btnAgregar = document.querySelector('#agregar-producto');
-  const btnCancelar = document.querySelector('#cancelar-producto');
+  const btnAgregarProducto = document.querySelector('#agregar-producto');
+  const btnCancelarProducto = document.querySelector('#cancelar-producto');
+  const btnConfirmarTodos = document.querySelector('#confirmar-todos');
+  const btnCancelarTodo = document.querySelector('#cancelar-todo');
+  const tablaProductosProceso = document.querySelector('#lista-productos-body');
   const btnEscanear = document.querySelector('#escanear');
   const btnEscanearAhora = document.querySelector('#escanear-ahora');
   const btnCerrarCamara = document.querySelector('#cerrar-camara');
-  const camaraContainer = document.querySelector('#camara-carga');
+  let camaraCarga = document.querySelector('#camara-carga');
+  const inputCodigo = document.querySelector('#codigo');
 
-  const btnConfirmarTodos = document.querySelector('#confirmar-todos');
-  const btnCancelarTodo = document.querySelector('#cancelar-todo');
-  const tablaBody = document.querySelector('#lista-productos-body');
-
-  const BASE_URL = `${location.origin}`;
+  // Estado para productos en proceso
   let productosEnProceso = [];
-  let scannerInstance = null;
+  let escaner = null;
 
-  // Inicializar UI
+  // URL base
+  const BASE_URL = `${window.location.protocol}//${window.location.hostname}`;
+
+  // Ocultar elementos iniciales
   document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
-  ['#cantidad-packs','#unidades-por-pack','#cantidad-docenas'].forEach(sel => document.querySelector(sel).style.display='none');
+  document.querySelector('#cantidad-packs').style.display = 'none';
+  document.querySelector('#unidades-por-pack').style.display = 'none';
+  document.querySelector('#cantidad-docenas').style.display = 'none';
 
-  // Cálculo de cantidad total
-  function actualizarCantidad() {
-    const packs = +inputPacks.value || 0;
-    const upack = +inputUnidadesPorPack.value || 0;
-    const doc = +inputDocenas.value || 0;
-    const suel = +inputUnidadesSueltas.value || 0;
-    inputCantidadTotal.value = packs*upack + doc*12 + suel;
+  // Verificar botón de escanear
+  if (!btnEscanear || !btnEscanearAhora || !btnCerrarCamara) {
+    console.error('Botones de escaneo no encontrados.');
+    mostrarToast('Error: Botones de escaneo no encontrados.', 'error');
+    return;
   }
-  [inputPacks,inputUnidadesPorPack,inputDocenas,inputUnidadesSueltas].forEach(i => i.addEventListener('input', actualizarCantidad));
+  console.log('Botones encontrados:', btnEscanear, btnEscanearAhora, btnCerrarCamara);
 
-  // Cálculo precio final
-  function actualizarPrecio() {
-    const lista = +inputPrecioLista.value || 0;
-    const gan = +inputPorcentajeGanancia.value || 0;
-    inputPrecioFinal.value = (lista*(1+gan/100)).toFixed(2);
-  }
-  [inputPrecioLista,inputPorcentajeGanancia].forEach(i=>i.addEventListener('input', actualizarPrecio));
-
-  // Categorías, subcategorías
-  inputCategoria.addEventListener('change', ()=>{
-    document.querySelectorAll('[id^="subcategoria-"]').forEach(el=>el.style.display='none');
-    const subEl = inputSubcategoria(inputCategoria.value);
-    if(subEl) subEl.style.display='block';
-  });
-
-  // Unidad
-  inputUnidad.addEventListener('change', ()=>{
-    const u = inputUnidad.value;
-    document.querySelector('#cantidad-packs').style.display = u==='pack'?'block':'none';
-    document.querySelector('#unidades-por-pack').style.display = u==='pack'?'block':'none';
-    document.querySelector('#cantidad-docenas').style.display = u==='docena'?'block':'none';
-    actualizarCantidad();
-  });
-
-  // Render tabla productos
-  function renderTabla() {
-    tablaBody.innerHTML='';
-    productosEnProceso.forEach((p,i)=>{
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${p.nombre}</td>
-        <td>${p.cantidadUnidades}</td>
-        <td>
-          <button data-i="${i}" class="confirmar">✓</button>
-          <button data-i="${i}" class="eliminar">✕</button>
-        </td>`;
-      tablaBody.appendChild(tr);
-    });
-    tablaBody.querySelectorAll('.confirmar').forEach(b=>b.onclick=e=>confirmar(+e.target.dataset.i));
-    tablaBody.querySelectorAll('.eliminar').forEach(b=>b.onclick=e=>eliminar(+e.target.dataset.i));
+  // Función para mostrar toast
+  function mostrarToast(mensaje, tipo) {
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo} flex items-center gap-2 p-3 rounded-md`;
+    toast.innerHTML = `<i class="fas fa-${tipo === 'error' ? 'exclamation-circle' : tipo === 'success' ? 'check-circle' : 'info-circle'}"></i> ${mensaje}`;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   }
 
-  // Confirmar producto individual
-  async function confirmar(idx) {
-    const p = productosEnProceso[idx];
+  // Función para recrear el contenedor de la cámara
+  function recrearContenedorCamara() {
     try {
-      const res = await fetch(`${BASE_URL}/api/productos`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({...p,usuarioId:localStorage.usuarioId})
-      });
-      if(!res.ok) throw new Error(res.statusText);
-      mostrarToast('Producto confirmado','success');
-      productosEnProceso.splice(idx,1);
-      renderTabla();
-    } catch(err){
-      console.error(err);
-      mostrarToast('Error al confirmar','error');
-    }
-  }
-
-  function eliminar(idx){
-    productosEnProceso.splice(idx,1);
-    renderTabla();
-    mostrarToast('Producto eliminado','info');
-  }
-
-  btnConfirmarTodos.addEventListener('click', ()=>{
-    productosEnProceso.slice().reverse().forEach((_,i)=>confirmar(productosEnProceso.length-1-i));
-  });
-  btnCancelarTodo.addEventListener('click', ()=>{
-    productosEnProceso=[];
-    renderTabla();
-    mostrarToast('Lista vaciada','info');
-  });
-
-  // Lógica de formulario
-  btnAgregar.addEventListener('click', ()=>{
-    const prod = {
-      codigo: inputCodigo.value.trim(),
-      nombre: inputNombre.value.trim(),
-      marca: inputMarca.value.trim(),
-      categoria: inputCategoria.value,
-      subcategoria: inputSubcategoria(inputCategoria.value)?.value||'',
-      precioLista: +inputPrecioLista.value||0,
-      porcentajeGanancia: +inputPorcentajeGanancia.value||0,
-      precioFinal: +inputPrecioFinal.value||0,
-      unidad: inputUnidad.value,
-      packs: +inputPacks.value||0,
-      unidadesPorPack: +inputUnidadesPorPack.value||0,
-      docenas: +inputDocenas.value||0,
-      unidadesSueltas: +inputUnidadesSueltas.value||0,
-      cantidadUnidades: +inputCantidadTotal.value||0,
-      fechaVencimiento: inputFechaVencimiento.value,
-      icono: inputIcono.value||'default'
-    };
-    // Validación
-    const faltantes = [];
-    ['nombre','marca','categoria','unidad','fechaVencimiento'].forEach(f=>{ if(!prod[f]) faltantes.push(f); });
-    if(!prod.cantidadUnidades) faltantes.push('cantidad');
-    if(faltantes.length) return mostrarToast('Completa: '+faltantes.join(', '),'error');
-    productosEnProceso.push(prod);
-    renderTabla();
-    form.reset(); actualizarCantidad(); actualizarPrecio();
-    mostrarToast('Producto agregado a lista','success');
-  });
-  btnCancelar.addEventListener('click', ()=>{ form.reset(); mostrarToast('Formulario limpio','info'); });
-
-  // Escáner: abrir con un click
-  btnEscanear.addEventListener('click', async ()=>{
-    mostrarToast('Abriendo cámara...','info');
-    if(scannerInstance) {
-      scannerInstance.detener();
-      scannerInstance = null;
-    }
-    scannerInstance = iniciarEscaneoContinuo(
-      camaraContainer, btnEscanear, btnEscanearAhora, btnCerrarCamara,
-      inputCodigo,
-      producto => {
-        if(producto) {
-          inputCodigo.value = producto.codigo;
-          btnAgregar.click();
-        } else {
-          mostrarToast('Código no reconocido','info');
-        }
+      const oldContainer = document.querySelector('#camara-carga');
+      if (!oldContainer || !oldContainer.parentNode) {
+        console.error('Contenedor de cámara no encontrado.');
+        return false;
       }
-    );
-    const ok = await scannerInstance.inicializar();
-    if(!ok) {
-      mostrarToast('No se pudo iniciar la cámara','error');
-      scannerInstance = null;
+      const parent = oldContainer.parentNode;
+      const newContainer = document.createElement('div');
+      newContainer.id = 'camara-carga';
+      newContainer.className = 'camara';
+      newContainer.style.display = 'none';
+      const guia = document.createElement('div');
+      guia.className = 'guia-codigo';
+      newContainer.appendChild(guia);
+      const circulo = document.createElement('svg');
+      circulo.id = 'circulo-progreso';
+      circulo.setAttribute('width', '30');
+      circulo.setAttribute('height', '30');
+      circulo.style.position = 'absolute';
+      circulo.style.top = '10px';
+      circulo.style.right = '10px';
+      circulo.innerHTML = '<circle cx="15" cy="15" r="12" stroke="#00ddeb" stroke-width="3" fill="none" stroke-dasharray="75.4" stroke-dashoffset="75.4" data-progress="0"></circle>';
+      newContainer.appendChild(circulo);
+      parent.replaceChild(newContainer, oldContainer);
+      camaraCarga = newContainer;
+      console.log('Contenedor de cámara recreado.');
+      return true;
+    } catch (error) {
+      console.error('Error al recrear contenedor:', titre);
+      return false;
+    }
+  }
+
+  // Función para limpiar eventos del contenedor
+  function limpiarEventosContenedor() {
+    if (camaraCarga) {
+      const clone = camaraCarga.cloneNode(true);
+      camaraCarga.parentNode.replaceChild(clone, camaraCarga);
+      camaraCarga = clone;
+      console.log('Eventos del contenedor limpiados.');
+    }
+  }
+
+  // Función para mostrar subcategoría
+  function mostrarSubcategoria(categoria) {
+    document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+    if (categoria) {
+      const subcategoriaElement = document.querySelector(`#subcategoria-${categoria}`);
+      if (subcategoriaElement) {
+        subcategoriaElement.style.display = 'block';
+        console.log('Mostrando subcategoría:', subcategoriaElement.id);
+      }
+    }
+  }
+
+  // Eventos para categoría y unidad
+  inputCategoria.addEventListener('change', () => {
+    const categoria = inputCategoria.value;
+    console.log('Categoría seleccionada:', categoria);
+    mostrarSubcategoria(categoria);
+  });
+
+  inputUnidad.addEventListener('change', () => {
+    const unidad = inputUnidad.value;
+    console.log('Unidad seleccionada:', unidad);
+    document.querySelector('#cantidad-packs').style.display = unidad === 'pack' ? 'block' : 'none';
+    document.querySelector('#unidades-por-pack').style.display = unidad === 'pack' ? 'block' : 'none';
+    document.querySelector('#cantidad-docenas').style.display = unidad === 'docena' ? 'block' : 'none';
+    actualizarCantidadTotal();
+  });
+
+  // Actualizar cantidad total
+  [inputPacks, inputUnidadesPorPack, inputDocenas, inputUnidadesSueltas].forEach(input => {
+    input.addEventListener('input', actualizarCantidadTotal);
+  });
+
+  function actualizarCantidadTotal() {
+    const packs = parseInt(inputPacks.value) || 0;
+    const unidadesPorPack = parseInt(inputUnidadesPorPack.value) || 0;
+    const docenas = parseInt(inputDocenas.value) || 0;
+    const unidadesSueltas = parseInt(inputUnidadesSueltas.value) || 0;
+    const total = (packs * unidadesPorPack) + (docenas * 12) + unidadesSueltas;
+    inputCantidadTotal.value = total;
+  }
+
+  // Calcular precio final
+  [inputPrecioLista, inputPorcentajeGanancia].forEach(input => {
+    input.addEventListener('input', () => {
+      const precioLista = parseFloat(inputPrecioLista.value) || 0;
+      const porcentajeGanancia = parseFloat(inputPorcentajeGanancia.value) || 0;
+      const precioFinal = precioLista * (1 + porcentajeGanancia / 100);
+      inputPrecioFinal.value = precioFinal.toFixed(2);
+    });
+  });
+
+  // Manejar el formulario
+  btnAgregarProducto.addEventListener('click', () => {
+    const formData = new FormData(formCargarProducto);
+    const data = Object.fromEntries(formData);
+
+    if (!data.nombre || !data.marca || !data.categoria || !data.unidad || !data.fechaVencimiento) {
+      mostrarToast('Completa todos los campos requeridos.', 'error');
+      return;
+    }
+
+    const cantidadTotal = parseInt(inputCantidadTotal.value) || 0;
+    if (cantidadTotal <= 0) {
+      mostrarToast('La cantidad total debe ser mayor que 0.', 'error');
+      return;
+    }
+
+    const producto = {
+      nombre: data.nombre,
+      marca: data.marca,
+      categoria: data.categoria,
+      subcategoria: data.subcategoria || '',
+      precioLista: parseFloat(data.precioLista),
+      porcentajeGanancia: parseFloat(data.porcentajeGanancia),
+      precioFinal: parseFloat(inputPrecioFinal.value),
+      unidad: data.unidad,
+      packs: parseInt(data.packs) || 0,
+      unidadesPorPack: parseInt(data.unidadesPorPack) || 0,
+      docenas: parseInt(data.docenas) || 0,
+      unidadesSueltas: parseInt(data.unidadesSueltas) || 0,
+      cantidadUnidades: cantidadTotal,
+      fechaVencimiento: data.fechaVencimiento,
+      codigo: data.codigo || '',
+      icono: data.icono || 'default',
+      estado: 'Pendiente'
+    };
+
+    if (producto.codigo) {
+      fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then(result => {
+          if (result.producto) {
+            mostrarToast(`Producto ya en stock. Redirigiendo a <a href="/public/stock.html?codigo=${producto.codigo}">Stock</a>.`, 'info');
+            setTimeout(() => {
+              window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
+            }, 3000);
+          } else {
+            productosEnProceso.push(producto);
+            actualizarTablaProductos();
+            formCargarProducto.reset();
+            inputPrecioFinal.value = '';
+            document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+            document.querySelector('#cantidad-packs').style.display = 'none';
+            document.querySelector('#unidades-por-pack').style.display = 'none';
+            document.querySelector('#cantidad-docenas').style.display = 'none';
+            mostrarToast('Producto agregado a la lista.', 'success');
+          }
+        })
+        .catch(err => {
+          console.error('Error al verificar producto:', err);
+          mostrarToast('Error al verificar producto: ' + err.message, 'error');
+        });
+    } else {
+      productosEnProceso.push(producto);
+      actualizarTablaProductos();
+      formCargarProducto.reset();
+      inputPrecioFinal.value = '';
+      document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+      document.querySelector('#cantidad-packs').style.display = 'none';
+      document.querySelector('#unidades-por-pack').style.display = 'none';
+      document.querySelector('#cantidad-docenas').style.display = 'none';
+      mostrarToast('Producto agregado a la lista.', 'success');
+    }
+  });
+
+  // Cancelar producto
+  btnCancelarProducto.addEventListener('click', () => {
+    formCargarProducto.reset();
+    inputPrecioFinal.value = '';
+    document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
+    document.querySelector('#cantidad-packs').style.display = 'none';
+    document.querySelector('#unidades-por-pack').style.display = 'none';
+    document.querySelector('#cantidad-docenas').style.display = 'none';
+  });
+
+  // Actualizar tabla de productos
+  function actualizarTablaProductos() {
+    tablaProductosProceso.innerHTML = '';
+    productosEnProceso.forEach((producto, index) => {
+      const fila = document.createElement('tr');
+      fila.classList.add(
+        producto.estado === 'Pendiente' ? 'pendiente' : 'completo',
+        'hover:bg-cyan-900',
+        'transition',
+        'bg-gray-800'
+      );
+      fila.innerHTML = `
+        <td class="p-3">${producto.nombre || 'Sin nombre'}</td>
+        <td class="p-3">${producto.cantidadUnidades || 0}</td>
+        <td class="acciones p-3 flex justify-center gap-2">
+          <button class="boton-accion confirmar-producto text-sm px-4 py-2 rounded-md" data-index="${index}">
+            <i class="fas fa-check mr-1"></i> Confirmar
+          </button>
+          <button class="boton-accion eliminar-producto text-sm px-4 py-2 rounded-md" data-index="${index}">
+            <i class="fas fa-trash-alt mr-1"></i> Eliminar
+          </button>
+        </td>
+      `;
+      tablaProductosProceso.appendChild(fila);
+    });
+
+    document.querySelectorAll('.confirmar-producto').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.currentTarget.getAttribute('data-index'));
+        confirmarProducto(index);
+      });
+    });
+
+    document.querySelectorAll('.eliminar-producto').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.currentTarget.getAttribute('data-index'));
+        eliminarProducto(index);
+      });
+    });
+  }
+
+  // Confirmar producto
+  async function confirmarProducto(index) {
+    const producto = productosEnProceso[index];
+    producto.estado = 'Confirmado';
+
+    try {
+      const usuarioId = localStorage.getItem('usuarioId');
+      const response = await fetch(`${BASE_URL}/api/productos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...producto, usuarioId })
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const result = await response.json();
+
+      mostrarToast(result.mensaje || 'Producto confirmado.', 'success');
+      productosEnProceso.splice(index, 1);
+      actualizarTablaProductos();
+    } catch (error) {
+      console.error('Error al confirmar:', error);
+      mostrarToast('Error al confirmar: ' + error.message, 'error');
+      producto.estado = 'Pendiente';
+      actualizarTablaProductos();
+    }
+  }
+
+  // Eliminar producto
+  function eliminarProducto(index) {
+    productosEnProceso.splice(index, 1);
+    actualizarTablaProductos();
+    mostrarToast('Producto eliminado.', 'info');
+  }
+
+  // Confirmar todos los productos
+  btnConfirmarTodos.addEventListener('click', async () => {
+    if (productosEnProceso.length === 0) {
+      mostrarToast('No hay productos para confirmar.', 'info');
+      return;
+    }
+
+    const usuarioId = localStorage.getItem('usuarioId');
+    const productosPendientes = productosEnProceso.filter(p => p.estado === 'Pendiente');
+
+    if (productosPendientes.length === 0) {
+      mostrarToast('No hay productos pendientes.', 'info');
+      return;
+    }
+
+    try {
+      for (let i = 0; i < productosPendientes.length; i++) {
+        const producto = productosPendientes[i];
+        producto.estado = 'Confirmado';
+        const response = await fetch(`${BASE_URL}/api/productos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ ...producto, usuarioId })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        await response.json();
+      }
+
+      productosEnProceso = productosEnProceso.filter(p => p.estado !== 'Confirmado');
+      actualizarTablaProductos();
+      mostrarToast('Productos confirmados.', 'success');
+    } catch (error) {
+      console.error('Error al confirmar:', error);
+      mostrarToast('Error al confirmar: ' + error.message, 'error');
+      productosPendientes.forEach(p => p.estado = 'Pendiente');
+      actualizarTablaProductos();
+    }
+  });
+
+  // Cancelar todos los productos
+  btnCancelarTodo.addEventListener('click', () => {
+    productosEnProceso = [];
+    actualizarTablaProductos();
+    mostrarToast('Lista de productos limpiada.', 'info');
+  });
+
+  // Callback para autocompletar formulario
+  const completarCallback = (producto) => {
+    if (producto) {
+      console.log('Producto detectado:', producto);
+      fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then(result => {
+          if (result.producto) {
+            mostrarToast(`Producto ya en stock. Redirigiendo a <a href="/public/stock.html?codigo=${producto.codigo}">Stock</a>.`, 'info');
+            setTimeout(() => {
+              window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
+            }, 3000);
+          } else {
+            console.log('Autocompletando formulario:', producto);
+            document.querySelector('#nombre-producto').value = producto.nombre;
+            document.querySelector('#marca').value = producto.marca;
+            document.querySelector('#categoria').value = producto.categoria;
+            mostrarSubcategoria(producto.categoria);
+            const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
+            if (subcategoriaSelect) {
+              subcategoriaSelect.value = producto.subcategoria || '';
+            }
+            document.querySelector('#precio-lista').value = producto.precioLista || '';
+            document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
+            document.querySelector('#precio-final').value = producto.precioFinal || '';
+            document.querySelector('#unidad').value = producto.unidad || 'unidad';
+            document.querySelector('#packs').value = producto.packs || 0;
+            document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
+            document.querySelector('#docenas').value = producto.docenas || 0;
+            document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
+            document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
+            document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
+            document.querySelector('#icono-producto').value = producto.icono || 'default';
+          }
+        })
+        .catch(err => {
+          console.error('Error al verificar:', err);
+          mostrarToast('Error al verificar: ' + err.message, 'error');
+        });
+    } else {
+      console.log('Producto no encontrado.');
+      mostrarToast('Producto no encontrado. Ingresa los datos manualmente.', 'info');
+    }
+  };
+
+  // Función para inicializar el escáner
+  async function intentarInicializarEscanner(reintentosRestantes = 10) {
+    if (reintentosRestantes <= 0) {
+      console.error('Máximo de reintentos alcanzado.');
+      mostrarToast('Error: No se pudo inicializar el escáner.', 'error');
+      escaner = null;
+      return false;
+    }
+
+    console.log('Intentando inicializar escáner, reintentos:', reintentosRestantes);
+    try {
+      if (typeof ZXing === 'undefined') {
+        console.error('ZXing no está cargado.');
+        mostrarToast('Error: Librería ZXing no cargada.', 'error');
+        return false;
+      }
+
+      const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+      console.log('Estado de permiso de cámara:', permissionStatus.state);
+      if (permissionStatus.state === 'denied') {
+        mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración.', 'error');
+        return false;
+      }
+
+      if (!document.querySelector('#camara-carga') || !recrearContenedorCamara()) {
+        console.error('Fallo al recrear contenedor.');
+        return intentarInicializarEscanner(reintentosRestantes - 1);
+      }
+
+      limpiarEventosContenedor();
+
+      if (escaner) {
+        console.log('Deteniendo escáner existente.');
+        escaner.detener();
+        escaner.reset();
+        escaner = null;
+      }
+
+      escaner = iniciarEscaneoContinuo(
+        camaraCarga,
+        btnEscanear,
+        btnEscanearAhora,
+        btnCerrarCamara,
+        inputCodigo,
+        completarCallback
+      );
+      const success = await escaner.inicializar();
+      if (!success) {
+        console.error('Fallo al inicializar, reintentando...');
+        return intentarInicializarEscanner(reintentosRestantes - 1);
+      }
+      console.log('Escáner inicializado correctamente.');
+      return true;
+    } catch (error) {
+      console.error('Error al iniciar:', error.name, error.message);
+      mostrarToast('Error al iniciar: ' + error.message, 'error');
+      return intentarInicializarEscanner(reintentosRestantes - 1);
+    }
+  }
+
+  // Evento para inicializar el escáner al hacer clic en "Escanear"
+  btnEscanear.addEventListener('click', async () => {
+    if (!escaner) {
+      mostrarToast('Iniciando escáner...', 'info');
+      const success = await intentarInicializarEscanner();
+      if (!success) {
+        mostrarToast('No se pudo inicializar el escáner.', 'error');
+      }
     }
   });
 });
