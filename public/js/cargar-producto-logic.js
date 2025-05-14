@@ -48,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Función para mostrar toast
   function mostrarToast(mensaje, tipo) {
     const toastContainer = document.getElementById('toast-container');
+    // Clear previous toasts
+    while (toastContainer.firstChild) {
+      toastContainer.removeChild(toastContainer.firstChild);
+    }
     const toast = document.createElement('div');
     toast.className = `toast ${tipo} flex items-center gap-2 p-3 rounded-md`;
     toast.innerHTML = `<i class="fas fa-${tipo === 'error' ? 'exclamation-circle' : tipo === 'success' ? 'check-circle' : 'info-circle'}"></i> ${mensaje}`;
@@ -85,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Contenedor de cámara recreado.');
       return true;
     } catch (error) {
-      console.error('Error al recrear contenedor:', titre);
+      console.error('Error al recrear contenedor:', error);
       return false;
     }
   }
@@ -196,10 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(result => {
           if (result.producto) {
-            mostrarToast(`Producto ya en stock. Redirigiendo a <a href="/public/stock.html?codigo=${producto.codigo}">Stock</a>.`, 'info');
+            mostrarToast(`Producto en stock: ${result.producto.nombre}. Redirigiendo...`, 'success');
             setTimeout(() => {
               window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
-            }, 3000);
+            }, 1000);
           } else {
             productosEnProceso.push(producto);
             actualizarTablaProductos();
@@ -365,116 +369,58 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarToast('Lista de productos limpiada.', 'info');
   });
 
-  // Callback para autocompletar formulario
-  const completarCallback = (producto) => {
-    if (producto) {
-      console.log('Producto detectado:', producto);
-      fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${localStorage.getItem('usuarioId')}`)
-        .then(res => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        })
-        .then(result => {
-          if (result.producto) {
-            mostrarToast(`Producto ya en stock. Redirigiendo a <a href="/public/stock.html?codigo=${producto.codigo}">Stock</a>.`, 'info');
+  // Manejar el escaneo continuo
+  btnEscanear.addEventListener('click', async () => {
+    const completarCallback = async (producto) => {
+      if (producto) {
+        try {
+          const usuarioId = localStorage.getItem('usuarioId');
+          if (!usuarioId) {
+            mostrarToast('Por favor, inicia sesión nuevamente.', 'error');
+            return;
+          }
+          const response = await fetch(`${BASE_URL}/api/productos/codigo/${producto.codigo}?usuarioId=${usuarioId}`, {
+            signal: AbortSignal.timeout(3000)
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          if (data.producto) {
+            mostrarToast(`Producto en stock: ${data.producto.nombre}. Redirigiendo...`, 'success');
             setTimeout(() => {
               window.location.href = `/public/stock.html?codigo=${producto.codigo}`;
-            }, 3000);
-          } else {
-            console.log('Autocompletando formulario:', producto);
-            document.querySelector('#nombre-producto').value = producto.nombre;
-            document.querySelector('#marca').value = producto.marca;
-            document.querySelector('#categoria').value = producto.categoria;
-            mostrarSubcategoria(producto.categoria);
-            const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
-            if (subcategoriaSelect) {
-              subcategoriaSelect.value = producto.subcategoria || '';
-            }
-            document.querySelector('#precio-lista').value = producto.precioLista || '';
-            document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
-            document.querySelector('#precio-final').value = producto.precioFinal || '';
-            document.querySelector('#unidad').value = producto.unidad || 'unidad';
-            document.querySelector('#packs').value = producto.packs || 0;
-            document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
-            document.querySelector('#docenas').value = producto.docenas || 0;
-            document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
-            document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
-            document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
-            document.querySelector('#icono-producto').value = producto.icono || 'default';
+            }, 1000);
+            return;
           }
-        })
-        .catch(err => {
-          console.error('Error al verificar:', err);
-          mostrarToast('Error al verificar: ' + err.message, 'error');
-        });
-    } else {
-      console.log('Producto no encontrado.');
-      mostrarToast('Producto no encontrado. Ingresa los datos manualmente.', 'info');
-    }
-  };
-
-  // Función para inicializar el escáner
-  async function intentarInicializarEscanner(reintentosRestantes = 10) {
-    if (reintentosRestantes <= 0) {
-      console.error('Máximo de reintentos alcanzado.');
-      mostrarToast('Error: No se pudo inicializar el escáner.', 'error');
-      escaner = null;
-      return false;
-    }
-
-    console.log('Intentando inicializar escáner, reintentos:', reintentosRestantes);
-    try {
-      if (typeof ZXing === 'undefined') {
-        console.error('ZXing no está cargado.');
-        mostrarToast('Error: Librería ZXing no cargada.', 'error');
-        return false;
+          // Autocompletar formulario
+          document.querySelector('#nombre-producto').value = producto.nombre;
+          document.querySelector('#marca').value = producto.marca;
+          document.querySelector('#categoria').value = producto.categoria;
+          mostrarSubcategoria(producto.categoria);
+          const subcategoriaSelect = document.querySelector(`#select-subcategoria-${producto.categoria}`);
+          if (subcategoriaSelect) {
+            subcategoriaSelect.value = producto.subcategoria || '';
+          }
+          document.querySelector('#precio-lista').value = producto.precioLista || '';
+          document.querySelector('#porcentaje-ganancia').value = producto.porcentajeGanancia || '';
+          document.querySelector('#precio-final').value = producto.precioFinal || '';
+          document.querySelector('#unidad').value = producto.unidad || 'unidad';
+          document.querySelector('#packs').value = producto.packs || 0;
+          document.querySelector('#unidadesPorPack').value = producto.unidadesPorPack || 0;
+          document.querySelector('#docenas').value = producto.docenas || 0;
+          document.querySelector('#unidadesSueltas').value = producto.unidadesSueltas || 0;
+          document.querySelector('#cantidad-total').value = producto.cantidadUnidades || 0;
+          document.querySelector('#fecha-vencimiento').value = producto.fechaVencimiento ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] : '';
+          document.querySelector('#icono-producto').value = producto.icono || 'default';
+          inputCodigo.value = producto.codigo;
+          mostrarToast(`Producto encontrado: ${producto.nombre}. Completa los datos.`, 'info');
+        } catch (error) {
+          console.error('Error al verificar stock:', error);
+          mostrarToast('Error al verificar stock. Intenta de nuevo.', 'error');
+        }
+      } else {
+        mostrarToast('Producto no encontrado. Ingresa manualmente.', 'info');
       }
-
-      const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-      console.log('Estado de permiso de cámara:', permissionStatus.state);
-      if (permissionStatus.state === 'denied') {
-        mostrarToast('Permiso de cámara denegado. Habilítalo en la configuración.', 'error');
-        return false;
-      }
-
-      if (!document.querySelector('#camara-carga') || !recrearContenedorCamara()) {
-        console.error('Fallo al recrear contenedor.');
-        return intentarInicializarEscanner(reintentosRestantes - 1);
-      }
-
-      limpiarEventosContenedor();
-
-      if (escaner) {
-        console.log('Deteniendo escáner existente.');
-        escaner.detener();
-        escaner.reset();
-        escaner = null;
-      }
-
-      escaner = iniciarEscaneoContinuo(
-        camaraCarga,
-        btnEscanear,
-        btnEscanearAhora,
-        btnCerrarCamara,
-        inputCodigo,
-        completarCallback
-      );
-      const success = await escaner.inicializar();
-      if (!success) {
-        console.error('Fallo al inicializar, reintentando...');
-        return intentarInicializarEscanner(reintentosRestantes - 1);
-      }
-      console.log('Escáner inicializado correctamente.');
-      return true;
-    } catch (error) {
-      console.error('Error al iniciar:', error.name, error.message);
-      mostrarToast('Error al iniciar: ' + error.message, 'error');
-      return intentarInicializarEscanner(reintentosRestantes - 1);
-    }
-  }
-
-  // Evento para inicializar el escáner al hacer clic en "Escanear"
-  btnEscanear.addEventListener('click', async () => {
+    };
     if (!escaner) {
       mostrarToast('Iniciando escáner...', 'info');
       const success = await intentarInicializarEscanner();
