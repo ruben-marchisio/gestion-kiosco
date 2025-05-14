@@ -1,171 +1,142 @@
 // public/js/cargar-producto-logic.js
-// Adaptación para usar utils.js iniciarEscaneoContinuo y un único flujo de toasts
+// Versión corregida: escáner se abre con un solo click y flujo de carga de productos estable
+
+import { iniciarEscaneoContinuo, mostrarToast } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('cargar-producto-logic.js cargado');
 
-  // --- DOM ELEMENTS ---
-  const form            = document.querySelector('#form-cargar-producto');
-  const inputCodigo     = document.querySelector('#codigo');
-  const inputNombre     = document.querySelector('#nombre');
-  const inputMarca      = document.querySelector('#marca');
-  const inputCategoria  = document.querySelector('#categoria');
-  const inputUnidad     = document.querySelector('#unidad');
-  const inputPacks      = document.querySelector('#packs');
+  // DOM elements
+  const form = document.querySelector('#form-cargar-producto');
+  const inputCodigo = document.querySelector('#codigo');
+  const inputNombre = document.querySelector('#nombre');
+  const inputMarca = document.querySelector('#marca');
+  const inputCategoria = document.querySelector('#categoria');
+  const inputSubcategoria = (val) => document.querySelector(`#subcategoria-${val}`);
+  const inputUnidad = document.querySelector('#unidad');
+  const inputPacks = document.querySelector('#packs');
   const inputUnidadesPorPack = document.querySelector('#unidadesPorPack');
-  const inputDocenas    = document.querySelector('#docenas');
+  const inputDocenas = document.querySelector('#docenas');
   const inputUnidadesSueltas = document.querySelector('#unidadesSueltas');
-  const inputCantidadTotal  = document.querySelector('#cantidad-total');
-  const inputPrecioLista    = document.querySelector('#precio-lista');
+  const inputCantidadTotal = document.querySelector('#cantidad-total');
+  const inputPrecioLista = document.querySelector('#precio-lista');
   const inputPorcentajeGanancia = document.querySelector('#porcentaje-ganancia');
-  const inputPrecioFinal    = document.querySelector('#precio-final');
-  const inputFechaVencimiento  = document.querySelector('#fecha-vencimiento');
-  const inputIconoProducto     = document.querySelector('#icono');
+  const inputPrecioFinal = document.querySelector('#precio-final');
+  const inputFechaVencimiento = document.querySelector('#fecha-vencimiento');
+  const inputIcono = document.querySelector('#icono-producto');
 
-  const btnAgregar      = document.querySelector('#agregar-producto');
-  const btnCancelar     = document.querySelector('#cancelar-producto');
-  const btnEscanear     = document.querySelector('#escanear');
-  const btnEscanearAhora= document.querySelector('#escanear-ahora');
+  const btnAgregar = document.querySelector('#agregar-producto');
+  const btnCancelar = document.querySelector('#cancelar-producto');
+  const btnEscanear = document.querySelector('#escanear');
+  const btnEscanearAhora = document.querySelector('#escanear-ahora');
   const btnCerrarCamara = document.querySelector('#cerrar-camara');
   const camaraContainer = document.querySelector('#camara-carga');
+
   const btnConfirmarTodos = document.querySelector('#confirmar-todos');
   const btnCancelarTodo = document.querySelector('#cancelar-todo');
-  const tablaBody       = document.querySelector('#lista-productos-body');
+  const tablaBody = document.querySelector('#lista-productos-body');
 
-  const BASE_URL = `${location.protocol}//${location.hostname}`;
-
+  const BASE_URL = `${location.origin}`;
   let productosEnProceso = [];
+  let scannerInstance = null;
 
-  // --- UI INITIALIZATION ---
-  // hide subcategories and unit fields
+  // Inicializar UI
   document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
-  document.querySelector('#cantidad-packs').style.display = 'none';
-  document.querySelector('#unidades-por-pack').style.display = 'none';
-  document.querySelector('#cantidad-docenas').style.display = 'none';
+  ['#cantidad-packs','#unidades-por-pack','#cantidad-docenas'].forEach(sel => document.querySelector(sel).style.display='none');
 
-  // --- HELPERS ---
-  function actualizarCantidadTotal() {
+  // Cálculo de cantidad total
+  function actualizarCantidad() {
     const packs = +inputPacks.value || 0;
     const upack = +inputUnidadesPorPack.value || 0;
-    const doc  = +inputDocenas.value || 0;
+    const doc = +inputDocenas.value || 0;
     const suel = +inputUnidadesSueltas.value || 0;
-    inputCantidadTotal.value = packs * upack + doc * 12 + suel;
+    inputCantidadTotal.value = packs*upack + doc*12 + suel;
   }
-  [inputPacks, inputUnidadesPorPack, inputDocenas, inputUnidadesSueltas]
-    .forEach(i => i.addEventListener('input', actualizarCantidadTotal));
+  [inputPacks,inputUnidadesPorPack,inputDocenas,inputUnidadesSueltas].forEach(i => i.addEventListener('input', actualizarCantidad));
 
-  function actualizarPrecioFinal() {
+  // Cálculo precio final
+  function actualizarPrecio() {
     const lista = +inputPrecioLista.value || 0;
     const gan = +inputPorcentajeGanancia.value || 0;
-    inputPrecioFinal.value = (lista * (1 + gan / 100)).toFixed(2);
+    inputPrecioFinal.value = (lista*(1+gan/100)).toFixed(2);
   }
-  [inputPrecioLista, inputPorcentajeGanancia]
-    .forEach(i => i.addEventListener('input', actualizarPrecioFinal));
+  [inputPrecioLista,inputPorcentajeGanancia].forEach(i=>i.addEventListener('input', actualizarPrecio));
 
-  // category / subcategory
-  inputCategoria.addEventListener('change', () => {
-    document.querySelectorAll('[id^="subcategoria-"]').forEach(el => el.style.display = 'none');
-    const sub = document.querySelector(`#subcategoria-${inputCategoria.value}`);
-    if (sub) sub.style.display = 'block';
+  // Categorías, subcategorías
+  inputCategoria.addEventListener('change', ()=>{
+    document.querySelectorAll('[id^="subcategoria-"]').forEach(el=>el.style.display='none');
+    const subEl = inputSubcategoria(inputCategoria.value);
+    if(subEl) subEl.style.display='block';
   });
-  // unit toggles
-  inputUnidad.addEventListener('change', () => {
+
+  // Unidad
+  inputUnidad.addEventListener('change', ()=>{
     const u = inputUnidad.value;
-    document.querySelector('#cantidad-packs').style.display = u === 'pack' ? 'block': 'none';
-    document.querySelector('#unidades-por-pack').style.display = u === 'pack' ? 'block': 'none';
-    document.querySelector('#cantidad-docenas').style.display = u === 'docena' ? 'block': 'none';
-    actualizarCantidadTotal();
+    document.querySelector('#cantidad-packs').style.display = u==='pack'?'block':'none';
+    document.querySelector('#unidades-por-pack').style.display = u==='pack'?'block':'none';
+    document.querySelector('#cantidad-docenas').style.display = u==='docena'?'block':'none';
+    actualizarCantidad();
   });
 
-  function mostrarProductoEnTabla() {
-    tablaBody.innerHTML = '';
-    productosEnProceso.forEach((p, i) => {
+  // Render tabla productos
+  function renderTabla() {
+    tablaBody.innerHTML='';
+    productosEnProceso.forEach((p,i)=>{
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${p.nombre}</td><td>${p.cantidadUnidades}</td>
+        <td>${p.nombre}</td>
+        <td>${p.cantidadUnidades}</td>
         <td>
           <button data-i="${i}" class="confirmar">✓</button>
           <button data-i="${i}" class="eliminar">✕</button>
         </td>`;
       tablaBody.appendChild(tr);
     });
-    tablaBody.querySelectorAll('.confirmar').forEach(b => b.onclick = e => confirmar(+e.target.dataset.i));
-    tablaBody.querySelectorAll('.eliminar').forEach(b => b.onclick = e => eliminar(+e.target.dataset.i));
+    tablaBody.querySelectorAll('.confirmar').forEach(b=>b.onclick=e=>confirmar(+e.target.dataset.i));
+    tablaBody.querySelectorAll('.eliminar').forEach(b=>b.onclick=e=>eliminar(+e.target.dataset.i));
   }
 
-  function validarCampos(producto) {
-    const falt = [];
-    ['nombre','marca','categoria','unidad','fechaVencimiento'].forEach(f => {
-      if (!producto[f]) falt.push(f);
-    });
-    if (!producto.cantidadUnidades) falt.push('cantidad');
-    return falt;
-  }
-
+  // Confirmar producto individual
   async function confirmar(idx) {
     const p = productosEnProceso[idx];
     try {
-      const res = await fetch(`${BASE_URL}/api/productos`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ ...p, usuarioId:localStorage.usuarioId })
+      const res = await fetch(`${BASE_URL}/api/productos`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({...p,usuarioId:localStorage.usuarioId})
       });
-      if (!res.ok) throw new Error(res.statusText);
+      if(!res.ok) throw new Error(res.statusText);
       mostrarToast('Producto confirmado','success');
       productosEnProceso.splice(idx,1);
-      mostrarProductoEnTabla();
-    } catch(err) {
+      renderTabla();
+    } catch(err){
       console.error(err);
       mostrarToast('Error al confirmar','error');
     }
   }
-  function eliminar(idx) {
+
+  function eliminar(idx){
     productosEnProceso.splice(idx,1);
-    mostrarProductoEnTabla();
+    renderTabla();
     mostrarToast('Producto eliminado','info');
   }
-  btnConfirmarTodos.addEventListener('click', async () => {
-    if (!productosEnProceso.length) return mostrarToast('No hay productos','info');
-    for (let i = productosEnProceso.length -1; i>=0; i--) await confirmar(i);
+
+  btnConfirmarTodos.addEventListener('click', ()=>{
+    productosEnProceso.slice().reverse().forEach((_,i)=>confirmar(productosEnProceso.length-1-i));
   });
-  btnCancelarTodo.addEventListener('click', () => {
-    productosEnProceso = [];
-    mostrarProductoEnTabla();
+  btnCancelarTodo.addEventListener('click', ()=>{
+    productosEnProceso=[];
+    renderTabla();
     mostrarToast('Lista vaciada','info');
   });
 
-  // --- COMPLETAR CALLBACK ---
-  function completarCallback(producto) {
-    if (producto) {
-      inputNombre.value = producto.nombre||'';
-      inputMarca.value  = producto.marca||'';
-      inputCategoria.value = producto.categoria||'';
-      inputCategoria.dispatchEvent(new Event('change'));
-      inputPrecioLista.value = producto.precioLista||'';
-      inputPorcentajeGanancia.value = producto.porcentajeGanancia||'';
-      actualizarPrecioFinal();
-      inputUnidad.value = producto.unidad||'unidad';
-      inputUnidad.dispatchEvent(new Event('change'));
-      inputPacks.value = producto.packs||0;
-      inputUnidadesPorPack.value = producto.unidadesPorPack||0;
-      inputDocenas.value = producto.docenas||0;
-      inputUnidadesSueltas.value = producto.unidadesSueltas||0;
-      actualizarCantidadTotal();
-      inputFechaVencimiento.value = producto.fechaVencimiento
-        ? new Date(producto.fechaVencimiento).toISOString().slice(0,10) : '';
-      mostrarToast('Formulario autocompletado','success');
-    } else {
-      mostrarToast('Producto no encontrado','info');
-    }
-  }
-
-  // --- FORM HANDLING ---
-  btnAgregar.addEventListener('click', () => {
+  // Lógica de formulario
+  btnAgregar.addEventListener('click', ()=>{
     const prod = {
       codigo: inputCodigo.value.trim(),
       nombre: inputNombre.value.trim(),
       marca: inputMarca.value.trim(),
       categoria: inputCategoria.value,
-      subcategoria: document.querySelector(`#subcategoria-${inputCategoria.value}`)?.value||'',
+      subcategoria: inputSubcategoria(inputCategoria.value)?.value||'',
       precioLista: +inputPrecioLista.value||0,
       porcentajeGanancia: +inputPorcentajeGanancia.value||0,
       precioFinal: +inputPrecioFinal.value||0,
@@ -176,32 +147,43 @@ document.addEventListener('DOMContentLoaded', () => {
       unidadesSueltas: +inputUnidadesSueltas.value||0,
       cantidadUnidades: +inputCantidadTotal.value||0,
       fechaVencimiento: inputFechaVencimiento.value,
-      icono: inputIconoProducto.value||'default'
+      icono: inputIcono.value||'default'
     };
-    const falt = validarCampos(prod);
-    if (falt.length) return mostrarToast('Completa: '+falt.join(', '),'error');
-    if (prod.codigo) {
-      // verificar stock + comun en completarCallback del escaner
-    }
+    // Validación
+    const faltantes = [];
+    ['nombre','marca','categoria','unidad','fechaVencimiento'].forEach(f=>{ if(!prod[f]) faltantes.push(f); });
+    if(!prod.cantidadUnidades) faltantes.push('cantidad');
+    if(faltantes.length) return mostrarToast('Completa: '+faltantes.join(', '),'error');
     productosEnProceso.push(prod);
-    mostrarProductoEnTabla();
-    form.reset(); actualizarCantidadTotal(); actualizarPrecioFinal();
-    mostrarToast('Añadido a lista','success');
+    renderTabla();
+    form.reset(); actualizarCantidad(); actualizarPrecio();
+    mostrarToast('Producto agregado a lista','success');
   });
-  btnCancelar.addEventListener('click', () => { form.reset(); mostrarToast('Formulario limpiado','info'); });
+  btnCancelar.addEventListener('click', ()=>{ form.reset(); mostrarToast('Formulario limpio','info'); });
 
-  // --- ESCANEO ---
-  btnEscanear.addEventListener('click', () => {
+  // Escáner: abrir con un click
+  btnEscanear.addEventListener('click', async ()=>{
     mostrarToast('Abriendo cámara...','info');
-    iniciarEscaneoContinuo(
+    if(scannerInstance) {
+      scannerInstance.detener();
+      scannerInstance = null;
+    }
+    scannerInstance = iniciarEscaneoContinuo(
       camaraContainer, btnEscanear, btnEscanearAhora, btnCerrarCamara,
-      inputCodigo, async (producto) => {
-        if (!producto && inputCodigo.value) {
-          // fetch común / stock si no vino en callback
-          // omitted: util logic handles completions
+      inputCodigo,
+      producto => {
+        if(producto) {
+          inputCodigo.value = producto.codigo;
+          btnAgregar.click();
+        } else {
+          mostrarToast('Código no reconocido','info');
         }
-        completarCallback(producto);
       }
     );
+    const ok = await scannerInstance.inicializar();
+    if(!ok) {
+      mostrarToast('No se pudo iniciar la cámara','error');
+      scannerInstance = null;
+    }
   });
 });
